@@ -5,8 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DartboardRecognition"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow"
+        Height="1000"
+        Width="600"
+        ResizeMode="NoResize">
     <Grid>
-        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Button Content="Start" HorizontalAlignment="Left" Margin="217,10,0,0" VerticalAlignment="Top" Width="75" Click="CaptureButtonClick" Height="19"/>
+        <Button Content="Stop" HorizontalAlignment="Left" Margin="297,10,0,0" VerticalAlignment="Top" Width="75" Click="StopButtonClick" Height="19"/>
+        <Image x:Name="ImageBox2" HorizontalAlignment="Left" Height="215" Margin="297,50,0,0" VerticalAlignment="Top" Width="288" />
+        <Image x:Name="ImageBox" HorizontalAlignment="Left" Height="215" Margin="10,50,0,0" VerticalAlignment="Top" Width="288" />
     </Grid>
 </Window>
