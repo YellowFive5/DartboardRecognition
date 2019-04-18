@@ -29,6 +29,7 @@ namespace DartboardRecognition
     public partial class MainWindow : Window
     {
         VideoCapture capture = new VideoCapture(0);
+
         public MainWindow()
         {
             InitializeComponent();
@@ -47,27 +48,60 @@ namespace DartboardRecognition
                 {
                     using (var stream = new MemoryStream())
                     {
-                        frame.Draw(new LineSegment2D(
-                            new System.Drawing.Point(5,400),
-                            new System.Drawing.Point(650, 400)),
-                            new Bgr(0, 0, 255),
-                            5);
                         frame.Bitmap.Save(stream, ImageFormat.Bmp);
-
                         BitmapImage bitmap = new BitmapImage();
                         bitmap.BeginInit();
                         bitmap.StreamSource = new MemoryStream(stream.ToArray());
                         bitmap.EndInit();
-
                         ImageBox.Source = bitmap;
-
-                        //TransformedBitmap bitmap2 = new TransformedBitmap();
-                        //bitmap2.BeginInit();
-                        //bitmap2.Source = bitmap.Clone();
-                        //bitmap2.Transform = new ScaleTransform(-1, 1, 0, 0);
-                        //bitmap2.EndInit();
-                        //ImageBox2.Source = bitmap2;
                     };
+
+                    using (var stream = new MemoryStream())
+                    {
+                        frame.Draw(new LineSegment2D(
+                            new System.Drawing.Point(5, 430),
+                            new System.Drawing.Point(650, 430)),
+                            new Bgr(0, 0, 255),
+                            2);
+                        frame.Draw(new System.Drawing.Rectangle(
+                                (int)RoiPosXSlider.Value,
+                                (int)RoiPosYSlider.Value,
+                                (int)RoiWidthSlider.Value,
+                                (int)RoiHeightSlider.Value),
+                            new Bgr(50, 255, 150),
+                            2);
+                        frame.Bitmap.Save(stream, ImageFormat.Bmp);
+                        BitmapImage bitmap = new BitmapImage();
+                        bitmap.BeginInit();
+                        bitmap.StreamSource = new MemoryStream(stream.ToArray());
+                        bitmap.EndInit();
+                        ImageBox3.Source = bitmap;
+                    }
+
+                    using (var stream = new MemoryStream())
+                    {
+                        frame.ROI = new System.Drawing.Rectangle(
+                            (int)RoiPosXSlider.Value,
+                            (int)RoiPosYSlider.Value,
+                            (int)RoiWidthSlider.Value,
+                            (int)RoiHeightSlider.Value);
+                        Image<Gray, byte> frame2 = frame.Convert<Gray,byte>().InRange(
+                            new Gray(TrasholdMinSlider.Value),
+                            new Gray(TrasholdMaxSlider.Value));
+                        frame2.Bitmap.Save(stream, ImageFormat.Bmp);
+                        BitmapImage bitmap = new BitmapImage();
+                        bitmap.BeginInit();
+                        bitmap.StreamSource = new MemoryStream(stream.ToArray());
+                        bitmap.EndInit();
+                        ImageBox4.Source = bitmap;
+                    }
+
+                    //TransformedBitmap bitmap2 = new TransformedBitmap();
+                    //bitmap2.BeginInit();
+                    //bitmap2.Source = bitmap.Clone();
+                    //bitmap2.Transform = new ScaleTransform(-1, 1, 0, 0);
+                    //bitmap2.EndInit();
+                    //ImageBox2.Source = bitmap2;
                 }
             }
         }
@@ -76,7 +110,8 @@ namespace DartboardRecognition
         {
             this.Dispatcher.Hooks.DispatcherInactive -= new EventHandler(CaptureImage);
             ImageBox.Source = null;
-            ImageBox2.Source = null;
+            ImageBox3.Source = null;
+            ImageBox4.Source = null;
         }
     }
 }
