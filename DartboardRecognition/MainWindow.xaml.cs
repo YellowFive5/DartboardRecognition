@@ -18,7 +18,7 @@ namespace DartboardRecognition
     /// </summary>
     public partial class MainWindow : Window
     {
-        VideoCapture capture = new VideoCapture(1);
+        VideoCapture capture;
 
         BitmapImage originImageWithLines = new BitmapImage();
         BitmapImage roiTrasholdImage = new BitmapImage();
@@ -35,10 +35,12 @@ namespace DartboardRecognition
         public MainWindow()
         {
             InitializeComponent();
+            capture = new VideoCapture(0);
         }
 
         private void CaptureImage(object sender, EventArgs e)
         {
+
             using (originFrame = capture.QueryFrame().ToImage<Bgr, byte>())
             {
                 if (originFrame != null)
@@ -111,28 +113,12 @@ namespace DartboardRecognition
                 }
             }
         }
-        private BitmapImage SaveBitmap(object frame, BitmapImage imageToSave)
+        private BitmapImage SaveBitmap(IImage frame, BitmapImage imageToSave)
         {
-            //todo Boxing/unboxing?
-
-            Image<Bgr, byte> bgrImage;
-            Image<Gray, byte> grayscaleImage;
-
             using (var stream = new MemoryStream())
             {
                 imageToSave = new BitmapImage();
-
-                if (frame is Image<Bgr, byte>)
-                {
-                    bgrImage = (Image<Bgr, byte>)frame;
-                    bgrImage.Bitmap.Save(stream, ImageFormat.Bmp);
-                }
-                else
-                {
-                    grayscaleImage = (Image<Gray, byte>)frame;
-                    grayscaleImage.Bitmap.Save(stream, ImageFormat.Bmp);
-                }
-
+                frame.Bitmap.Save(stream, ImageFormat.Bmp);
                 imageToSave.BeginInit();
                 imageToSave.StreamSource = new MemoryStream(stream.ToArray());
                 imageToSave.EndInit();
@@ -143,6 +129,7 @@ namespace DartboardRecognition
         {
             this.Dispatcher.Hooks.DispatcherInactive += new EventHandler(CaptureImage);
             StartButton.IsEnabled = !StartButton.IsEnabled;
+            CamIndexBox.IsEnabled = !CamIndexBox.IsEnabled;
         }
         private void StopButtonClick(object sender, RoutedEventArgs e)
         {
@@ -154,6 +141,16 @@ namespace DartboardRecognition
             {
                 StartButton.IsEnabled = !StartButton.IsEnabled;
             }
+            if (!CamIndexBox.IsEnabled)
+            {
+                CamIndexBox.IsEnabled = !CamIndexBox.IsEnabled;
+            }
+        }
+        private void CamIndexBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            int camId = 0;
+            Int32.TryParse(CamIndexBox.Text, out camId);
+            capture = new VideoCapture(camId);
         }
     }
 }
