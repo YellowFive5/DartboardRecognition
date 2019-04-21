@@ -1,10 +1,12 @@
 ﻿#region Usings
 
 using System;
+using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 using Emgu.CV;
 using Emgu.CV.Structure;
 using Emgu.CV.Util;
@@ -94,8 +96,41 @@ namespace DartboardRecognition
                         for (int i = 0; i < contours.Size; i++)
                         {
                             var moments = CvInvoke.Moments(contours[i], false);
-                            var p = new System.Drawing.Point((int)(moments.M10 / moments.M00), (int)RoiPosYSlider.Value+(int)(moments.M01 / moments.M00));
-                            CvInvoke.Circle(linedFrame, p,4, new MCvScalar(255, 0, 0),3);
+                            var p = new System.Drawing.Point((int)(moments.M10 / moments.M00), (int)RoiPosYSlider.Value + (int)(moments.M01 / moments.M00));
+                            CvInvoke.Circle(linedFrame, p, 4, new MCvScalar(255, 0, 0), 3);
+
+                            var rect = CvInvoke.MinAreaRect(contours[i]);
+                            var box = CvInvoke.BoxPoints(rect);
+                            var point1 = new System.Drawing.Point((int)box[0].X, (int)RoiPosYSlider.Value + (int)box[0].Y);
+                            var point2 = new System.Drawing.Point((int)box[1].X, (int)RoiPosYSlider.Value + (int)box[1].Y);
+                            var point3 = new System.Drawing.Point((int)box[2].X, (int)RoiPosYSlider.Value + (int)box[2].Y);
+                            var point4 = new System.Drawing.Point((int)box[3].X, (int)RoiPosYSlider.Value + (int)box[3].Y);
+                            var color = new MCvScalar(255, 0, 0);
+                            var thickness = 3;
+                            CvInvoke.Line(linedFrame, point1, point2, color, thickness);
+                            CvInvoke.Line(linedFrame, point2, point3, color, thickness);
+                            CvInvoke.Line(linedFrame, point3, point4, color, thickness);
+                            CvInvoke.Line(linedFrame, point4, point1, color, thickness);
+                            var midpoint = new  System.Drawing.Point((point1.X + point2.X) / 2, (point1.Y + point2.Y) / 2);
+                            var midpoint2 = new  System.Drawing.Point((point3.X + point4.X) / 2, (point3.Y + point4.Y) / 2);
+                            CvInvoke.Line(linedFrame, midpoint, midpoint2, color, thickness);
+
+                            //System.Drawing.Point[] parr = new System.Drawing.Point[2]
+                            //{
+                            //    midpoint,
+                            //    midpoint2
+                            //};
+                            //VectorOfPoint V = new VectorOfPoint(parr);
+                            //Mat m = new Mat();
+                            //CvInvoke.FitLine(V, m, Emgu.CV.CvEnum.DistType.L2, 0, 0.01, 0.01);
+                            //var arr = m.GetData();
+                            //var p1 = Convert.ToInt32(arr.GetValue(0, 0));
+                            //var p2 = Convert.ToInt32(arr.GetValue(1, 0));
+                            //var p3 = Convert.ToInt32(arr.GetValue(2, 0));
+                            //var p4 = Convert.ToInt32(arr.GetValue(3, 0));
+                            //var raypoint = new System.Drawing.Point(p4, p1);
+                            //var raypoint2 = new System.Drawing.Point(p3, p2);
+                            //CvInvoke.Line(linedFrame, raypoint, raypoint2, color, thickness);
                         }
                     }
 
