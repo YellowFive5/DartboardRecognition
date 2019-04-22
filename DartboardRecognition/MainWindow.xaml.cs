@@ -1,12 +1,10 @@
 ﻿#region Usings
 
 using System;
-using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Windows;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using Emgu.CV;
 using Emgu.CV.Structure;
 using Emgu.CV.Util;
@@ -111,26 +109,32 @@ namespace DartboardRecognition
                             CvInvoke.Line(linedFrame, point2, point3, color, thickness);
                             CvInvoke.Line(linedFrame, point3, point4, color, thickness);
                             CvInvoke.Line(linedFrame, point4, point1, color, thickness);
-                            var midpoint = new  System.Drawing.Point((point1.X + point2.X) / 2, (point1.Y + point2.Y) / 2);
-                            var midpoint2 = new  System.Drawing.Point((point3.X + point4.X) / 2, (point3.Y + point4.Y) / 2);
+                            var midpointX = (point1.X + point2.X) / 2;
+                            var midpointY = (point1.Y + point2.Y) / 2;
+                            var midpoint = new System.Drawing.Point(midpointX, midpointY);
+                            var midpoint2X = (point3.X + point4.X) / 2;
+                            var midpoint2Y = (point3.Y + point4.Y) / 2;
+                            var midpoint2 = new System.Drawing.Point(midpoint2X, midpoint2Y);
                             CvInvoke.Line(linedFrame, midpoint, midpoint2, color, thickness);
 
-                            //System.Drawing.Point[] parr = new System.Drawing.Point[2]
-                            //{
-                            //    midpoint,
-                            //    midpoint2
-                            //};
-                            //VectorOfPoint V = new VectorOfPoint(parr);
-                            //Mat m = new Mat();
-                            //CvInvoke.FitLine(V, m, Emgu.CV.CvEnum.DistType.L2, 0, 0.01, 0.01);
-                            //var arr = m.GetData();
-                            //var p1 = Convert.ToInt32(arr.GetValue(0, 0));
-                            //var p2 = Convert.ToInt32(arr.GetValue(1, 0));
-                            //var p3 = Convert.ToInt32(arr.GetValue(2, 0));
-                            //var p4 = Convert.ToInt32(arr.GetValue(3, 0));
-                            //var raypoint = new System.Drawing.Point(p4, p1);
-                            //var raypoint2 = new System.Drawing.Point(p3, p2);
-                            //CvInvoke.Line(linedFrame, raypoint, raypoint2, color, thickness);
+                            // work but strange
+                            var P = new System.Drawing.Point(0, 0);
+                            var Q = new System.Drawing.Point(0, 0);
+                            //test if line is vertical, otherwise computes line equation
+                            //y = ax + b
+                            if (midpoint.X == midpoint2.X)
+                            {
+                                P = new System.Drawing.Point(midpoint.X, 0);
+                                Q = new System.Drawing.Point(midpoint.X, linedFrame.Rows);
+                            }
+                            else
+                            {
+                                int a = (midpoint2.Y - midpoint.Y) / (midpoint2.X - midpoint.X);
+                                int b = midpoint.Y - a * midpoint.X;
+                                P = new System.Drawing.Point(0, b);
+                                Q = new System.Drawing.Point(linedFrame.Rows, a * linedFrame.Rows + b);
+                            }
+                            CvInvoke.Line(linedFrame, P, Q, color, thickness);
                         }
                     }
 
