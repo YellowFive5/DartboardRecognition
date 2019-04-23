@@ -41,7 +41,9 @@ namespace DartboardRecognition
         private void CaptureImage(object sender, EventArgs e)
         {
 
-            using (originFrame = capture.QueryFrame().ToImage<Bgr, byte>())
+            //using (originFrame = capture.QueryFrame().ToImage<Bgr, byte>())
+            //{
+            using (originFrame = new Image<Bgr, byte>(@"C:\Users\YellowFive\Dropbox\MY\[Darts recognition]\MyC#\TestPhoto\C.JPG"))
             {
                 if (originFrame != null)
                 {
@@ -52,14 +54,14 @@ namespace DartboardRecognition
                         new System.Drawing.Point(5, 430),
                         new System.Drawing.Point(650, 430)),
                         new Bgr(0, 0, 255),
-                        2);
+                        10);
                     linedFrame.Draw(new System.Drawing.Rectangle(
                             (int)RoiPosXSlider.Value,
                             (int)RoiPosYSlider.Value,
                             (int)RoiWidthSlider.Value,
                             (int)RoiHeightSlider.Value),
                         new Bgr(50, 255, 150),
-                        2);
+                        10);
 
                     #endregion
 
@@ -94,8 +96,8 @@ namespace DartboardRecognition
                         for (int i = 0; i < contours.Size; i++)
                         {
                             var moments = CvInvoke.Moments(contours[i], false);
-                            var p = new System.Drawing.Point((int)(moments.M10 / moments.M00), (int)RoiPosYSlider.Value + (int)(moments.M01 / moments.M00));
-                            CvInvoke.Circle(linedFrame, p, 4, new MCvScalar(255, 0, 0), 3);
+                            var centerPoint = new System.Drawing.Point((int)(moments.M10 / moments.M00), (int)RoiPosYSlider.Value + (int)(moments.M01 / moments.M00));
+                            CvInvoke.Circle(linedFrame, centerPoint, 4, new MCvScalar(255, 0, 0), 3);
 
                             var rect = CvInvoke.MinAreaRect(contours[i]);
                             var box = CvInvoke.BoxPoints(rect);
@@ -109,30 +111,44 @@ namespace DartboardRecognition
                             CvInvoke.Line(linedFrame, point2, point3, color, thickness);
                             CvInvoke.Line(linedFrame, point3, point4, color, thickness);
                             CvInvoke.Line(linedFrame, point4, point1, color, thickness);
-                            var midpointX = (point1.X + point2.X) / 2;
-                            var midpointY = (point1.Y + point2.Y) / 2;
-                            var midpoint = new System.Drawing.Point(midpointX, midpointY);
-                            var midpoint2X = (point3.X + point4.X) / 2;
-                            var midpoint2Y = (point3.Y + point4.Y) / 2;
-                            var midpoint2 = new System.Drawing.Point(midpoint2X, midpoint2Y);
-                            CvInvoke.Line(linedFrame, midpoint, midpoint2, color, thickness);
 
-                            // work but strange
-                            var P = new System.Drawing.Point(0, 0);
-                            var Q = new System.Drawing.Point(0, 0);
-                            //test if line is vertical, otherwise computes line equation
-                            //y = ax + b
-                            if (midpoint.X == midpoint2.X)
+                            var middlePoint = new System.Drawing.Point();
+                            var middlePoint2 = new System.Drawing.Point();
+
+                            if (DistancePtP(point1,point2) < DistancePtP(point4,point1))
                             {
-                                P = new System.Drawing.Point(midpoint.X, 0);
-                                Q = new System.Drawing.Point(midpoint.X, linedFrame.Rows);
+                                middlePoint = MiddlePoint(point1, point2);
+                                middlePoint2 = MiddlePoint(point4, point3);
                             }
                             else
                             {
-                                int a = (midpoint2.Y - midpoint.Y) / (midpoint2.X - midpoint.X);
-                                int b = midpoint.Y - a * midpoint.X;
-                                P = new System.Drawing.Point(0, b);
-                                Q = new System.Drawing.Point(linedFrame.Rows, a * linedFrame.Rows + b);
+                                middlePoint = MiddlePoint(point4, point1);
+                                middlePoint2 = MiddlePoint(point3, point2);
+                            }
+
+                            CvInvoke.Line(linedFrame, middlePoint, middlePoint2, color, thickness);
+
+                            // work but strange
+                            var P = new System.Drawing.Point();
+                            var Q = new System.Drawing.Point();
+                            //test if line is vertical, otherwise computes line equation
+                            //y = ax + b
+                            if (middlePoint.X == middlePoint2.X)
+                            {
+                                P.X = middlePoint.X;
+                                P.Y = 0;
+                                Q.X = middlePoint.X;
+                                Q.Y= linedFrame.Rows;
+                            }
+                            else
+                            {
+                                int a = (middlePoint2.Y - middlePoint.Y) / (middlePoint2.X - middlePoint.X);
+                                int b = middlePoint.Y - (a * middlePoint.X);
+                                P.X = 0;
+                                P.Y= b;
+                                Q.X= linedFrame.Rows;
+                                Q.Y= a * linedFrame.Rows + b;
+                                //CvInvoke.ClipLine(new System.Drawing.Rectangle(linedFrame.Rows,linedFrame.Cols));
                             }
                             CvInvoke.Line(linedFrame, P, Q, color, thickness);
                         }
@@ -190,6 +206,16 @@ namespace DartboardRecognition
             int camId = 0;
             Int32.TryParse(CamIndexBox.Text, out camId);
             capture = new VideoCapture(camId);
+        }
+        private System.Drawing.Point MiddlePoint(System.Drawing.Point point1,System.Drawing.Point point2)
+        {
+            var mpX = (point1.X + point2.X) / 2;
+            var mpY = (point1.Y + point2.Y) / 2;
+            return new System.Drawing.Point(mpX, mpY);
+        }
+        private int DistancePtP(System.Drawing.Point point1, System.Drawing.Point point2)
+        {
+            return (int)Math.Sqrt((Math.Pow(point1.X - point2.X, 2) + Math.Pow(point1.Y - point2.Y, 2)));
         }
     }
 }
