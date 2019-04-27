@@ -43,16 +43,16 @@ namespace DartboardRecognition
 
             //using (originFrame = capture.QueryFrame().ToImage<Bgr, byte>())
             //{
-            using (originFrame = new Image<Bgr, byte>(@"C:\Users\YellowFive\Dropbox\MY\[Darts recognition]\MyC#\TestPhoto\C.JPG"))
-            {
-                if (originFrame != null)
+                using (originFrame = new Image<Bgr, byte>(@"C:\Users\YellowFive\Dropbox\MY\[Darts recognition]\MyC#\TestPhoto\Ccrop.JPG"))
+                {
+                    if (originFrame != null)
                 {
                     #region LinedFrame
 
                     linedFrame = originFrame.Clone();
                     linedFrame.Draw(new LineSegment2D(
-                        new System.Drawing.Point(5, 430),
-                        new System.Drawing.Point(650, 430)),
+                        new System.Drawing.Point(0, (int)SurfaceSlider.Value),
+                        new System.Drawing.Point(originFrame.Cols, (int)SurfaceSlider.Value)),
                         new Bgr(0, 0, 255),
                         10);
                     linedFrame.Draw(new System.Drawing.Rectangle(
@@ -88,13 +88,18 @@ namespace DartboardRecognition
                     #region ROIContourFrame
 
                     roiContourFrame = roiFrame.Clone();
-                    CvInvoke.FindContours(roiTrasholdFrame, contours, matHierarhy, Emgu.CV.CvEnum.RetrType.External, Emgu.CV.CvEnum.ChainApproxMethod.ChainApproxSimple);
+                    CvInvoke.FindContours(roiTrasholdFrame, contours, matHierarhy, Emgu.CV.CvEnum.RetrType.External, Emgu.CV.CvEnum.ChainApproxMethod.ChainApproxNone);
                     CvInvoke.DrawContours(linedFrame, contours, -1, new MCvScalar(0, 0, 255), 2, offset: new System.Drawing.Point(0, (int)RoiPosYSlider.Value));
 
                     if (contours.Size > 0)
                     {
                         for (int i = 0; i < contours.Size; i++)
                         {
+                            var arclenth = CvInvoke.ArcLength(contours[i],true);
+                            if (arclenth < 550)
+                            {
+                                continue;
+                            }
                             var moments = CvInvoke.Moments(contours[i], false);
                             var centerPoint = new System.Drawing.Point((int)(moments.M10 / moments.M00), (int)RoiPosYSlider.Value + (int)(moments.M01 / moments.M00));
                             CvInvoke.Circle(linedFrame, centerPoint, 4, new MCvScalar(255, 0, 0), 3);
@@ -126,31 +131,36 @@ namespace DartboardRecognition
                                 middlePoint2 = MiddlePoint(point3, point2);
                             }
 
+                            var length = 500;
+                            var angle = Math.Atan2(middlePoint.Y - middlePoint2.Y, middlePoint.X - middlePoint2.X);
+                            middlePoint.X = (int)(middlePoint2.X + Math.Cos(angle) * length);
+                            middlePoint.Y = (int)(middlePoint2.Y + Math.Sin(angle) * length);
                             CvInvoke.Line(linedFrame, middlePoint, middlePoint2, color, thickness);
 
                             // work but strange
-                            var P = new System.Drawing.Point();
-                            var Q = new System.Drawing.Point();
-                            //test if line is vertical, otherwise computes line equation
-                            //y = ax + b
-                            if (middlePoint.X == middlePoint2.X)
-                            {
-                                P.X = middlePoint.X;
-                                P.Y = 0;
-                                Q.X = middlePoint.X;
-                                Q.Y= linedFrame.Rows;
-                            }
-                            else
-                            {
-                                int a = (middlePoint2.Y - middlePoint.Y) / (middlePoint2.X - middlePoint.X);
-                                int b = middlePoint.Y - (a * middlePoint.X);
-                                P.X = 0;
-                                P.Y= b;
-                                Q.X= linedFrame.Rows;
-                                Q.Y= a * linedFrame.Rows + b;
-                                //CvInvoke.ClipLine(new System.Drawing.Rectangle(linedFrame.Rows,linedFrame.Cols));
-                            }
-                            CvInvoke.Line(linedFrame, P, Q, color, thickness);
+                            //var P = new System.Drawing.Point();
+                            //var Q = new System.Drawing.Point();
+                            ////test if line is vertical, otherwise computes line equation
+                            ////y = ax + b
+                            //if (middlePoint.X == middlePoint2.X)
+                            //{
+                            //    P.X = middlePoint.X;
+                            //    P.Y = 0;
+                            //    Q.X = middlePoint.X;
+                            //    Q.Y = linedFrame.Rows;
+                            //}
+                            //else
+                            //{
+                            //    int a = (middlePoint2.Y - middlePoint.Y) / (middlePoint2.X - middlePoint.X);
+                            //    int b = middlePoint.Y - a * middlePoint.X;
+                            //    P.X = 0;
+                            //    P.Y = b;
+                            //    Q.X = linedFrame.Rows;
+                            //    Q.Y = a * linedFrame.Rows + b;
+                            //    //CvInvoke.ClipLine(new System.Drawing.Rectangle(0,0,linedFrame.Rows, linedFrame.Cols),ref P ,ref Q);
+                            //}
+
+                            //CvInvoke.Line(linedFrame, P, Q, color, thickness);
                         }
                     }
 
