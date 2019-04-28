@@ -29,6 +29,30 @@ namespace DartboardRecognition
         Image<Gray, byte> roiTrasholdFrame;
         Image<Bgr, byte> roiContourFrame;
 
+        System.Drawing.Point surfacePoint1 = new System.Drawing.Point();
+        System.Drawing.Point surfacePoint2 = new System.Drawing.Point();
+        Bgr surfaceLineColor = new Bgr(0, 0, 255);
+        int surfaceLineThickness = 10;
+
+        Bgr roiRectColor = new Bgr(50, 255, 150);
+        int roiRectThickness = 10;
+
+        MCvScalar contourColor = new MCvScalar(0, 0, 255);
+        int countourThickness = 2;
+
+        MCvScalar contourRectColor = new MCvScalar(255, 0, 0);
+        int contourRectThickness = 7;
+
+        int spikeLineLength;
+        MCvScalar spikeLineColor = new MCvScalar(255, 255, 255);
+        int spikeLineThickness = 4;
+
+        MCvScalar pointOfImpactColor = new MCvScalar(0, 255, 255);
+        int pointOfImpactRadius = 10;
+        int pointOfImpactThickness = 10;
+
+        int minContourArcLength = 550;
+
         VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint();
         Mat matHierarhy = new Mat();
 
@@ -46,22 +70,19 @@ namespace DartboardRecognition
                 using (originFrame = new Image<Bgr, byte>(@"C:\Users\YellowFive\Dropbox\MY\[Darts recognition]\MyC#\TestPhoto\Ccrop.JPG"))
                 {
                     if (originFrame != null)
-                {
+                    {
                     #region LinedFrame
-
+                    surfacePoint1 = new System.Drawing.Point(0, (int)SurfaceSlider.Value);
+                    surfacePoint2 = new System.Drawing.Point(originFrame.Cols, (int)SurfaceSlider.Value);
                     linedFrame = originFrame.Clone();
-                    linedFrame.Draw(new LineSegment2D(
-                        new System.Drawing.Point(0, (int)SurfaceSlider.Value),
-                        new System.Drawing.Point(originFrame.Cols, (int)SurfaceSlider.Value)),
-                        new Bgr(0, 0, 255),
-                        10);
+                    linedFrame.Draw(new LineSegment2D(surfacePoint1, surfacePoint2), surfaceLineColor, surfaceLineThickness);
                     linedFrame.Draw(new System.Drawing.Rectangle(
-                            (int)RoiPosXSlider.Value,
-                            (int)RoiPosYSlider.Value,
-                            (int)RoiWidthSlider.Value,
-                            (int)RoiHeightSlider.Value),
-                        new Bgr(50, 255, 150),
-                        10);
+                                                    (int)RoiPosXSlider.Value,
+                                                    (int)RoiPosYSlider.Value,
+                                                    (int)RoiWidthSlider.Value,
+                                                    (int)RoiHeightSlider.Value),
+                                    roiRectColor,
+                                    roiRectThickness);
 
                     #endregion
 
@@ -89,14 +110,14 @@ namespace DartboardRecognition
 
                     roiContourFrame = roiFrame.Clone();
                     CvInvoke.FindContours(roiTrasholdFrame, contours, matHierarhy, Emgu.CV.CvEnum.RetrType.External, Emgu.CV.CvEnum.ChainApproxMethod.ChainApproxNone);
-                    CvInvoke.DrawContours(linedFrame, contours, -1, new MCvScalar(0, 0, 255), 2, offset: new System.Drawing.Point(0, (int)RoiPosYSlider.Value));
+                    //CvInvoke.DrawContours(linedFrame, contours, -1, contourColor, countourThickness, offset: new System.Drawing.Point(0, (int)RoiPosYSlider.Value));
 
                     if (contours.Size > 0)
                     {
                         for (int i = 0; i < contours.Size; i++)
                         {
                             var arclenth = CvInvoke.ArcLength(contours[i],true);
-                            if (arclenth < 550)
+                            if (arclenth < minContourArcLength)
                             {
                                 continue;
                             }
@@ -110,57 +131,39 @@ namespace DartboardRecognition
                             var point2 = new System.Drawing.Point((int)box[1].X, (int)RoiPosYSlider.Value + (int)box[1].Y);
                             var point3 = new System.Drawing.Point((int)box[2].X, (int)RoiPosYSlider.Value + (int)box[2].Y);
                             var point4 = new System.Drawing.Point((int)box[3].X, (int)RoiPosYSlider.Value + (int)box[3].Y);
-                            var color = new MCvScalar(255, 0, 0);
-                            var thickness = 3;
-                            CvInvoke.Line(linedFrame, point1, point2, color, thickness);
-                            CvInvoke.Line(linedFrame, point2, point3, color, thickness);
-                            CvInvoke.Line(linedFrame, point3, point4, color, thickness);
-                            CvInvoke.Line(linedFrame, point4, point1, color, thickness);
 
-                            var middlePoint = new System.Drawing.Point();
+                            CvInvoke.Line(linedFrame, point1, point2, contourRectColor, contourRectThickness);
+                            CvInvoke.Line(linedFrame, point2, point3, contourRectColor, contourRectThickness);
+                            CvInvoke.Line(linedFrame, point3, point4, contourRectColor, contourRectThickness);
+                            CvInvoke.Line(linedFrame, point4, point1, contourRectColor, contourRectThickness);
+
+                            var middlePoint1 = new System.Drawing.Point();
                             var middlePoint2 = new System.Drawing.Point();
 
                             if (DistancePtP(point1,point2) < DistancePtP(point4,point1))
                             {
-                                middlePoint = MiddlePoint(point1, point2);
+                                middlePoint1 = MiddlePoint(point1, point2);
                                 middlePoint2 = MiddlePoint(point4, point3);
                             }
                             else
                             {
-                                middlePoint = MiddlePoint(point4, point1);
+                                middlePoint1 = MiddlePoint(point4, point1);
                                 middlePoint2 = MiddlePoint(point3, point2);
                             }
 
-                            var length = 500;
-                            var angle = Math.Atan2(middlePoint.Y - middlePoint2.Y, middlePoint.X - middlePoint2.X);
-                            middlePoint.X = (int)(middlePoint2.X + Math.Cos(angle) * length);
-                            middlePoint.Y = (int)(middlePoint2.Y + Math.Sin(angle) * length);
-                            CvInvoke.Line(linedFrame, middlePoint, middlePoint2, color, thickness);
+                            var spikePoint1 = middlePoint1;
+                            var spikePoint2 = middlePoint2;
+                            spikeLineLength = surfacePoint2.Y - middlePoint2.Y; 
+                            var angle = Math.Atan2(middlePoint1.Y - middlePoint2.Y, middlePoint1.X - middlePoint2.X);
+                            spikePoint1.X = (int)(middlePoint2.X + Math.Cos(angle) * spikeLineLength);
+                            spikePoint1.Y = (int)(middlePoint2.Y + Math.Sin(angle) * spikeLineLength);
+                            CvInvoke.Line(linedFrame, spikePoint1, spikePoint2, spikeLineColor, spikeLineThickness);
 
-                            // work but strange
-                            //var P = new System.Drawing.Point();
-                            //var Q = new System.Drawing.Point();
-                            ////test if line is vertical, otherwise computes line equation
-                            ////y = ax + b
-                            //if (middlePoint.X == middlePoint2.X)
-                            //{
-                            //    P.X = middlePoint.X;
-                            //    P.Y = 0;
-                            //    Q.X = middlePoint.X;
-                            //    Q.Y = linedFrame.Rows;
-                            //}
-                            //else
-                            //{
-                            //    int a = (middlePoint2.Y - middlePoint.Y) / (middlePoint2.X - middlePoint.X);
-                            //    int b = middlePoint.Y - a * middlePoint.X;
-                            //    P.X = 0;
-                            //    P.Y = b;
-                            //    Q.X = linedFrame.Rows;
-                            //    Q.Y = a * linedFrame.Rows + b;
-                            //    //CvInvoke.ClipLine(new System.Drawing.Rectangle(0,0,linedFrame.Rows, linedFrame.Cols),ref P ,ref Q);
-                            //}
-
-                            //CvInvoke.Line(linedFrame, P, Q, color, thickness);
+                            var pointOfImpact = IntersectPoint(spikePoint1, spikePoint2, surfacePoint1, surfacePoint2);
+                            if (pointOfImpact != null)
+                            {
+                                CvInvoke.Circle(linedFrame, pointOfImpact.Value, pointOfImpactRadius, pointOfImpactColor, pointOfImpactThickness);
+                            }
                         }
                     }
 
@@ -168,17 +171,10 @@ namespace DartboardRecognition
 
                     ImageBox.Source = SaveBitmap(linedFrame, originImageWithLines);                   
                     ImageBox2.Source = SaveBitmap(roiTrasholdFrame, roiTrasholdImage);
-
-                    //TransformedBitmap bitmap2 = new TransformedBitmap();
-                    //bitmap2.BeginInit();
-                    //bitmap2.Source = bitmap.Clone();
-                    //bitmap2.Transform = new ScaleTransform(-1, 1, 0, 0);
-                    //bitmap2.EndInit();
-                    //ImageBox2.Source = bitmap2;
                 }
             }
         }
-        private BitmapImage SaveBitmap(IImage frame, BitmapImage imageToSave)
+        private static BitmapImage SaveBitmap(IImage frame, BitmapImage imageToSave)
         {
             using (var stream = new MemoryStream())
             {
@@ -217,15 +213,41 @@ namespace DartboardRecognition
             Int32.TryParse(CamIndexBox.Text, out camId);
             capture = new VideoCapture(camId);
         }
-        private System.Drawing.Point MiddlePoint(System.Drawing.Point point1,System.Drawing.Point point2)
+        private static System.Drawing.Point MiddlePoint(System.Drawing.Point point1,System.Drawing.Point point2)
         {
             var mpX = (point1.X + point2.X) / 2;
             var mpY = (point1.Y + point2.Y) / 2;
             return new System.Drawing.Point(mpX, mpY);
         }
-        private int DistancePtP(System.Drawing.Point point1, System.Drawing.Point point2)
+        private static int DistancePtP(System.Drawing.Point point1, System.Drawing.Point point2)
         {
             return (int)Math.Sqrt((Math.Pow(point1.X - point2.X, 2) + Math.Pow(point1.Y - point2.Y, 2)));
         }
+        private static System.Drawing.Point? IntersectPoint(System.Drawing.Point line1point1,
+                                                            System.Drawing.Point line1point2,
+                                                            System.Drawing.Point line2point1,
+                                                            System.Drawing.Point line2point2)
+        {
+            float A1 = line1point2.Y - line1point1.Y;
+            float B1 = line1point2.X - line1point1.X;
+            float C1 = A1 * line1point1.X + B1 * line1point1.Y;
+
+            float A2 = line2point2.Y - line2point1.Y;
+            float B2 = line2point2.X - line2point1.X;
+            float C2 = A2 * line2point1.X + B2 * line2point1.Y;
+
+            float det = A1 * B2 - A2 * B1;
+            if (det == 0)
+            {
+                return null;
+            }
+            else
+            {
+                int x = (int)((B2 * C1 - B1 * C2) / det);
+                int y = (int)((A1 * C2 - A2 * C1) / det);
+                return new System.Drawing.Point(x, y);
+            }
+        }
+
     }
 }
