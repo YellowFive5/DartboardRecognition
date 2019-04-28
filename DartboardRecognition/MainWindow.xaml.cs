@@ -18,7 +18,10 @@ namespace DartboardRecognition
     /// </summary>
     public partial class MainWindow : Window
     {
-        VideoCapture capture;
+        VideoCapture videoCapture;
+
+        EventHandler cam1Handler;
+        EventHandler cam2Handler;
 
         BitmapImage originImageWithLines = new BitmapImage();
         BitmapImage roiTrasholdImage = new BitmapImage();
@@ -32,46 +35,54 @@ namespace DartboardRecognition
         System.Drawing.Point surfacePoint1 = new System.Drawing.Point();
         System.Drawing.Point surfacePoint2 = new System.Drawing.Point();
         Bgr surfaceLineColor = new Bgr(0, 0, 255);
-        int surfaceLineThickness = 10;
+        int surfaceLineThickness = 5;
 
         Bgr roiRectColor = new Bgr(50, 255, 150);
-        int roiRectThickness = 10;
+        int roiRectThickness = 5;
 
         MCvScalar contourColor = new MCvScalar(0, 0, 255);
         int countourThickness = 2;
 
         MCvScalar contourRectColor = new MCvScalar(255, 0, 0);
-        int contourRectThickness = 7;
+        int contourRectThickness = 5;
 
         int spikeLineLength;
         MCvScalar spikeLineColor = new MCvScalar(255, 255, 255);
         int spikeLineThickness = 4;
 
         MCvScalar pointOfImpactColor = new MCvScalar(0, 255, 255);
-        int pointOfImpactRadius = 10;
-        int pointOfImpactThickness = 10;
+        int pointOfImpactRadius = 6;
+        int pointOfImpactThickness = 6;
 
-        int minContourArcLength = 550;
+        int minContourArcLength = 250;
 
         VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint();
         Mat matHierarhy = new Mat();
 
+        Image<Bgr, byte> cam1_1 = new Image<Bgr, byte>(@"C:\Users\YellowFive\Dropbox\MY\[Darts recognition]\MyC#\TestPhoto\Ethalon images\cam1_1.png");
+        Image<Bgr, byte> cam1_2 = new Image<Bgr, byte>(@"C:\Users\YellowFive\Dropbox\MY\[Darts recognition]\MyC#\TestPhoto\Ethalon images\cam1_2.png");
+        Image<Bgr, byte> cam1_3 = new Image<Bgr, byte>(@"C:\Users\YellowFive\Dropbox\MY\[Darts recognition]\MyC#\TestPhoto\Ethalon images\cam1_3.png");
+        Image<Bgr, byte> cam2_1 = new Image<Bgr, byte>(@"C:\Users\YellowFive\Dropbox\MY\[Darts recognition]\MyC#\TestPhoto\Ethalon images\cam2_1.png");
+        Image<Bgr, byte> cam2_2 = new Image<Bgr, byte>(@"C:\Users\YellowFive\Dropbox\MY\[Darts recognition]\MyC#\TestPhoto\Ethalon images\cam2_2.png");
+        Image<Bgr, byte> cam2_3 = new Image<Bgr, byte>(@"C:\Users\YellowFive\Dropbox\MY\[Darts recognition]\MyC#\TestPhoto\Ethalon images\cam2_3.png");
+
         public MainWindow()
         {
             InitializeComponent();
-            capture = new VideoCapture(0);
+            videoCapture = new VideoCapture(0);
         }
 
-        private void CaptureImage(object sender, EventArgs e)
+        private void CaptureImage(object sender, EventArgs e, Image<Bgr, byte> img, int imageBox)
         {
-
+            originFrame = img.Clone();
             //using (originFrame = capture.QueryFrame().ToImage<Bgr, byte>())
             //{
-                using (originFrame = new Image<Bgr, byte>(@"C:\Users\YellowFive\Dropbox\MY\[Darts recognition]\MyC#\TestPhoto\Ccrop.JPG"))
+            using (originFrame)
+            {
+                if (originFrame != null)
                 {
-                    if (originFrame != null)
-                    {
                     #region LinedFrame
+
                     surfacePoint1 = new System.Drawing.Point(0, (int)SurfaceSlider.Value);
                     surfacePoint2 = new System.Drawing.Point(originFrame.Cols, (int)SurfaceSlider.Value);
                     linedFrame = originFrame.Clone();
@@ -166,11 +177,21 @@ namespace DartboardRecognition
                             }
                         }
                     }
-
                     #endregion
 
-                    ImageBox.Source = SaveBitmap(linedFrame, originImageWithLines);                   
-                    ImageBox2.Source = SaveBitmap(roiTrasholdFrame, roiTrasholdImage);
+                    switch (imageBox)
+                    {
+                        case 1:
+                            ImageBox1.Source = SaveBitmap(linedFrame, originImageWithLines);
+                            ImageBox1Roi.Source = SaveBitmap(roiTrasholdFrame, roiTrasholdImage);
+                            break;
+                        case 2:
+                            ImageBox2.Source = SaveBitmap(linedFrame, originImageWithLines);
+                            ImageBox2Roi.Source = SaveBitmap(roiTrasholdFrame, roiTrasholdImage);
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
         }
@@ -188,16 +209,43 @@ namespace DartboardRecognition
         }
         private void CaptureButtonClick(object sender, RoutedEventArgs e)
         {
-            this.Dispatcher.Hooks.DispatcherInactive += new EventHandler(CaptureImage);
+            Image<Bgr, byte> cam1Image = null;
+            Image<Bgr, byte> cam2Image = null;
+
+            if (Throw1RadioButton.IsChecked.Value)
+            {
+                cam1Image = cam1_1;
+                cam2Image = cam2_1;
+            }
+            if (Throw2RadioButton.IsChecked.Value)
+            {
+                cam1Image = cam1_2;
+                cam2Image = cam2_2;
+            }
+            if (Throw3RadioButton.IsChecked.Value)
+            {
+                cam1Image = cam1_3;
+                cam2Image = cam2_3;
+            }
+
+            cam1Handler = (s, e2) => CaptureImage(s, e2, cam1Image, 1);
+            cam2Handler = (s, e2) => CaptureImage(s, e2, cam2Image, 2);
+
+            this.Dispatcher.Hooks.DispatcherInactive += cam1Handler;
+            this.Dispatcher.Hooks.DispatcherInactive += cam2Handler;
+
             StartButton.IsEnabled = !StartButton.IsEnabled;
             CamIndexBox.IsEnabled = !CamIndexBox.IsEnabled;
         }
         private void StopButtonClick(object sender, RoutedEventArgs e)
         {
-            this.Dispatcher.Hooks.DispatcherInactive -= new EventHandler(CaptureImage);
-            ImageBox.Source = null;
+            this.Dispatcher.Hooks.DispatcherInactive -= cam1Handler;
+            this.Dispatcher.Hooks.DispatcherInactive -= cam2Handler;
+
+            ImageBox1.Source = null;
+            ImageBox1Roi.Source = null;
             ImageBox2.Source = null;
-            ImageBox3.Source = null;
+            ImageBox2Roi.Source = null;
             if (!StartButton.IsEnabled)
             {
                 StartButton.IsEnabled = !StartButton.IsEnabled;
@@ -211,7 +259,7 @@ namespace DartboardRecognition
         {
             int camId = 0;
             Int32.TryParse(CamIndexBox.Text, out camId);
-            capture = new VideoCapture(camId);
+            videoCapture = new VideoCapture(camId);
         }
         private static System.Drawing.Point MiddlePoint(System.Drawing.Point point1,System.Drawing.Point point2)
         {

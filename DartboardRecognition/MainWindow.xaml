@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="MainWindow"
         Height="1000"
-        Width="600"
+        Width="1208.2"
         ResizeMode="NoResize">
     <Grid>
         <Grid.ColumnDefinitions>
@@ -21,17 +21,21 @@
         <Slider x:Name="RoiPosYSlider" HorizontalAlignment="Left" Margin="16,466,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="568" Maximum="5000" Value="300"/>
         <Slider x:Name="RoiHeightSlider" HorizontalAlignment="Left" Margin="16,513,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="568" Maximum="5000" Value="70"/>
         <Slider x:Name="RoiWidthSlider" HorizontalAlignment="Left" Margin="17,490,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="567" Maximum="5000" Value="650"/>-->
-        <Slider x:Name="TrasholdMinSlider" HorizontalAlignment="Left" Margin="296,394,0,0" VerticalAlignment="Top" Width="287" Maximum="255" Value="197"/>
-        <Slider x:Name="TrasholdMaxSlider" HorizontalAlignment="Left" Margin="297,417,0,0" VerticalAlignment="Top" Width="286" Maximum="255" Value="255"/>
-        <Slider x:Name="RoiPosXSlider" HorizontalAlignment="Left" Margin="16,443,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="568" Maximum="5000" Value="0"/>
-        <Slider x:Name="RoiPosYSlider" HorizontalAlignment="Left" Margin="16,466,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="568" Maximum="5000" Value="629"/>
-        <Slider x:Name="RoiHeightSlider" HorizontalAlignment="Left" Margin="16,513,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="568" Maximum="5000" Value="206"/>
-        <Slider x:Name="RoiWidthSlider" HorizontalAlignment="Left" Margin="17,490,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="567" Maximum="5000" Value="4074"/>
-        <Slider x:Name="SurfaceSlider" HorizontalAlignment="Left" Margin="16,536,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="568" Maximum="5000" Value="1010"/>
+        <Slider x:Name="TrasholdMinSlider" HorizontalAlignment="Left" Margin="296,484,0,0" VerticalAlignment="Top" Width="287" Maximum="255" Value="197"/>
+        <Slider x:Name="TrasholdMaxSlider" HorizontalAlignment="Left" Margin="297,507,0,0" VerticalAlignment="Top" Width="286" Maximum="255" Value="255"/>
+        <Slider x:Name="RoiPosXSlider" HorizontalAlignment="Left" Margin="16,533,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="568" Maximum="5000" Value="0"/>
+        <Slider x:Name="RoiPosYSlider" HorizontalAlignment="Left" Margin="16,556,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="568" Maximum="5000" Value="357"/>
+        <Slider x:Name="RoiWidthSlider" HorizontalAlignment="Left" Margin="17,580,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="567" Maximum="5000" Value="3671"/>
+        <Slider x:Name="RoiHeightSlider" HorizontalAlignment="Left" Margin="16,603,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="568" Maximum="5000" Value="133"/>
+        <Slider x:Name="SurfaceSlider" HorizontalAlignment="Left" Margin="16,626,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="568" Maximum="5000" Value="536"/>
+        <TextBox x:Name="CamIndexBox" HorizontalAlignment="Left" Height="23" Margin="302,456,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="31" RenderTransformOrigin="0.5,0.435" TextChanged="CamIndexBox_TextChanged"/>
 
-        <Image x:Name="ImageBox2" HorizontalAlignment="Left" Height="75" Margin="9,280,0,0" VerticalAlignment="Top" Width="574" />
-        <Image x:Name="ImageBox" HorizontalAlignment="Left" Height="231" Margin="10,34,0,0" VerticalAlignment="Top" Width="573" />
-        <Image x:Name="ImageBox3" HorizontalAlignment="Left" Height="75" Margin="9,360,0,0" VerticalAlignment="Top" Width="288" />
-        <TextBox x:Name="CamIndexBox" HorizontalAlignment="Left" Height="23" Margin="302,366,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="31" RenderTransformOrigin="0.5,0.435" TextChanged="CamIndexBox_TextChanged"/>
+        <Image x:Name="ImageBox1" HorizontalAlignment="Left" Height="321" Margin="10,34,0,0" VerticalAlignment="Top" Width="573" />
+        <Image x:Name="ImageBox1Roi" HorizontalAlignment="Left" Height="75" Margin="9,370,0,0" VerticalAlignment="Top" Width="574" />
+        <Image x:Name="ImageBox2" HorizontalAlignment="Left" Height="321" Margin="602,34,0,0" VerticalAlignment="Top" Width="573" />
+        <Image x:Name="ImageBox2Roi" HorizontalAlignment="Left" Height="75" Margin="602,370,0,0" VerticalAlignment="Top" Width="574" />
+        <RadioButton x:Name="Throw1RadioButton" Content="1" HorizontalAlignment="Left" Margin="385,12,0,0" VerticalAlignment="Top" IsChecked="True"/>
+        <RadioButton x:Name="Throw2RadioButton" Content="2" HorizontalAlignment="Left" Margin="420,12,0,0" VerticalAlignment="Top"/>
+        <RadioButton x:Name="Throw3RadioButton" Content="3" HorizontalAlignment="Left" Margin="451,12,0,0" VerticalAlignment="Top"/>
     </Grid>
 </Window>
