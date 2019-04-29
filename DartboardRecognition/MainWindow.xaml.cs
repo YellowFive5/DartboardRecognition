@@ -1,6 +1,8 @@
 ﻿#region Usings
 
 using System;
+using System.ComponentModel;
+using System.Configuration;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Windows;
@@ -69,9 +71,46 @@ namespace DartboardRecognition
         public MainWindow()
         {
             InitializeComponent();
+            LoadSettings();
             videoCapture = new VideoCapture(0);
         }
 
+        private void LoadSettings()
+        {
+            TrasholdMinSlider.Value = double.Parse(ConfigurationManager.AppSettings["TrasholdMinSlider"]);
+            TrasholdMaxSlider.Value = double.Parse(ConfigurationManager.AppSettings["TrasholdMaxSlider"]);
+            RoiPosXSlider.Value = double.Parse(ConfigurationManager.AppSettings["RoiPosXSlider"]);
+            RoiPosYSlider.Value = double.Parse(ConfigurationManager.AppSettings["RoiPosYSlider"]);
+            RoiWidthSlider.Value = double.Parse(ConfigurationManager.AppSettings["RoiWidthSlider"]);
+            RoiHeightSlider.Value = double.Parse(ConfigurationManager.AppSettings["RoiHeightSlider"]);
+            SurfaceSlider.Value = double.Parse(ConfigurationManager.AppSettings["SurfaceSlider"]);
+            CamIndexBox.Text = ConfigurationManager.AppSettings["CamIndexBox"];
+        }
+        private void SaveSettings()
+        {
+            Configuration configManager = ConfigurationManager.OpenExeConfiguration(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            configManager.AppSettings.Settings.Remove("TrasholdMinSlider");
+            configManager.AppSettings.Settings.Add("TrasholdMinSlider", TrasholdMinSlider.Value.ToString());
+            configManager.AppSettings.Settings.Remove("TrasholdMaxSlider");
+            configManager.AppSettings.Settings.Add("TrasholdMaxSlider", TrasholdMaxSlider.Value.ToString());
+            configManager.AppSettings.Settings.Remove("RoiPosXSlider");
+            configManager.AppSettings.Settings.Add("RoiPosXSlider", RoiPosXSlider.Value.ToString());
+            configManager.AppSettings.Settings.Remove("RoiPosYSlider");
+            configManager.AppSettings.Settings.Add("RoiPosYSlider", RoiPosYSlider.Value.ToString());
+            configManager.AppSettings.Settings.Remove("RoiWidthSlider");
+            configManager.AppSettings.Settings.Add("RoiWidthSlider", RoiWidthSlider.Value.ToString());
+            configManager.AppSettings.Settings.Remove("RoiHeightSlider");
+            configManager.AppSettings.Settings.Add("RoiHeightSlider", RoiHeightSlider.Value.ToString());
+            configManager.AppSettings.Settings.Remove("SurfaceSlider");
+            configManager.AppSettings.Settings.Add("SurfaceSlider", SurfaceSlider.Value.ToString());
+            configManager.AppSettings.Settings.Remove("CamIndexBox");
+            configManager.AppSettings.Settings.Add("CamIndexBox", CamIndexBox.Text);
+            configManager.Save(ConfigurationSaveMode.Modified);
+        }
+        private void OnClosing(object sender, CancelEventArgs e)
+        {
+            SaveSettings();
+        }
         private void CaptureImage(object sender, EventArgs e, Image<Bgr, byte> img, int imageBox)
         {
             originFrame = img.Clone();
