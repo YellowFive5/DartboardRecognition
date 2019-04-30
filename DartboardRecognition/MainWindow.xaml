@@ -16,9 +16,9 @@
             <ColumnDefinition Width="7*"/>
         </Grid.ColumnDefinitions>
         <Button x:Name="StartButton" Content="Start" HorizontalAlignment="Left" Margin="217,10,0,0" VerticalAlignment="Top" Width="75" Click="CaptureButtonClick" Height="19"/>
-        <Button x:Name="StopButton" Content="Stop" HorizontalAlignment="Left" Margin="297,10,0,0" VerticalAlignment="Top" Width="75" Click="StopButtonClick" Height="19"/>
-        <Slider x:Name="TrasholdMinSlider" HorizontalAlignment="Left" Margin="296,484,0,0" VerticalAlignment="Top" Width="287" Maximum="255" Value="197"/>
-        <Slider x:Name="TrasholdMaxSlider" HorizontalAlignment="Left" Margin="297,507,0,0" VerticalAlignment="Top" Width="286" Maximum="255" Value="255"/>
+        <Button x:Name="StopButton" Content="Stop" HorizontalAlignment="Left" Margin="297,10,0,0" VerticalAlignment="Top" Width="75" Click="StopButtonClick" Height="19" IsEnabled="False"/>
+        <Slider x:Name="TresholdMinSlider" HorizontalAlignment="Left" Margin="296,484,0,0" VerticalAlignment="Top" Width="287" Maximum="255" Value="197"/>
+        <Slider x:Name="TresholdMaxSlider" HorizontalAlignment="Left" Margin="297,507,0,0" VerticalAlignment="Top" Width="286" Maximum="255" Value="255"/>
         <Slider x:Name="RoiPosXSlider" HorizontalAlignment="Left" Margin="16,533,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="568" Maximum="5000" Value="0"/>
         <Slider x:Name="RoiPosYSlider" HorizontalAlignment="Left" Margin="16,556,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="568" Maximum="5000" Value="357"/>
         <Slider x:Name="RoiWidthSlider" HorizontalAlignment="Left" Margin="17,580,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="567" Maximum="5000" Value="3671"/>

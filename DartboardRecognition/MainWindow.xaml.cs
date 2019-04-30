@@ -59,7 +59,7 @@ namespace DartboardRecognition
         int minContourArcLength = 250;
 
         VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint();
-        Mat matHierarhy = new Mat();
+        Mat matHierarсhy = new Mat();
 
         Image<Bgr, byte> cam1_1 = new Image<Bgr, byte>(@"C:\Users\YellowFive\Dropbox\MY\[Darts recognition]\MyC#\TestPhoto\Ethalon images\cam1_1.png");
         Image<Bgr, byte> cam1_2 = new Image<Bgr, byte>(@"C:\Users\YellowFive\Dropbox\MY\[Darts recognition]\MyC#\TestPhoto\Ethalon images\cam1_2.png");
@@ -77,8 +77,8 @@ namespace DartboardRecognition
 
         private void LoadSettings()
         {
-            TrasholdMinSlider.Value = double.Parse(ConfigurationManager.AppSettings["TrasholdMinSlider"]);
-            TrasholdMaxSlider.Value = double.Parse(ConfigurationManager.AppSettings["TrasholdMaxSlider"]);
+            TresholdMinSlider.Value = double.Parse(ConfigurationManager.AppSettings["TresholdMinSlider"]);
+            TresholdMaxSlider.Value = double.Parse(ConfigurationManager.AppSettings["TresholdMaxSlider"]);
             RoiPosXSlider.Value = double.Parse(ConfigurationManager.AppSettings["RoiPosXSlider"]);
             RoiPosYSlider.Value = double.Parse(ConfigurationManager.AppSettings["RoiPosYSlider"]);
             RoiWidthSlider.Value = double.Parse(ConfigurationManager.AppSettings["RoiWidthSlider"]);
@@ -89,10 +89,10 @@ namespace DartboardRecognition
         private void SaveSettings()
         {
             Configuration configManager = ConfigurationManager.OpenExeConfiguration(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            configManager.AppSettings.Settings.Remove("TrasholdMinSlider");
-            configManager.AppSettings.Settings.Add("TrasholdMinSlider", TrasholdMinSlider.Value.ToString());
-            configManager.AppSettings.Settings.Remove("TrasholdMaxSlider");
-            configManager.AppSettings.Settings.Add("TrasholdMaxSlider", TrasholdMaxSlider.Value.ToString());
+            configManager.AppSettings.Settings.Remove("TresholdMinSlider");
+            configManager.AppSettings.Settings.Add("TresholdMinSlider", TresholdMinSlider.Value.ToString());
+            configManager.AppSettings.Settings.Remove("TresholdMaxSlider");
+            configManager.AppSettings.Settings.Add("TresholdMaxSlider", TresholdMaxSlider.Value.ToString());
             configManager.AppSettings.Settings.Remove("RoiPosXSlider");
             configManager.AppSettings.Settings.Add("RoiPosXSlider", RoiPosXSlider.Value.ToString());
             configManager.AppSettings.Settings.Remove("RoiPosYSlider");
@@ -120,7 +120,7 @@ namespace DartboardRecognition
             {
                 if (originFrame != null)
                 {
-                    #region LinedFrame
+                    #region DrawLines
 
                     surfacePoint1 = new System.Drawing.Point(0, (int)SurfaceSlider.Value);
                     surfacePoint2 = new System.Drawing.Point(originFrame.Cols, (int)SurfaceSlider.Value);
@@ -136,7 +136,7 @@ namespace DartboardRecognition
 
                     #endregion
 
-                    #region ROIFrame
+                    #region FindROIRegion
 
                     roiFrame = originFrame.Clone();
                     roiFrame.ROI = new System.Drawing.Rectangle(
@@ -147,49 +147,52 @@ namespace DartboardRecognition
 
                     #endregion
 
-                    #region ROITrasholdFrame
+                    #region TresholdROIRegion
 
                     roiTrasholdFrame = roiFrame.Clone().Convert<Gray, byte>().Not();
                     roiTrasholdFrame._ThresholdBinary(
-                        new Gray(TrasholdMinSlider.Value),
-                        new Gray(TrasholdMaxSlider.Value));
+                        new Gray(TresholdMinSlider.Value),
+                        new Gray(TresholdMaxSlider.Value));
 
                     #endregion
 
-                    #region ROIContourFrame
+                    #region FindDartContours
 
                     roiContourFrame = roiFrame.Clone();
-                    CvInvoke.FindContours(roiTrasholdFrame, contours, matHierarhy, Emgu.CV.CvEnum.RetrType.External, Emgu.CV.CvEnum.ChainApproxMethod.ChainApproxNone);
+                    CvInvoke.FindContours(roiTrasholdFrame, contours, matHierarсhy, Emgu.CV.CvEnum.RetrType.External, Emgu.CV.CvEnum.ChainApproxMethod.ChainApproxNone);
                     //CvInvoke.DrawContours(linedFrame, contours, -1, contourColor, countourThickness, offset: new System.Drawing.Point(0, (int)RoiPosYSlider.Value));
 
                     if (contours.Size > 0)
                     {
                         for (int i = 0; i < contours.Size; i++)
                         {
+                            // Filter contour
                             var arclenth = CvInvoke.ArcLength(contours[i],true);
                             if (arclenth < minContourArcLength)
                             {
                                 continue;
                             }
+
+                            // Find moments and centerpoint
                             var moments = CvInvoke.Moments(contours[i], false);
                             var centerPoint = new System.Drawing.Point((int)(moments.M10 / moments.M00), (int)RoiPosYSlider.Value + (int)(moments.M01 / moments.M00));
                             CvInvoke.Circle(linedFrame, centerPoint, 4, new MCvScalar(255, 0, 0), 3);
 
+                            // Find contour rectangle
                             var rect = CvInvoke.MinAreaRect(contours[i]);
                             var box = CvInvoke.BoxPoints(rect);
                             var point1 = new System.Drawing.Point((int)box[0].X, (int)RoiPosYSlider.Value + (int)box[0].Y);
                             var point2 = new System.Drawing.Point((int)box[1].X, (int)RoiPosYSlider.Value + (int)box[1].Y);
                             var point3 = new System.Drawing.Point((int)box[2].X, (int)RoiPosYSlider.Value + (int)box[2].Y);
                             var point4 = new System.Drawing.Point((int)box[3].X, (int)RoiPosYSlider.Value + (int)box[3].Y);
-
                             CvInvoke.Line(linedFrame, point1, point2, contourRectColor, contourRectThickness);
                             CvInvoke.Line(linedFrame, point2, point3, contourRectColor, contourRectThickness);
                             CvInvoke.Line(linedFrame, point3, point4, contourRectColor, contourRectThickness);
                             CvInvoke.Line(linedFrame, point4, point1, contourRectColor, contourRectThickness);
 
+                            // Setup vertical contour middlepoints 
                             var middlePoint1 = new System.Drawing.Point();
                             var middlePoint2 = new System.Drawing.Point();
-
                             if (DistancePtP(point1,point2) < DistancePtP(point4,point1))
                             {
                                 middlePoint1 = MiddlePoint(point1, point2);
@@ -201,6 +204,7 @@ namespace DartboardRecognition
                                 middlePoint2 = MiddlePoint(point3, point2);
                             }
 
+                            // Find spikeLine to surface
                             var spikePoint1 = middlePoint1;
                             var spikePoint2 = middlePoint2;
                             spikeLineLength = surfacePoint2.Y - middlePoint2.Y; 
@@ -209,6 +213,7 @@ namespace DartboardRecognition
                             spikePoint1.Y = (int)(middlePoint2.Y + Math.Sin(angle) * spikeLineLength);
                             CvInvoke.Line(linedFrame, spikePoint1, spikePoint2, spikeLineColor, spikeLineThickness);
 
+                            // Find point of impact with surface
                             var pointOfImpact = IntersectPoint(spikePoint1, spikePoint2, surfacePoint1, surfacePoint2);
                             if (pointOfImpact != null)
                             {
@@ -217,6 +222,8 @@ namespace DartboardRecognition
                         }
                     }
                     #endregion
+
+                    #region SaveImageToImagebox
 
                     switch (imageBox)
                     {
@@ -231,6 +238,8 @@ namespace DartboardRecognition
                         default:
                             break;
                     }
+
+                    #endregion
                 }
             }
         }
@@ -248,9 +257,10 @@ namespace DartboardRecognition
         }
         private void CaptureButtonClick(object sender, RoutedEventArgs e)
         {
+            ToggleControls();
+
             Image<Bgr, byte> cam1Image = null;
             Image<Bgr, byte> cam2Image = null;
-
             if (Throw1RadioButton.IsChecked.Value)
             {
                 cam1Image = cam1_1;
@@ -266,18 +276,15 @@ namespace DartboardRecognition
                 cam1Image = cam1_3;
                 cam2Image = cam2_3;
             }
-
             cam1Handler = (s, e2) => CaptureImage(s, e2, cam1Image, 1);
             cam2Handler = (s, e2) => CaptureImage(s, e2, cam2Image, 2);
-
             this.Dispatcher.Hooks.DispatcherInactive += cam1Handler;
             this.Dispatcher.Hooks.DispatcherInactive += cam2Handler;
-
-            StartButton.IsEnabled = !StartButton.IsEnabled;
-            CamIndexBox.IsEnabled = !CamIndexBox.IsEnabled;
         }
         private void StopButtonClick(object sender, RoutedEventArgs e)
         {
+            ToggleControls();
+
             this.Dispatcher.Hooks.DispatcherInactive -= cam1Handler;
             this.Dispatcher.Hooks.DispatcherInactive -= cam2Handler;
 
@@ -285,14 +292,15 @@ namespace DartboardRecognition
             ImageBox1Roi.Source = null;
             ImageBox2.Source = null;
             ImageBox2Roi.Source = null;
-            if (!StartButton.IsEnabled)
-            {
-                StartButton.IsEnabled = !StartButton.IsEnabled;
-            }
-            if (!CamIndexBox.IsEnabled)
-            {
-                CamIndexBox.IsEnabled = !CamIndexBox.IsEnabled;
-            }
+        }
+        private void ToggleControls()
+        {
+            StartButton.IsEnabled = !StartButton.IsEnabled;
+            StopButton.IsEnabled = !StopButton.IsEnabled;
+            CamIndexBox.IsEnabled = !CamIndexBox.IsEnabled;
+            Throw1RadioButton.IsEnabled = !Throw1RadioButton.IsEnabled;
+            Throw2RadioButton.IsEnabled = !Throw2RadioButton.IsEnabled;
+            Throw3RadioButton.IsEnabled = !Throw3RadioButton.IsEnabled;
         }
         private void CamIndexBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
@@ -300,7 +308,7 @@ namespace DartboardRecognition
             Int32.TryParse(CamIndexBox.Text, out camId);
             videoCapture = new VideoCapture(camId);
         }
-        private static System.Drawing.Point MiddlePoint(System.Drawing.Point point1,System.Drawing.Point point2)
+        private static System.Drawing.Point MiddlePoint(System.Drawing.Point point1, System.Drawing.Point point2)
         {
             var mpX = (point1.X + point2.X) / 2;
             var mpY = (point1.Y + point2.Y) / 2;
