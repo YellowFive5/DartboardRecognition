@@ -27,34 +27,46 @@ namespace DartboardRecognition
 
         BitmapImage originImageWithLines = new BitmapImage();
         BitmapImage roiTrasholdImage = new BitmapImage();
+        BitmapImage dartboardImage = new BitmapImage();
 
         Image<Bgr, byte> originFrame;
         Image<Bgr, byte> linedFrame;
         Image<Bgr, byte> roiFrame;
         Image<Gray, byte> roiTrasholdFrame;
         Image<Bgr, byte> roiContourFrame;
+        Image<Bgr, byte> dartboardProjectionFrame;
 
         System.Drawing.Point surfacePoint1 = new System.Drawing.Point();
         System.Drawing.Point surfacePoint2 = new System.Drawing.Point();
-        Bgr surfaceLineColor = new Bgr(0, 0, 255);
+        Bgr surfaceLineColor = new Bgr(System.Drawing.Color.Red);
         int surfaceLineThickness = 5;
 
-        Bgr roiRectColor = new Bgr(50, 255, 150);
+        Bgr roiRectColor = new Bgr(System.Drawing.Color.LawnGreen);
         int roiRectThickness = 5;
 
-        MCvScalar contourColor = new MCvScalar(0, 0, 255);
+        MCvScalar contourColor = new Bgr(System.Drawing.Color.Violet).MCvScalar;
         int countourThickness = 2;
 
-        MCvScalar contourRectColor = new MCvScalar(255, 0, 0);
+        MCvScalar contourRectColor = new Bgr(System.Drawing.Color.Blue).MCvScalar;
         int contourRectThickness = 5;
 
         int spikeLineLength;
-        MCvScalar spikeLineColor = new MCvScalar(255, 255, 255);
+        MCvScalar spikeLineColor = new Bgr(System.Drawing.Color.White).MCvScalar;
         int spikeLineThickness = 4;
 
-        MCvScalar pointOfImpactColor = new MCvScalar(0, 255, 255);
+        MCvScalar pointOfImpactColor = new Bgr(System.Drawing.Color.Yellow).MCvScalar;
         int pointOfImpactRadius = 6;
         int pointOfImpactThickness = 6;
+
+        MCvScalar dartboardProjectionColor = new Bgr(System.Drawing.Color.White).MCvScalar;
+        int dartboardProjectionFrameHeigth = 1200;
+        int dartboardProjectionFrameWidth = 1200;
+        int dartboardProjectionCoefficent = 3;
+        int dartboardProjectionThickness = 2;
+
+        MCvScalar surfaceProjectionLineColor = new Bgr(System.Drawing.Color.Red).MCvScalar;
+        int surfaceProjectionLineThickness = 2;
+
 
         int minContourArcLength = 250;
 
@@ -176,7 +188,7 @@ namespace DartboardRecognition
                             // Find moments and centerpoint
                             var moments = CvInvoke.Moments(contours[i], false);
                             var centerPoint = new System.Drawing.Point((int)(moments.M10 / moments.M00), (int)RoiPosYSlider.Value + (int)(moments.M01 / moments.M00));
-                            CvInvoke.Circle(linedFrame, centerPoint, 4, new MCvScalar(255, 0, 0), 3);
+                            CvInvoke.Circle(linedFrame, centerPoint, 4, new Bgr(System.Drawing.Color.Blue).MCvScalar, 3);
 
                             // Find contour rectangle
                             var rect = CvInvoke.MinAreaRect(contours[i]);
@@ -240,6 +252,50 @@ namespace DartboardRecognition
                     }
 
                     #endregion
+
+                    #region DrawDartboard
+
+                    // Draw dartboard projection
+                    dartboardProjectionFrame = new Image<Bgr, byte>(dartboardProjectionFrameWidth, dartboardProjectionFrameHeigth);
+                    var dartboardCenterPoint = new System.Drawing.Point(dartboardProjectionFrame.Width/2,dartboardProjectionFrame.Height/2);
+                    CvInvoke.Circle(dartboardProjectionFrame, dartboardCenterPoint, dartboardProjectionCoefficent*7, dartboardProjectionColor, dartboardProjectionThickness);
+                    CvInvoke.Circle(dartboardProjectionFrame, dartboardCenterPoint, dartboardProjectionCoefficent*17, dartboardProjectionColor, dartboardProjectionThickness);
+                    CvInvoke.Circle(dartboardProjectionFrame, dartboardCenterPoint, dartboardProjectionCoefficent*95, dartboardProjectionColor, dartboardProjectionThickness);
+                    CvInvoke.Circle(dartboardProjectionFrame, dartboardCenterPoint, dartboardProjectionCoefficent*105, dartboardProjectionColor, dartboardProjectionThickness);
+                    CvInvoke.Circle(dartboardProjectionFrame, dartboardCenterPoint, dartboardProjectionCoefficent*160, dartboardProjectionColor, dartboardProjectionThickness);
+                    CvInvoke.Circle(dartboardProjectionFrame, dartboardCenterPoint, dartboardProjectionCoefficent*170, dartboardProjectionColor, dartboardProjectionThickness);
+                    for (int i = 0; i <= 360; i+=9)
+                    {
+                        var segmentPoint1 = new System.Drawing.Point();
+                        segmentPoint1.X = (int)(dartboardCenterPoint.X + Math.Cos(0.314159 * i - 0.15708) * dartboardProjectionCoefficent * 170);
+                        segmentPoint1.Y = (int)(dartboardCenterPoint.Y + Math.Sin(0.314159 * i - 0.15708) * dartboardProjectionCoefficent * 170);
+                        var segmentPoint2 = new System.Drawing.Point();
+                        segmentPoint2.X = (int)(dartboardCenterPoint.X + Math.Cos(0.314159 * i - 0.15708) * dartboardProjectionCoefficent * 17);
+                        segmentPoint2.Y = (int)(dartboardCenterPoint.Y + Math.Sin(0.314159 * i - 0.15708) * dartboardProjectionCoefficent * 17);
+                        CvInvoke.Line(dartboardProjectionFrame, segmentPoint1, segmentPoint2, dartboardProjectionColor, dartboardProjectionThickness);
+                    }
+
+                    // Draw surface projection lines
+                    var surfaceProjectionLineCam1Point1 = new System.Drawing.Point();
+                    var surfaceProjectionLineCam1Point2 = new System.Drawing.Point();
+                    var surfaceProjectionLineCam2Point1 = new System.Drawing.Point();
+                    var surfaceProjectionLineCam2Point2 = new System.Drawing.Point();
+
+                    surfaceProjectionLineCam1Point1.X = (int)(dartboardCenterPoint.X + Math.Cos(-0.785398) * dartboardProjectionCoefficent * 170);
+                    surfaceProjectionLineCam1Point1.Y = (int)(dartboardCenterPoint.Y + Math.Sin(-0.785398) * dartboardProjectionCoefficent * 170);
+                    surfaceProjectionLineCam1Point2.X = (int)(dartboardCenterPoint.X + Math.Cos(-3.92699) * dartboardProjectionCoefficent * 170);
+                    surfaceProjectionLineCam1Point2.Y = (int)(dartboardCenterPoint.Y + Math.Sin(-3.92699) * dartboardProjectionCoefficent * 170);
+                    CvInvoke.Line(dartboardProjectionFrame, surfaceProjectionLineCam1Point1, surfaceProjectionLineCam1Point2, surfaceProjectionLineColor, surfaceProjectionLineThickness);
+
+                    surfaceProjectionLineCam2Point1.X = (int)(dartboardCenterPoint.X + Math.Cos(0.785398) * dartboardProjectionCoefficent * 170);
+                    surfaceProjectionLineCam2Point1.Y = (int)(dartboardCenterPoint.Y + Math.Sin(0.785398) * dartboardProjectionCoefficent * 170);
+                    surfaceProjectionLineCam2Point2.X = (int)(dartboardCenterPoint.X + Math.Cos(3.92699) * dartboardProjectionCoefficent * 170);
+                    surfaceProjectionLineCam2Point2.Y = (int)(dartboardCenterPoint.Y + Math.Sin(3.92699) * dartboardProjectionCoefficent * 170);
+                    CvInvoke.Line(dartboardProjectionFrame, surfaceProjectionLineCam2Point1, surfaceProjectionLineCam2Point2, surfaceProjectionLineColor, surfaceProjectionLineThickness);
+
+                    ImageBox3.Source = SaveBitmap(dartboardProjectionFrame,dartboardImage);
+
+                    #endregion
                 }
             }
         }
@@ -292,6 +348,7 @@ namespace DartboardRecognition
             ImageBox1Roi.Source = null;
             ImageBox2.Source = null;
             ImageBox2Roi.Source = null;
+            ImageBox3.Source = null;
         }
         private void ToggleControls()
         {

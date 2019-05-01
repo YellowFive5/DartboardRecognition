@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:DartboardRecognition"
         mc:Ignorable="d"
         Title="MainWindow"
-        Height="1000"
+        Height="861.4"
         Width="1208.2"
         ResizeMode="NoResize"
         Closing="OnClosing">
@@ -32,5 +32,6 @@
         <RadioButton x:Name="Throw1RadioButton" Content="1" HorizontalAlignment="Left" Margin="385,12,0,0" VerticalAlignment="Top" IsChecked="True"/>
         <RadioButton x:Name="Throw2RadioButton" Content="2" HorizontalAlignment="Left" Margin="420,12,0,0" VerticalAlignment="Top"/>
         <RadioButton x:Name="Throw3RadioButton" Content="3" HorizontalAlignment="Left" Margin="451,12,0,0" VerticalAlignment="Top"/>
+        <Image x:Name="ImageBox3" HorizontalAlignment="Left" Height="349" Margin="760,456,0,0" VerticalAlignment="Top" Width="355" />
     </Grid>
 </Window>
