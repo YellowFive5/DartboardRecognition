@@ -1,5 +1,9 @@
-﻿using System;
+﻿#region Usings
+
+using System;
 using Point = System.Drawing.Point;
+
+#endregion
 
 namespace DartboardRecognition
 {
@@ -14,11 +18,11 @@ namespace DartboardRecognition
 
         public int FindDistance(Point point1, Point point2)
         {
-            return (int)Math.Sqrt(Math.Pow(point1.X - point2.X, 2) + Math.Pow(point1.Y - point2.Y, 2));
+            return (int) Math.Sqrt(Math.Pow(point1.X - point2.X, 2) + Math.Pow(point1.Y - point2.Y, 2));
         }
 
         public Point? FindIntersectionPoint(Point line1Point1, Point line1Point2, Point line2Point1,
-                                                    Point line2Point2)
+                                            Point line2Point2)
         {
             float a1 = line1Point2.Y - line1Point1.Y;
             float b1 = line1Point2.X - line1Point1.X;
@@ -35,8 +39,8 @@ namespace DartboardRecognition
             }
             else
             {
-                var x = (int)((b2 * c1 - b1 * c2) / det);
-                var y = (int)((a1 * c2 - a2 * c1) / det);
+                var x = (int) ((b2 * c1 - b1 * c2) / det);
+                var y = (int) ((a1 * c2 - a2 * c1) / det);
                 return new Point(x, y);
             }
         }

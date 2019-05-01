@@ -1,4 +1,6 @@
-﻿using System;
+﻿#region Usings
+
+using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -7,6 +9,8 @@ using Emgu.CV;
 using Emgu.CV.Structure;
 using Point = System.Drawing.Point;
 using Image = System.Windows.Controls.Image;
+
+#endregion
 
 namespace DartboardRecognition
 {

@@ -1,14 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿#region Usings
+
+using System;
 using System.Configuration;
 using System.Drawing;
-using System.Windows;
+using System.Threading;
 using System.Windows.Threading;
 using Emgu.CV;
 using Emgu.CV.Structure;
 using Point = System.Drawing.Point;
 
-
+#endregion
 
 namespace DartboardRecognition
 {
@@ -20,7 +21,6 @@ namespace DartboardRecognition
         private Dispatcher dispatcher;
         private Geometr geometr;
         private Drawer drawer;
-        private Dictionary<string, FrameworkElement> controlsCollection;
 
         public MainWindowViewModel(MainWindow view)
         {
@@ -28,15 +28,14 @@ namespace DartboardRecognition
             drawer = new Drawer(view);
             geometr = new Geometr();
             dispatcher = Dispatcher.CurrentDispatcher;
-            controlsCollection = new Dictionary<string, FrameworkElement>();
-            PrepareControlsCollection();
             LoadSettings();
-            Cam1 = new Cam(controlsCollection, 1);
-            Cam2 = new Cam(controlsCollection, 2);
         }
 
         public void StartCapture()
         {
+            Cam1 = new Cam(view, 1);
+            Cam2 = new Cam(view, 2);
+
             if (view.Throw1RadioButton.IsChecked.Value)
             {
                 Cam1.SetProcessingCapture(1);
@@ -65,6 +64,8 @@ namespace DartboardRecognition
         {
             dispatcher.Hooks.DispatcherInactive -= Cam1.camHandler;
             dispatcher.Hooks.DispatcherInactive -= Cam2.camHandler;
+            Cam1.videoCapture.Dispose();
+            Cam2.videoCapture.Dispose();
         }
 
         private void LoadSettings()
@@ -120,7 +121,6 @@ namespace DartboardRecognition
         private void CaptureImage(Cam cam)
         {
             drawer.DrawDartboardProjection();
-
             cam.originFrame = view.UseCamsRadioButton.IsChecked.Value
                                   ? cam.videoCapture.QueryFrame().ToImage<Bgr, byte>()
                                   : cam.processingCapture.Clone();
@@ -136,9 +136,9 @@ namespace DartboardRecognition
                 cam.linedFrame = cam.originFrame.Clone();
 
                 var roiRectangle = new Rectangle((int) cam.roiPosXSlider.Value,
-                                                                (int) cam.roiPosYSlider.Value,
-                                                                (int) cam.roiWidthSlider.Value,
-                                                                (int) cam.roiHeightSlider.Value);
+                                                 (int) cam.roiPosYSlider.Value,
+                                                 (int) cam.roiWidthSlider.Value,
+                                                 (int) cam.roiHeightSlider.Value);
                 drawer.DrawRectangle(cam.linedFrame, roiRectangle, view.RoiRectColor.MCvScalar, view.RoiRectThickness);
 
                 cam.surfacePoint1 = new Point(0, (int) cam.surfaceSlider.Value);
@@ -234,34 +234,6 @@ namespace DartboardRecognition
                 drawer.SaveBitmapToImageBox(cam.linedFrame, cam.imageBox);
                 drawer.SaveBitmapToImageBox(cam.roiTrasholdFrame, cam.imageBoxRoi);
             }
-        }
-
-        private void PrepareControlsCollection()
-        {
-            controlsCollection.Add("Cam1TresholdMinSlider", view.Cam1TresholdMinSlider);
-            controlsCollection.Add("Cam1TresholdMaxSlider", view.Cam1TresholdMaxSlider);
-            controlsCollection.Add("Cam1RoiPosXSlider", view.Cam1RoiPosXSlider);
-            controlsCollection.Add("Cam1RoiPosYSlider", view.Cam1RoiPosYSlider);
-            controlsCollection.Add("Cam1RoiWidthSlider", view.Cam1RoiWidthSlider);
-            controlsCollection.Add("Cam1RoiHeightSlider", view.Cam1RoiHeightSlider);
-            controlsCollection.Add("Cam1SurfaceSlider", view.Cam1SurfaceSlider);
-            controlsCollection.Add("Cam1IndexBox", view.Cam1IndexBox);
-            controlsCollection.Add("Cam1SurfaceCenterSlider", view.Cam1SurfaceCenterSlider);
-
-            controlsCollection.Add("Cam2TresholdMinSlider", view.Cam2TresholdMinSlider);
-            controlsCollection.Add("Cam2TresholdMaxSlider", view.Cam2TresholdMaxSlider);
-            controlsCollection.Add("Cam2RoiPosXSlider", view.Cam2RoiPosXSlider);
-            controlsCollection.Add("Cam2RoiPosYSlider", view.Cam2RoiPosYSlider);
-            controlsCollection.Add("Cam2RoiWidthSlider", view.Cam2RoiWidthSlider);
-            controlsCollection.Add("Cam2RoiHeightSlider", view.Cam2RoiHeightSlider);
-            controlsCollection.Add("Cam2SurfaceSlider", view.Cam2SurfaceSlider);
-            controlsCollection.Add("Cam2IndexBox", view.Cam2IndexBox);
-            controlsCollection.Add("Cam2SurfaceCenterSlider", view.Cam2SurfaceCenterSlider);
-
-            controlsCollection.Add("ImageBox1", view.ImageBox1);
-            controlsCollection.Add("ImageBox1Roi", view.ImageBox1Roi);
-            controlsCollection.Add("ImageBox2", view.ImageBox2);
-            controlsCollection.Add("ImageBox2Roi", view.ImageBox2Roi);
         }
     }
 }

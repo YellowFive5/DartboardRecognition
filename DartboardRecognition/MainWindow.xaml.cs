@@ -40,7 +40,7 @@ namespace DartboardRecognition
             InitializeComponent();
             viewModel = new MainWindowViewModel(this);
         }
-        
+
         private void OnClosing(object sender, CancelEventArgs e)
         {
             viewModel.SaveSettings();
@@ -79,6 +79,5 @@ namespace DartboardRecognition
             Throw3RadioButton.IsEnabled = !Throw3RadioButton.IsEnabled;
             UseCamsRadioButton.IsEnabled = !UseCamsRadioButton.IsEnabled;
         }
-
     }
 }
