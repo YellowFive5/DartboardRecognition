@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using Point = System.Drawing.Point;
+
 
 #endregion
 
@@ -19,14 +21,16 @@ namespace DartboardRecognition
         private readonly Image<Bgr, byte> testCaptureThrow3;
         public Image<Bgr, byte> processingCapture;
         public EventHandler camHandler;
-        private VideoCapture videoCapture;
+        public VideoCapture videoCapture;
         public Image<Bgr, byte> originFrame;
         public Image<Bgr, byte> linedFrame;
         public Image<Bgr, byte> roiFrame;
         public Image<Gray, byte> roiTrasholdFrame;
         public Image<Bgr, byte> roiContourFrame;
-        public System.Drawing.Point surfacePoint1;
-        public System.Drawing.Point surfacePoint2;
+        public Point surfacePoint1;
+        public Point surfacePoint2;
+        public Point surfaceCenterPoint1;
+        public Point surfaceCenterPoint2;
         public int spikeLineLength;
         public int minContourArcLength = 250;
         public readonly VectorOfVectorOfPoint contours;
@@ -41,11 +45,12 @@ namespace DartboardRecognition
         public readonly Slider roiWidthSlider;
         public readonly Slider roiHeightSlider;
         public readonly Slider surfaceSlider;
+        public readonly Slider SurfaceCenterSlider;
 
         public Cam(Dictionary<string, FrameworkElement> controlsCollection, int index)
         {
-            surfacePoint1 = new System.Drawing.Point();
-            surfacePoint2 = new System.Drawing.Point();
+            surfacePoint1 = new Point();
+            surfacePoint2 = new Point();
             contours = new VectorOfVectorOfPoint();
             matHierarсhy = new Mat();
 
@@ -64,6 +69,7 @@ namespace DartboardRecognition
                 surfaceSlider = (Slider) controlsCollection["Cam1SurfaceSlider"];
                 imageBox = (Image) controlsCollection["ImageBox1"];
                 imageBoxRoi = (Image) controlsCollection["ImageBox1Roi"];
+                SurfaceCenterSlider = (Slider)controlsCollection["Cam1SurfaceCenterSlider"];
             }
             else
             {
@@ -80,7 +86,10 @@ namespace DartboardRecognition
                 surfaceSlider = (Slider) controlsCollection["Cam2SurfaceSlider"];
                 imageBox = (Image) controlsCollection["ImageBox2"];
                 imageBoxRoi = (Image) controlsCollection["ImageBox2Roi"];
+                SurfaceCenterSlider = (Slider)controlsCollection["Cam2SurfaceCenterSlider"];
+                camIndexBox = (TextBox)controlsCollection["Cam2IndexBox"];
             }
+            videoCapture = new VideoCapture(int.Parse(camIndexBox.Text));
         }
 
         public void SetProcessingCapture(int throwIndex)
@@ -97,7 +106,6 @@ namespace DartboardRecognition
                     processingCapture = testCaptureThrow3;
                     break;
                 default:
-                    // ReSharper disable once NotResolvedInText
                     throw new ArgumentOutOfRangeException("Only 3 throws avaliable");
             }
         }

@@ -7,7 +7,6 @@ using System.Configuration;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using Emgu.CV;
 using Emgu.CV.Structure;
@@ -74,6 +73,8 @@ namespace DartboardRecognition
             controlsCollection.Add("Cam1RoiHeightSlider", Cam1RoiHeightSlider);
             controlsCollection.Add("Cam1SurfaceSlider", Cam1SurfaceSlider);
             controlsCollection.Add("Cam1IndexBox", Cam1IndexBox);
+            controlsCollection.Add("Cam1SurfaceCenterSlider", Cam1SurfaceCenterSlider);
+
             controlsCollection.Add("Cam2TresholdMinSlider", Cam2TresholdMinSlider);
             controlsCollection.Add("Cam2TresholdMaxSlider", Cam2TresholdMaxSlider);
             controlsCollection.Add("Cam2RoiPosXSlider", Cam2RoiPosXSlider);
@@ -82,6 +83,8 @@ namespace DartboardRecognition
             controlsCollection.Add("Cam2RoiHeightSlider", Cam2RoiHeightSlider);
             controlsCollection.Add("Cam2SurfaceSlider", Cam2SurfaceSlider);
             controlsCollection.Add("Cam2IndexBox", Cam2IndexBox);
+            controlsCollection.Add("Cam2SurfaceCenterSlider", Cam2SurfaceCenterSlider);
+
             controlsCollection.Add("ImageBox1", ImageBox1);
             controlsCollection.Add("ImageBox1Roi", ImageBox1Roi);
             controlsCollection.Add("ImageBox2", ImageBox2);
@@ -98,6 +101,8 @@ namespace DartboardRecognition
             Cam1RoiHeightSlider.Value = double.Parse(ConfigurationManager.AppSettings["Cam1RoiHeightSlider"]);
             Cam1SurfaceSlider.Value = double.Parse(ConfigurationManager.AppSettings["Cam1SurfaceSlider"]);
             Cam1IndexBox.Text = ConfigurationManager.AppSettings["Cam1IndexBox"];
+            Cam1SurfaceCenterSlider.Value = double.Parse(ConfigurationManager.AppSettings["Cam1SurfaceCenterSlider"]);
+
             Cam2TresholdMinSlider.Value = double.Parse(ConfigurationManager.AppSettings["Cam2TresholdMinSlider"]);
             Cam2TresholdMaxSlider.Value = double.Parse(ConfigurationManager.AppSettings["Cam2TresholdMaxSlider"]);
             Cam2RoiPosXSlider.Value = double.Parse(ConfigurationManager.AppSettings["Cam2RoiPosXSlider"]);
@@ -106,6 +111,8 @@ namespace DartboardRecognition
             Cam2RoiHeightSlider.Value = double.Parse(ConfigurationManager.AppSettings["Cam2RoiHeightSlider"]);
             Cam2SurfaceSlider.Value = double.Parse(ConfigurationManager.AppSettings["Cam2SurfaceSlider"]);
             Cam2IndexBox.Text = ConfigurationManager.AppSettings["Cam2IndexBox"];
+            Cam2SurfaceCenterSlider.Value = double.Parse(ConfigurationManager.AppSettings["Cam2SurfaceCenterSlider"]);
+
         }
 
         private void SaveSettings()
@@ -120,6 +127,9 @@ namespace DartboardRecognition
             configManager.AppSettings.Settings.Add("Cam1RoiHeightSlider", Cam1RoiHeightSlider.Value.ToString());
             configManager.AppSettings.Settings.Add("Cam1SurfaceSlider", Cam1SurfaceSlider.Value.ToString());
             configManager.AppSettings.Settings.Add("Cam1IndexBox", Cam1IndexBox.Text);
+            configManager.AppSettings.Settings.Add("Cam1SurfaceCenterSlider", Cam1SurfaceCenterSlider.Value.ToString());
+
+
             configManager.AppSettings.Settings.Add("Cam2TresholdMinSlider", Cam2TresholdMinSlider.Value.ToString());
             configManager.AppSettings.Settings.Add("Cam2TresholdMaxSlider", Cam2TresholdMaxSlider.Value.ToString());
             configManager.AppSettings.Settings.Add("Cam2RoiPosXSlider", Cam2RoiPosXSlider.Value.ToString());
@@ -128,6 +138,8 @@ namespace DartboardRecognition
             configManager.AppSettings.Settings.Add("Cam2RoiHeightSlider", Cam2RoiHeightSlider.Value.ToString());
             configManager.AppSettings.Settings.Add("Cam2SurfaceSlider", Cam2SurfaceSlider.Value.ToString());
             configManager.AppSettings.Settings.Add("Cam2IndexBox", Cam2IndexBox.Text);
+            configManager.AppSettings.Settings.Add("Cam2SurfaceCenterSlider", Cam2SurfaceCenterSlider.Value.ToString());
+
             configManager.Save(ConfigurationSaveMode.Modified);
         }
 
@@ -138,8 +150,12 @@ namespace DartboardRecognition
 
         private void CaptureImage(Cam cam)
         {
-            cam.originFrame = cam.processingCapture.Clone();
-            //using (cam.originFrame = cam.videoCapture.QueryFrame().ToImage<Bgr, byte>())
+            DrawDartboardProjection();
+
+            cam.originFrame = UseCamsRadioButton.IsChecked.Value
+                                  ? cam.videoCapture.QueryFrame().ToImage<Bgr, byte>()
+                                  : cam.processingCapture.Clone();
+
             using (cam.originFrame)
             {
                 if (cam.originFrame == null)
@@ -147,38 +163,39 @@ namespace DartboardRecognition
                     return;
                 }
 
-                #region DrawLines
+                //DrawLines
+                cam.linedFrame = cam.originFrame.Clone();
+
+                var roiRectangle = new System.Drawing.Rectangle((int)cam.roiPosXSlider.Value,
+                                                                (int)cam.roiPosYSlider.Value,
+                                                                (int)cam.roiWidthSlider.Value,
+                                                                (int)cam.roiHeightSlider.Value);
+                cam.linedFrame.Draw(roiRectangle, roiRectColor, roiRectThickness);
 
                 cam.surfacePoint1 = new Point(0, (int) cam.surfaceSlider.Value);
                 cam.surfacePoint2 = new Point(cam.originFrame.Cols, (int) cam.surfaceSlider.Value);
-                cam.linedFrame = cam.originFrame.Clone();
                 var surfaceLine = new LineSegment2D(cam.surfacePoint1, cam.surfacePoint2);
                 cam.linedFrame.Draw(surfaceLine, surfaceLineColor, surfaceLineThickness);
-                var roiRectangle = new System.Drawing.Rectangle((int) cam.roiPosXSlider.Value,
-                                                                (int) cam.roiPosYSlider.Value,
-                                                                (int) cam.roiWidthSlider.Value,
-                                                                (int) cam.roiHeightSlider.Value);
-                cam.linedFrame.Draw(roiRectangle, roiRectColor, roiRectThickness);
 
-                #endregion
+                cam.surfaceCenterPoint1 = new Point{
+                                              X = (int) cam.SurfaceCenterSlider.Value,
+                                              Y = (int) cam.surfaceSlider.Value};
+                cam.surfaceCenterPoint2 = new Point{
+                                              X = cam.surfaceCenterPoint1.X,
+                                              Y = cam.surfaceCenterPoint1.Y - 50};
+                var surfaceCenterLine = new LineSegment2D(cam.surfaceCenterPoint1, cam.surfaceCenterPoint2);
+                cam.linedFrame.Draw(surfaceCenterLine, surfaceLineColor, surfaceLineThickness);
 
-                #region FindROIRegion
-
+                //FindROIRegion
                 cam.roiFrame = cam.originFrame.Clone();
                 cam.roiFrame.ROI = roiRectangle;
 
-                #endregion
-
-                #region TresholdROIRegion
-
+                //TresholdROIRegion
                 cam.roiTrasholdFrame = cam.roiFrame.Clone().Convert<Gray, byte>().Not();
                 cam.roiTrasholdFrame._ThresholdBinary(new Gray(cam.tresholdMinSlider.Value),
                                                       new Gray(cam.tresholdMaxSlider.Value));
 
-                #endregion
-
-                #region FindDartContours
-
+                //FindDartContours
                 cam.roiContourFrame = cam.roiFrame.Clone();
                 CvInvoke.FindContours(cam.roiTrasholdFrame, cam.contours, cam.matHierarсhy, Emgu.CV.CvEnum.RetrType.External, Emgu.CV.CvEnum.ChainApproxMethod.ChainApproxNone);
                 //CvInvoke.DrawContours(linedFrame, contours, -1, contourColor, countourThickness, offset: new System.Drawing.Point(0, (int)RoiPosYSlider.Value));
@@ -240,75 +257,69 @@ namespace DartboardRecognition
                         {
                             CvInvoke.Circle(cam.linedFrame, pointOfImpact.Value, pointOfImpactRadius, pointOfImpactColor, pointOfImpactThickness);
                         }
+
                     }
                 }
 
-                #endregion
-
-                #region SaveImageToImagebox
-
                 cam.imageBox.Source = SaveBitmap(cam.linedFrame);
                 cam.imageBoxRoi.Source = SaveBitmap(cam.roiTrasholdFrame);
-
-                #endregion
-
-                #region DrawDartboard
-
-                // Draw dartboard projection
-                dartboardProjectionFrame = new Image<Bgr, byte>(dartboardProjectionFrameWidth, dartboardProjectionFrameHeight);
-                var dartboardCenterPoint = new Point(dartboardProjectionFrame.Width / 2, dartboardProjectionFrame.Height / 2);
-                CvInvoke.Circle(dartboardProjectionFrame, dartboardCenterPoint, dartboardProjectionCoefficent * 7, dartboardProjectionColor, dartboardProjectionThickness);
-                CvInvoke.Circle(dartboardProjectionFrame, dartboardCenterPoint, dartboardProjectionCoefficent * 17, dartboardProjectionColor, dartboardProjectionThickness);
-                CvInvoke.Circle(dartboardProjectionFrame, dartboardCenterPoint, dartboardProjectionCoefficent * 95, dartboardProjectionColor, dartboardProjectionThickness);
-                CvInvoke.Circle(dartboardProjectionFrame, dartboardCenterPoint, dartboardProjectionCoefficent * 105, dartboardProjectionColor, dartboardProjectionThickness);
-                CvInvoke.Circle(dartboardProjectionFrame, dartboardCenterPoint, dartboardProjectionCoefficent * 160, dartboardProjectionColor, dartboardProjectionThickness);
-                CvInvoke.Circle(dartboardProjectionFrame, dartboardCenterPoint, dartboardProjectionCoefficent * 170, dartboardProjectionColor, dartboardProjectionThickness);
-                for (var i = 0; i <= 360; i += 9)
-                {
-                    var segmentPoint1 = new Point
-                                        {
-                                            X = (int) (dartboardCenterPoint.X + Math.Cos(0.314159 * i - 0.15708) * dartboardProjectionCoefficent * 170),
-                                            Y = (int) (dartboardCenterPoint.Y + Math.Sin(0.314159 * i - 0.15708) * dartboardProjectionCoefficent * 170)
-                                        };
-                    var segmentPoint2 = new Point
-                                        {
-                                            X = (int) (dartboardCenterPoint.X + Math.Cos(0.314159 * i - 0.15708) * dartboardProjectionCoefficent * 17),
-                                            Y = (int) (dartboardCenterPoint.Y + Math.Sin(0.314159 * i - 0.15708) * dartboardProjectionCoefficent * 17)
-                                        };
-                    CvInvoke.Line(dartboardProjectionFrame, segmentPoint1, segmentPoint2, dartboardProjectionColor, dartboardProjectionThickness);
-                }
-
-                // Draw surface projection lines
-                var surfaceProjectionLineCam1Point1 = new Point
-                                                      {
-                                                          X = (int) (dartboardCenterPoint.X + Math.Cos(-0.785398) * dartboardProjectionCoefficent * 170),
-                                                          Y = (int) (dartboardCenterPoint.Y + Math.Sin(-0.785398) * dartboardProjectionCoefficent * 170)
-                                                      };
-                var surfaceProjectionLineCam1Point2 = new Point
-                                                      {
-                                                          X = (int) (dartboardCenterPoint.X + Math.Cos(-3.92699) * dartboardProjectionCoefficent * 170),
-                                                          Y = (int) (dartboardCenterPoint.Y + Math.Sin(-3.92699) * dartboardProjectionCoefficent * 170)
-                                                      };
-                CvInvoke.Line(dartboardProjectionFrame, surfaceProjectionLineCam1Point1, surfaceProjectionLineCam1Point2, surfaceProjectionLineColor, surfaceProjectionLineThickness);
-
-                var surfaceProjectionLineCam2Point1 = new Point
-                                                      {
-                                                          X = (int) (dartboardCenterPoint.X + Math.Cos(0.785398) * dartboardProjectionCoefficent * 170),
-                                                          Y = (int) (dartboardCenterPoint.Y + Math.Sin(0.785398) * dartboardProjectionCoefficent * 170)
-                                                      };
-                var surfaceProjectionLineCam2Point2 = new Point
-                                                      {
-                                                          X = (int) (dartboardCenterPoint.X + Math.Cos(3.92699) * dartboardProjectionCoefficent * 170),
-                                                          Y = (int) (dartboardCenterPoint.Y + Math.Sin(3.92699) * dartboardProjectionCoefficent * 170)
-                                                      };
-
-                CvInvoke.Line(dartboardProjectionFrame, surfaceProjectionLineCam2Point1, surfaceProjectionLineCam2Point2, surfaceProjectionLineColor, surfaceProjectionLineThickness);
-
-                ImageBox3.Source = SaveBitmap(dartboardProjectionFrame);
-
-                #endregion
             }
 
+        }
+
+        private void DrawDartboardProjection()
+        {
+            // Draw dartboard projection
+            dartboardProjectionFrame = new Image<Bgr, byte>(dartboardProjectionFrameWidth, dartboardProjectionFrameHeight);
+            var dartboardCenterPoint = new Point(dartboardProjectionFrame.Width / 2, dartboardProjectionFrame.Height / 2);
+            CvInvoke.Circle(dartboardProjectionFrame, dartboardCenterPoint, dartboardProjectionCoefficent * 7, dartboardProjectionColor, dartboardProjectionThickness);
+            CvInvoke.Circle(dartboardProjectionFrame, dartboardCenterPoint, dartboardProjectionCoefficent * 17, dartboardProjectionColor, dartboardProjectionThickness);
+            CvInvoke.Circle(dartboardProjectionFrame, dartboardCenterPoint, dartboardProjectionCoefficent * 95, dartboardProjectionColor, dartboardProjectionThickness);
+            CvInvoke.Circle(dartboardProjectionFrame, dartboardCenterPoint, dartboardProjectionCoefficent * 105, dartboardProjectionColor, dartboardProjectionThickness);
+            CvInvoke.Circle(dartboardProjectionFrame, dartboardCenterPoint, dartboardProjectionCoefficent * 160, dartboardProjectionColor, dartboardProjectionThickness);
+            CvInvoke.Circle(dartboardProjectionFrame, dartboardCenterPoint, dartboardProjectionCoefficent * 170, dartboardProjectionColor, dartboardProjectionThickness);
+            for (var i = 0; i <= 360; i += 9)
+            {
+                var segmentPoint1 = new Point
+                                    {
+                                        X = (int) (dartboardCenterPoint.X + Math.Cos(0.314159 * i - 0.15708) * dartboardProjectionCoefficent * 170),
+                                        Y = (int) (dartboardCenterPoint.Y + Math.Sin(0.314159 * i - 0.15708) * dartboardProjectionCoefficent * 170)
+                                    };
+                var segmentPoint2 = new Point
+                                    {
+                                        X = (int) (dartboardCenterPoint.X + Math.Cos(0.314159 * i - 0.15708) * dartboardProjectionCoefficent * 17),
+                                        Y = (int) (dartboardCenterPoint.Y + Math.Sin(0.314159 * i - 0.15708) * dartboardProjectionCoefficent * 17)
+                                    };
+                CvInvoke.Line(dartboardProjectionFrame, segmentPoint1, segmentPoint2, dartboardProjectionColor, dartboardProjectionThickness);
+            }
+
+            // Draw surface projection lines
+            var surfaceProjectionLineCam1Point1 = new Point
+                                                  {
+                                                      X = (int) (dartboardCenterPoint.X + Math.Cos(-0.785398) * dartboardProjectionCoefficent * 170),
+                                                      Y = (int) (dartboardCenterPoint.Y + Math.Sin(-0.785398) * dartboardProjectionCoefficent * 170)
+                                                  };
+            var surfaceProjectionLineCam1Point2 = new Point
+                                                  {
+                                                      X = (int) (dartboardCenterPoint.X + Math.Cos(-3.92699) * dartboardProjectionCoefficent * 170),
+                                                      Y = (int) (dartboardCenterPoint.Y + Math.Sin(-3.92699) * dartboardProjectionCoefficent * 170)
+                                                  };
+            CvInvoke.Line(dartboardProjectionFrame, surfaceProjectionLineCam1Point1, surfaceProjectionLineCam1Point2, surfaceProjectionLineColor, surfaceProjectionLineThickness);
+
+            var surfaceProjectionLineCam2Point1 = new Point
+                                                  {
+                                                      X = (int) (dartboardCenterPoint.X + Math.Cos(0.785398) * dartboardProjectionCoefficent * 170),
+                                                      Y = (int) (dartboardCenterPoint.Y + Math.Sin(0.785398) * dartboardProjectionCoefficent * 170)
+                                                  };
+            var surfaceProjectionLineCam2Point2 = new Point
+                                                  {
+                                                      X = (int) (dartboardCenterPoint.X + Math.Cos(3.92699) * dartboardProjectionCoefficent * 170),
+                                                      Y = (int) (dartboardCenterPoint.Y + Math.Sin(3.92699) * dartboardProjectionCoefficent * 170)
+                                                  };
+
+            CvInvoke.Line(dartboardProjectionFrame, surfaceProjectionLineCam2Point1, surfaceProjectionLineCam2Point2, surfaceProjectionLineColor, surfaceProjectionLineThickness);
+
+            ImageBox3.Source = SaveBitmap(dartboardProjectionFrame);
         }
 
         private static BitmapImage SaveBitmap(IImage frame)
@@ -380,13 +391,7 @@ namespace DartboardRecognition
             Throw1RadioButton.IsEnabled = !Throw1RadioButton.IsEnabled;
             Throw2RadioButton.IsEnabled = !Throw2RadioButton.IsEnabled;
             Throw3RadioButton.IsEnabled = !Throw3RadioButton.IsEnabled;
-        }
-
-        private void CamIndexBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            //int camId = 0;
-            //Int32.TryParse(CamIndexBox.Text, out camId);
-            //videoCapture = new VideoCapture(camId);
+            UseCamsRadioButton.IsEnabled = !UseCamsRadioButton.IsEnabled;
         }
 
         private static Point FindMiddlePoint(Point point1, Point point2)
