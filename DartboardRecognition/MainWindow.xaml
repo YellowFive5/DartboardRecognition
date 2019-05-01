@@ -10,7 +10,7 @@
         Width="1478.2"
         ResizeMode="NoResize"
         Closing="OnClosing">
-    <Grid x:Name="ControlsGrid">
+    <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1195*"/>
             <ColumnDefinition Width="7*"/>
@@ -22,7 +22,7 @@
         <RadioButton x:Name="Throw3RadioButton" Content="3" HorizontalAlignment="Left" Margin="824,358,0,0" VerticalAlignment="Top"/>
 
         <Slider x:Name="Cam1TresholdMinSlider"  HorizontalAlignment="Left" Margin="296,484,0,0" VerticalAlignment="Top" Width="287" Maximum="255" Value="197"/>
-        <Slider x:Name="Cam1TresholdMaxSlider" x:FieldModifier="public" HorizontalAlignment="Left" Margin="297,507,0,0" VerticalAlignment="Top" Width="286" Maximum="255" Value="255"/>
+        <Slider x:Name="Cam1TresholdMaxSlider" HorizontalAlignment="Left" Margin="297,507,0,0" VerticalAlignment="Top" Width="286" Maximum="255" Value="255"/>
         <Slider x:Name="Cam1RoiPosXSlider" HorizontalAlignment="Left" Margin="16,533,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="568" Maximum="5000" Value="0"/>
         <Slider x:Name="Cam1RoiPosYSlider" HorizontalAlignment="Left" Margin="16,556,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="568" Maximum="5000" Value="357"/>
         <Slider x:Name="Cam1RoiWidthSlider"  HorizontalAlignment="Left" Margin="17,580,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="567" Maximum="5000" Value="3671"/>
