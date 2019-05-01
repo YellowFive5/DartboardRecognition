@@ -45,7 +45,7 @@ namespace DartboardRecognition
         public readonly Slider roiWidthSlider;
         public readonly Slider roiHeightSlider;
         public readonly Slider surfaceSlider;
-        public readonly Slider SurfaceCenterSlider;
+        public readonly Slider surfaceCenterSlider;
 
         public Cam(Dictionary<string, FrameworkElement> controlsCollection, int index)
         {
@@ -69,14 +69,13 @@ namespace DartboardRecognition
                 surfaceSlider = (Slider) controlsCollection["Cam1SurfaceSlider"];
                 imageBox = (Image) controlsCollection["ImageBox1"];
                 imageBoxRoi = (Image) controlsCollection["ImageBox1Roi"];
-                SurfaceCenterSlider = (Slider)controlsCollection["Cam1SurfaceCenterSlider"];
+                surfaceCenterSlider = (Slider)controlsCollection["Cam1SurfaceCenterSlider"];
             }
             else
             {
                 testCaptureThrow1 = new Image<Bgr, byte>(@"C:\Users\YellowFive\Dropbox\MY\[Darts recognition]\MyC#\TestPhoto\Ethalon images\cam2_1.png");
                 testCaptureThrow2 = new Image<Bgr, byte>(@"C:\Users\YellowFive\Dropbox\MY\[Darts recognition]\MyC#\TestPhoto\Ethalon images\cam2_2.png");
                 testCaptureThrow3 = new Image<Bgr, byte>(@"C:\Users\YellowFive\Dropbox\MY\[Darts recognition]\MyC#\TestPhoto\Ethalon images\cam2_3.png");
-                camIndexBox = (TextBox) controlsCollection["Cam2IndexBox"];
                 tresholdMinSlider = (Slider) controlsCollection["Cam2TresholdMinSlider"];
                 tresholdMaxSlider = (Slider) controlsCollection["Cam2TresholdMaxSlider"];
                 roiPosXSlider = (Slider) controlsCollection["Cam2RoiPosXSlider"];
@@ -86,7 +85,7 @@ namespace DartboardRecognition
                 surfaceSlider = (Slider) controlsCollection["Cam2SurfaceSlider"];
                 imageBox = (Image) controlsCollection["ImageBox2"];
                 imageBoxRoi = (Image) controlsCollection["ImageBox2Roi"];
-                SurfaceCenterSlider = (Slider)controlsCollection["Cam2SurfaceCenterSlider"];
+                surfaceCenterSlider = (Slider)controlsCollection["Cam2SurfaceCenterSlider"];
                 camIndexBox = (TextBox)controlsCollection["Cam2IndexBox"];
             }
             videoCapture = new VideoCapture(int.Parse(camIndexBox.Text));
