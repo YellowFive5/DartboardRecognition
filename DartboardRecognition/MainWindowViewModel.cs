@@ -3,7 +3,6 @@
 using System;
 using System.Configuration;
 using System.Drawing;
-using System.Threading;
 using System.Windows.Threading;
 using Emgu.CV;
 using Emgu.CV.Structure;
@@ -15,8 +14,8 @@ namespace DartboardRecognition
 {
     public class MainWindowViewModel
     {
-        private Cam Cam1;
-        private Cam Cam2;
+        private Cam cam1;
+        private Cam cam2;
         private MainWindow view;
         private Dispatcher dispatcher;
         private Geometr geometr;
@@ -33,39 +32,39 @@ namespace DartboardRecognition
 
         public void StartCapture()
         {
-            Cam1 = new Cam(view, 1);
-            Cam2 = new Cam(view, 2);
+            cam1 = new Cam1(view);
+            cam2 = new Cam2(view);
 
             if (view.Throw1RadioButton.IsChecked.Value)
             {
-                Cam1.SetProcessingCapture(1);
-                Cam2.SetProcessingCapture(1);
+                cam1.SetProcessingCapture(1);
+                cam2.SetProcessingCapture(1);
             }
 
             if (view.Throw2RadioButton.IsChecked.Value)
             {
-                Cam1.SetProcessingCapture(2);
-                Cam2.SetProcessingCapture(2);
+                cam1.SetProcessingCapture(2);
+                cam2.SetProcessingCapture(2);
             }
 
             if (view.Throw3RadioButton.IsChecked.Value)
             {
-                Cam1.SetProcessingCapture(3);
-                Cam2.SetProcessingCapture(3);
+                cam1.SetProcessingCapture(3);
+                cam2.SetProcessingCapture(3);
             }
 
-            Cam1.camHandler = (s, e2) => CaptureImage(Cam1);
-            Cam2.camHandler = (s, e2) => CaptureImage(Cam2);
-            dispatcher.Hooks.DispatcherInactive += Cam1.camHandler;
-            dispatcher.Hooks.DispatcherInactive += Cam2.camHandler;
+            cam1.camHandler = (s, e2) => CaptureImage(cam1);
+            cam2.camHandler = (s, e2) => CaptureImage(cam2);
+            dispatcher.Hooks.DispatcherInactive += cam1.camHandler;
+            dispatcher.Hooks.DispatcherInactive += cam2.camHandler;
         }
 
         public void StopCapture()
         {
-            dispatcher.Hooks.DispatcherInactive -= Cam1.camHandler;
-            dispatcher.Hooks.DispatcherInactive -= Cam2.camHandler;
-            Cam1.videoCapture.Dispose();
-            Cam2.videoCapture.Dispose();
+            dispatcher.Hooks.DispatcherInactive -= cam1.camHandler;
+            dispatcher.Hooks.DispatcherInactive -= cam2.camHandler;
+            cam1.videoCapture.Dispose();
+            cam2.videoCapture.Dispose();
         }
 
         private void LoadSettings()
@@ -169,7 +168,7 @@ namespace DartboardRecognition
                 //FindDartContours
                 cam.roiContourFrame = cam.roiFrame.Clone();
                 CvInvoke.FindContours(cam.roiTrasholdFrame, cam.contours, cam.matHierarсhy, Emgu.CV.CvEnum.RetrType.External, Emgu.CV.CvEnum.ChainApproxMethod.ChainApproxNone);
-                //CvInvoke.DrawContours(linedFrame, contours, -1, contourColor, countourThickness, offset: new System.Drawing.Point(0, (int)RoiPosYSlider.Value));
+                //CvInvoke.DrawContours(linedFrame, contours, -1, contourColor, contourThickness, offset: new System.Drawing.Point(0, (int)RoiPosYSlider.Value));
 
                 if (cam.contours.Size > 0)
                 {

@@ -22,7 +22,7 @@ namespace DartboardRecognition
         private Bgr roiRectColor;
         private int roiRectThickness;
         private MCvScalar contourColor;
-        private int countourThickness;
+        private int contourThickness;
         private MCvScalar contourRectColor;
         private int contourRectThickness;
         private MCvScalar spikeLineColor;
@@ -47,7 +47,7 @@ namespace DartboardRecognition
             roiRectColor = view.RoiRectColor;
             roiRectThickness = view.RoiRectThickness;
             contourColor = view.ContourColor;
-            countourThickness = view.CountourThickness;
+            contourThickness = view.CountourThickness;
             contourRectColor = view.ContourRectColor;
             contourRectThickness = view.ContourRectThickness;
             spikeLineColor = view.SpikeLineColor;
@@ -118,27 +118,27 @@ namespace DartboardRecognition
             SaveBitmapToImageBox(dartboardProjectionFrame, view.ImageBox3);
         }
 
-        public void DrawLine(Image<Bgr, byte> img, Point point1, Point point2, MCvScalar color, int thickness)
+        public void DrawLine(Image<Bgr, byte> image, Point point1, Point point2, MCvScalar color, int thickness)
         {
-            CvInvoke.Line(img, point1, point2, color, thickness);
+            CvInvoke.Line(image, point1, point2, color, thickness);
         }
 
-        public void DrawRectangle(Image<Bgr, byte> img, Rectangle rect, MCvScalar color, int thickness)
+        public void DrawRectangle(Image<Bgr, byte> image, Rectangle rectangle, MCvScalar color, int thickness)
         {
-            CvInvoke.Rectangle(img, rect, color, thickness);
+            CvInvoke.Rectangle(image, rectangle, color, thickness);
         }
 
-        public void DrawCircle(Image<Bgr, byte> img, Point centerpoint, int radius, MCvScalar color, int thickness)
+        public void DrawCircle(Image<Bgr, byte> image, Point centerpoint, int radius, MCvScalar color, int thickness)
         {
-            CvInvoke.Circle(img, centerpoint, radius, color, thickness);
+            CvInvoke.Circle(image, centerpoint, radius, color, thickness);
         }
 
-        public void SaveBitmapToImageBox(IImage frame, Image imageBox)
+        public void SaveBitmapToImageBox(IImage image, Image imageBox)
         {
             using (var stream = new MemoryStream())
             {
                 var imageToSave = new BitmapImage();
-                frame.Bitmap.Save(stream, ImageFormat.Bmp);
+                image.Bitmap.Save(stream, ImageFormat.Bmp);
                 imageToSave.BeginInit();
                 imageToSave.StreamSource = new MemoryStream(stream.ToArray());
                 imageToSave.EndInit();
