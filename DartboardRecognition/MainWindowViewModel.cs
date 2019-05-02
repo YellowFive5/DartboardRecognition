@@ -1,12 +1,8 @@
 ﻿#region Usings
 
-using System;
 using System.Configuration;
-using System.Drawing;
 using System.Windows.Threading;
-using Emgu.CV;
 using Emgu.CV.Structure;
-using Point = System.Drawing.Point;
 
 #endregion
 
@@ -18,14 +14,14 @@ namespace DartboardRecognition
         private Cam cam2;
         private MainWindow view;
         private Dispatcher dispatcher;
-        private Geometr geometr;
-        private Drawer drawer;
+        private Measureman measureman;
+        private Drawman drawman;
 
         public MainWindowViewModel(MainWindow view)
         {
             this.view = view;
-            drawer = new Drawer(view);
-            geometr = new Geometr();
+            drawman = new Drawman(view);
+            measureman = new Measureman(view, drawman);
             dispatcher = Dispatcher.CurrentDispatcher;
             LoadSettings();
         }
@@ -119,11 +115,11 @@ namespace DartboardRecognition
 
         private void CaptureImage(Cam cam)
         {
-            drawer.DrawDartboardProjection();
+            drawman.DrawDartboardProjection();
+
             cam.originFrame = view.UseCamsRadioButton.IsChecked.Value
                                   ? cam.videoCapture.QueryFrame().ToImage<Bgr, byte>()
                                   : cam.processingCapture.Clone();
-
             using (cam.originFrame)
             {
                 if (cam.originFrame == null)
@@ -131,107 +127,16 @@ namespace DartboardRecognition
                     return;
                 }
 
-                //DrawLines
-                cam.linedFrame = cam.originFrame.Clone();
+                measureman.CalculateLines(cam);
 
-                var roiRectangle = new Rectangle((int) cam.roiPosXSlider.Value,
-                                                 (int) cam.roiPosYSlider.Value,
-                                                 (int) cam.roiWidthSlider.Value,
-                                                 (int) cam.roiHeightSlider.Value);
-                drawer.DrawRectangle(cam.linedFrame, roiRectangle, view.RoiRectColor.MCvScalar, view.RoiRectThickness);
+                measureman.CalculateRoiRegion(cam);
 
-                cam.surfacePoint1 = new Point(0, (int) cam.surfaceSlider.Value);
-                cam.surfacePoint2 = new Point(cam.originFrame.Cols, (int) cam.surfaceSlider.Value);
-                drawer.DrawLine(cam.linedFrame, cam.surfacePoint1, cam.surfacePoint2, view.SurfaceLineColor.MCvScalar, view.SurfaceLineThickness);
+                drawman.TresholdRoiRegion(cam);
 
-                cam.surfaceCenterPoint1 = new Point
-                                          {
-                                              X = (int) cam.surfaceCenterSlider.Value,
-                                              Y = (int) cam.surfaceSlider.Value
-                                          };
-                cam.surfaceCenterPoint2 = new Point
-                                          {
-                                              X = cam.surfaceCenterPoint1.X,
-                                              Y = cam.surfaceCenterPoint1.Y - 50
-                                          };
-                drawer.DrawLine(cam.linedFrame, cam.surfaceCenterPoint1, cam.surfaceCenterPoint2, view.SurfaceLineColor.MCvScalar, view.SurfaceLineThickness);
+                measureman.CalculateDartContours(cam);
 
-                //FindROIRegion
-                cam.roiFrame = cam.originFrame.Clone();
-                cam.roiFrame.ROI = roiRectangle;
-
-                //TresholdROIRegion
-                cam.roiTrasholdFrame = cam.roiFrame.Clone().Convert<Gray, byte>().Not();
-                cam.roiTrasholdFrame._ThresholdBinary(new Gray(cam.tresholdMinSlider.Value),
-                                                      new Gray(cam.tresholdMaxSlider.Value));
-
-                //FindDartContours
-                cam.roiContourFrame = cam.roiFrame.Clone();
-                CvInvoke.FindContours(cam.roiTrasholdFrame, cam.contours, cam.matHierarсhy, Emgu.CV.CvEnum.RetrType.External, Emgu.CV.CvEnum.ChainApproxMethod.ChainApproxNone);
-                //CvInvoke.DrawContours(linedFrame, contours, -1, contourColor, contourThickness, offset: new System.Drawing.Point(0, (int)RoiPosYSlider.Value));
-
-                if (cam.contours.Size > 0)
-                {
-                    for (var i = 0; i < cam.contours.Size; i++)
-                    {
-                        // Filter contour
-                        var arclength = CvInvoke.ArcLength(cam.contours[i], true);
-                        if (arclength < cam.minContourArcLength)
-                        {
-                            continue;
-                        }
-
-                        // Find moments and centerpoint
-                        var moments = CvInvoke.Moments(cam.contours[i]);
-                        var centerPoint = new Point((int) (moments.M10 / moments.M00), (int) cam.roiPosYSlider.Value + (int) (moments.M01 / moments.M00));
-                        drawer.DrawCircle(cam.linedFrame, centerPoint, 4, new Bgr(Color.Blue).MCvScalar, 3);
-
-                        // Find contour rectangle
-                        var rect = CvInvoke.MinAreaRect(cam.contours[i]);
-                        var box = CvInvoke.BoxPoints(rect);
-                        var point1 = new Point((int) box[0].X, (int) cam.roiPosYSlider.Value + (int) box[0].Y);
-                        var point2 = new Point((int) box[1].X, (int) cam.roiPosYSlider.Value + (int) box[1].Y);
-                        var point3 = new Point((int) box[2].X, (int) cam.roiPosYSlider.Value + (int) box[2].Y);
-                        var point4 = new Point((int) box[3].X, (int) cam.roiPosYSlider.Value + (int) box[3].Y);
-                        drawer.DrawLine(cam.linedFrame, point1, point2, view.ContourRectColor, view.ContourRectThickness);
-                        drawer.DrawLine(cam.linedFrame, point2, point3, view.ContourRectColor, view.ContourRectThickness);
-                        drawer.DrawLine(cam.linedFrame, point3, point4, view.ContourRectColor, view.ContourRectThickness);
-                        drawer.DrawLine(cam.linedFrame, point4, point1, view.ContourRectColor, view.ContourRectThickness);
-
-                        // Setup vertical contour middlepoints 
-                        Point middlePoint1;
-                        Point middlePoint2;
-                        if (geometr.FindDistance(point1, point2) < geometr.FindDistance(point4, point1))
-                        {
-                            middlePoint1 = geometr.FindMiddlePoint(point1, point2);
-                            middlePoint2 = geometr.FindMiddlePoint(point4, point3);
-                        }
-                        else
-                        {
-                            middlePoint1 = geometr.FindMiddlePoint(point4, point1);
-                            middlePoint2 = geometr.FindMiddlePoint(point3, point2);
-                        }
-
-                        // Find spikeLine to surface
-                        var spikePoint1 = middlePoint1;
-                        var spikePoint2 = middlePoint2;
-                        cam.spikeLineLength = cam.surfacePoint2.Y - middlePoint2.Y;
-                        var angle = Math.Atan2(middlePoint1.Y - middlePoint2.Y, middlePoint1.X - middlePoint2.X);
-                        spikePoint1.X = (int) (middlePoint2.X + Math.Cos(angle) * cam.spikeLineLength);
-                        spikePoint1.Y = (int) (middlePoint2.Y + Math.Sin(angle) * cam.spikeLineLength);
-                        drawer.DrawLine(cam.linedFrame, spikePoint1, spikePoint2, view.SpikeLineColor, view.SpikeLineThickness);
-
-                        // Find point of impact with surface
-                        var pointOfImpact = geometr.FindIntersectionPoint(spikePoint1, spikePoint2, cam.surfacePoint1, cam.surfacePoint2);
-                        if (pointOfImpact != null)
-                        {
-                            drawer.DrawCircle(cam.linedFrame, pointOfImpact.Value, view.PointOfImpactRadius, view.PointOfImpactColor, view.PointOfImpactThickness);
-                        }
-                    }
-                }
-
-                drawer.SaveBitmapToImageBox(cam.linedFrame, cam.imageBox);
-                drawer.SaveBitmapToImageBox(cam.roiTrasholdFrame, cam.imageBoxRoi);
+                drawman.SaveBitmapToImageBox(cam.linedFrame, cam.imageBox);
+                drawman.SaveBitmapToImageBox(cam.roiTrasholdFrame, cam.imageBoxRoi);
             }
         }
     }

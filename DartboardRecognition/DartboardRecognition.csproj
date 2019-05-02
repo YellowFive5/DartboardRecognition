@@ -78,8 +78,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Cam.cs" />
-    <Compile Include="Drawer.cs" />
-    <Compile Include="Geometr.cs" />
+    <Compile Include="Drawman.cs" />
+    <Compile Include="Measureman.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

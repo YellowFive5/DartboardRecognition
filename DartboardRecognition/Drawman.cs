@@ -14,7 +14,7 @@ using Image = System.Windows.Controls.Image;
 
 namespace DartboardRecognition
 {
-    public class Drawer
+    public class Drawman
     {
         private MainWindow view;
         private Bgr surfaceLineColor;
@@ -39,7 +39,7 @@ namespace DartboardRecognition
         private MCvScalar surfaceProjectionLineColor;
         private int surfaceProjectionLineThickness;
 
-        public Drawer(MainWindow view)
+        public Drawman(MainWindow view)
         {
             this.view = view;
             surfaceLineColor = view.SurfaceLineColor;
@@ -144,6 +144,13 @@ namespace DartboardRecognition
                 imageToSave.EndInit();
                 imageBox.Source = imageToSave;
             }
+        }
+
+        public void TresholdRoiRegion(Cam cam)
+        {
+            cam.roiTrasholdFrame = cam.roiFrame.Clone().Convert<Gray, byte>().Not();
+            cam.roiTrasholdFrame._ThresholdBinary(new Gray(cam.tresholdMinSlider.Value),
+                                                  new Gray(cam.tresholdMaxSlider.Value));
         }
     }
 }
