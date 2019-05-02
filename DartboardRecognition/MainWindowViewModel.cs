@@ -20,8 +20,6 @@ namespace DartboardRecognition
         public MainWindowViewModel(MainWindow view)
         {
             this.view = view;
-            drawman = new Drawman();
-            measureman = new Measureman(view, drawman);
             dispatcher = Dispatcher.CurrentDispatcher;
             LoadSettings();
         }
@@ -30,6 +28,8 @@ namespace DartboardRecognition
         {
             cam1 = new Cam1(view);
             cam2 = new Cam2(view);
+            drawman = new Drawman();
+            measureman = new Measureman(view, drawman);
 
             if (view.Throw1RadioButton.IsChecked.Value)
             {
@@ -74,6 +74,8 @@ namespace DartboardRecognition
             view.Cam1SurfaceSlider.Value = double.Parse(ConfigurationManager.AppSettings["Cam1SurfaceSlider"]);
             view.Cam1IndexBox.Text = ConfigurationManager.AppSettings["Cam1IndexBox"];
             view.Cam1SurfaceCenterSlider.Value = double.Parse(ConfigurationManager.AppSettings["Cam1SurfaceCenterSlider"]);
+            view.Cam1SurfaceLeftSlider.Value = double.Parse(ConfigurationManager.AppSettings["Cam1SurfaceLeftSlider"]);
+            view.Cam1SurfaceRightSlider.Value = double.Parse(ConfigurationManager.AppSettings["Cam1SurfaceRightSlider"]);
 
             view.Cam2TresholdMinSlider.Value = double.Parse(ConfigurationManager.AppSettings["Cam2TresholdMinSlider"]);
             view.Cam2TresholdMaxSlider.Value = double.Parse(ConfigurationManager.AppSettings["Cam2TresholdMaxSlider"]);
@@ -84,6 +86,9 @@ namespace DartboardRecognition
             view.Cam2SurfaceSlider.Value = double.Parse(ConfigurationManager.AppSettings["Cam2SurfaceSlider"]);
             view.Cam2IndexBox.Text = ConfigurationManager.AppSettings["Cam2IndexBox"];
             view.Cam2SurfaceCenterSlider.Value = double.Parse(ConfigurationManager.AppSettings["Cam2SurfaceCenterSlider"]);
+            view.Cam2SurfaceLeftSlider.Value = double.Parse(ConfigurationManager.AppSettings["Cam2SurfaceLeftSlider"]);
+            view.Cam2SurfaceRightSlider.Value = double.Parse(ConfigurationManager.AppSettings["Cam2SurfaceRightSlider"]);
+
         }
 
         public void SaveSettings()
@@ -99,6 +104,8 @@ namespace DartboardRecognition
             configManager.AppSettings.Settings.Add("Cam1SurfaceSlider", view.Cam1SurfaceSlider.Value.ToString());
             configManager.AppSettings.Settings.Add("Cam1IndexBox", view.Cam1IndexBox.Text);
             configManager.AppSettings.Settings.Add("Cam1SurfaceCenterSlider", view.Cam1SurfaceCenterSlider.Value.ToString());
+            configManager.AppSettings.Settings.Add("Cam1SurfaceLeftSlider", view.Cam1SurfaceLeftSlider.Value.ToString());
+            configManager.AppSettings.Settings.Add("Cam1SurfaceRightSlider", view.Cam1SurfaceRightSlider.Value.ToString());
 
             configManager.AppSettings.Settings.Add("Cam2TresholdMinSlider", view.Cam2TresholdMinSlider.Value.ToString());
             configManager.AppSettings.Settings.Add("Cam2TresholdMaxSlider", view.Cam2TresholdMaxSlider.Value.ToString());
@@ -109,13 +116,14 @@ namespace DartboardRecognition
             configManager.AppSettings.Settings.Add("Cam2SurfaceSlider", view.Cam2SurfaceSlider.Value.ToString());
             configManager.AppSettings.Settings.Add("Cam2IndexBox", view.Cam2IndexBox.Text);
             configManager.AppSettings.Settings.Add("Cam2SurfaceCenterSlider", view.Cam2SurfaceCenterSlider.Value.ToString());
+            configManager.AppSettings.Settings.Add("Cam2SurfaceLeftSlider", view.Cam2SurfaceLeftSlider.Value.ToString());
+            configManager.AppSettings.Settings.Add("Cam2SurfaceRightSlider", view.Cam2SurfaceRightSlider.Value.ToString());
 
             configManager.Save(ConfigurationSaveMode.Modified);
         }
 
         private void CaptureImage(Cam cam)
         {
-            measureman.CalculateDartboardProjection();
 
             cam.originFrame = view.UseCamsRadioButton.IsChecked.Value
                                   ? cam.videoCapture.QueryFrame().ToImage<Bgr, byte>()
@@ -126,6 +134,8 @@ namespace DartboardRecognition
                 {
                     return;
                 }
+
+                measureman.CalculateDartboardProjection();
 
                 measureman.CalculateSetupLines(cam);
 
@@ -138,6 +148,7 @@ namespace DartboardRecognition
                 drawman.SaveBitmapToImageBox(cam.linedFrame, cam.imageBox);
                 drawman.SaveBitmapToImageBox(cam.roiTrasholdFrame, cam.imageBoxRoi);
             }
+
         }
     }
 }

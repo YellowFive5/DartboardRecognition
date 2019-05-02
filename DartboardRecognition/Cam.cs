@@ -28,6 +28,10 @@ namespace DartboardRecognition
         public Point surfacePoint2;
         public Point surfaceCenterPoint1;
         public Point surfaceCenterPoint2;
+        public Point surfaceLeftPoint1;
+        public Point surfaceLeftPoint2;
+        public Point surfaceRightPoint1;
+        public Point surfaceRightPoint2;
         public int spikeLineLength;
         public int minContourArcLength = 250;
         public readonly VectorOfVectorOfPoint contours;
@@ -43,6 +47,8 @@ namespace DartboardRecognition
         public Slider roiHeightSlider;
         public Slider surfaceSlider;
         public Slider surfaceCenterSlider;
+        public Slider surfaceLeftSlider;
+        public Slider surfaceRightSlider;
 
         protected Cam()
         {
@@ -89,6 +95,8 @@ namespace DartboardRecognition
             imageBox = view.ImageBox1;
             imageBoxRoi = view.ImageBox1Roi;
             surfaceCenterSlider = view.Cam1SurfaceCenterSlider;
+            surfaceLeftSlider = view.Cam1SurfaceLeftSlider;
+            surfaceRightSlider = view.Cam1SurfaceRightSlider;
             videoCapture = new VideoCapture(int.Parse(camIndexBox.Text));
         }
     }
@@ -111,6 +119,8 @@ namespace DartboardRecognition
             imageBox = view.ImageBox2;
             imageBoxRoi = view.ImageBox2Roi;
             surfaceCenterSlider = view.Cam2SurfaceCenterSlider;
+            surfaceLeftSlider = view.Cam2SurfaceLeftSlider;
+            surfaceRightSlider = view.Cam2SurfaceRightSlider;
             videoCapture = new VideoCapture(int.Parse(camIndexBox.Text));
         }
     }

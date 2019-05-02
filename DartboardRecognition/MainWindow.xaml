@@ -20,6 +20,7 @@
         <RadioButton x:Name="Throw1RadioButton" Content="1" HorizontalAlignment="Left" Margin="692,400,0,0" VerticalAlignment="Top" IsChecked="True"/>
         <RadioButton x:Name="Throw2RadioButton" Content="2" HorizontalAlignment="Left" Margin="727,400,0,0" VerticalAlignment="Top"/>
         <RadioButton x:Name="Throw3RadioButton" Content="3" HorizontalAlignment="Left" Margin="758,400,0,0" VerticalAlignment="Top"/>
+        <RadioButton x:Name="UseCamsRadioButton" Content="Use cams" HorizontalAlignment="Left" Margin="703,427,0,0" VerticalAlignment="Top"/>
 
         <Slider x:Name="Cam1TresholdMinSlider"  HorizontalAlignment="Left" Margin="21,484,0,0" VerticalAlignment="Top" Width="626" Maximum="255" Value="197"/>
         <Slider x:Name="Cam1TresholdMaxSlider" HorizontalAlignment="Left" Margin="21,507,0,0" VerticalAlignment="Top" Width="626" Maximum="255" Value="255"/>
@@ -29,7 +30,9 @@
         <Slider x:Name="Cam1RoiHeightSlider"  HorizontalAlignment="Left" Margin="21,603,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="627" Maximum="5000" Value="133"/>
         <Slider x:Name="Cam1SurfaceSlider"  HorizontalAlignment="Left" Margin="21,626,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="627" Maximum="5000" Value="536"/>
         <TextBox x:Name="Cam1IndexBox"  HorizontalAlignment="Left" Height="23" Margin="616,456,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="31" RenderTransformOrigin="0.5,0.435"/>
-        <Slider x:Name="Cam1SurfaceCenterSlider"  HorizontalAlignment="Left" Margin="21,649,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="627" Maximum="5000" Value="536"/>
+        <Slider x:Name="Cam1SurfaceCenterSlider"  HorizontalAlignment="Left" Margin="21,649,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="627" Maximum="2000" Value="536"/>
+        <Slider x:Name="Cam1SurfaceLeftSlider"  HorizontalAlignment="Left" Margin="21,672,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="627" Maximum="2000" Value="536"/>
+        <Slider x:Name="Cam1SurfaceRightSlider"  HorizontalAlignment="Left" Margin="21,695,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="627" Maximum="2000" Value="536"/>
 
         <Slider x:Name="Cam2TresholdMinSlider" HorizontalAlignment="Left" Margin="810,484,0,0" VerticalAlignment="Top" Width="635" Maximum="255" Value="197"/>
         <Slider x:Name="Cam2TresholdMaxSlider"  HorizontalAlignment="Left" Margin="811,507,0,0" VerticalAlignment="Top" Width="634" Maximum="255" Value="255"/>
@@ -39,7 +42,9 @@
         <Slider x:Name="Cam2RoiHeightSlider" HorizontalAlignment="Left" Margin="809,603,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="636" Maximum="5000" Value="133"/>
         <Slider x:Name="Cam2SurfaceSlider" HorizontalAlignment="Left" Margin="809,626,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="636" Maximum="5000" Value="536"/>
         <TextBox x:Name="Cam2IndexBox" HorizontalAlignment="Left" Height="23" Margin="809,456,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="31" RenderTransformOrigin="0.5,0.435"/>
-        <Slider x:Name="Cam2SurfaceCenterSlider"  HorizontalAlignment="Left" Margin="809,649,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="627" Maximum="5000" Value="536"/>
+        <Slider x:Name="Cam2SurfaceCenterSlider"  HorizontalAlignment="Left" Margin="809,649,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="627" Maximum="2000" Value="536"/>
+        <Slider x:Name="Cam2SurfaceLeftSlider"  HorizontalAlignment="Left" Margin="810,672,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="627" Maximum="2000" Value="536"/>
+        <Slider x:Name="Cam2SurfaceRightSlider"  HorizontalAlignment="Left" Margin="810,695,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="627" Maximum="2000" Value="536"/>
 
         <Image x:Name="ImageBox1"  HorizontalAlignment="Left" Height="308" Margin="10,34,0,0" VerticalAlignment="Top" Width="550" />
         <Image x:Name="ImageBox1Roi"  HorizontalAlignment="Left" Height="72" Margin="9,370,0,0" VerticalAlignment="Top" Width="551" />
@@ -56,7 +61,8 @@
         <Label Content="ROI height" HorizontalAlignment="Left" Margin="692,598,0,0" VerticalAlignment="Top" Width="92" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" HorizontalContentAlignment="Center" RenderTransformOrigin="0.594,0.181"/>
         <Label Content="Surface Y" HorizontalAlignment="Left" Margin="692,620,0,0" VerticalAlignment="Top" Width="92" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" HorizontalContentAlignment="Center" RenderTransformOrigin="0.594,0.181"/>
         <Label Content="Surface center" HorizontalAlignment="Left" Margin="692,644,0,0" VerticalAlignment="Top" Width="92" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" HorizontalContentAlignment="Center" RenderTransformOrigin="0.594,0.181"/>
-        <RadioButton x:Name="UseCamsRadioButton" Content="Use cams" HorizontalAlignment="Left" Margin="703,427,0,0" VerticalAlignment="Top"/>
+        <Label Content="Surface left" HorizontalAlignment="Left" Margin="692,667,0,0" VerticalAlignment="Top" Width="92" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" HorizontalContentAlignment="Center" RenderTransformOrigin="0.594,0.181"/>
+        <Label Content="Surface right" HorizontalAlignment="Left" Margin="692,690,0,0" VerticalAlignment="Top" Width="92" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" HorizontalContentAlignment="Center" RenderTransformOrigin="0.594,0.181"/>
 
     </Grid>
 </Window>

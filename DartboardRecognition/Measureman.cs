@@ -31,13 +31,14 @@ namespace DartboardRecognition
         private Point surfaceProjectionLineCam2Point1;
         private Point surfaceProjectionLineCam2Point2;
         private Point? pointOfImpact;
-        private int poiToCenterDistance;
         private Image<Bgr, byte> dartboardProjectionFrame;
 
         public Measureman(MainWindow view, Drawman drawman)
         {
             this.view = view;
             this.drawman = drawman;
+            dartboardProjectionFrame = new Image<Bgr, byte>(view.DartboardProjectionFrameWidth, view.DartboardProjectionFrameHeight);
+            dartboardCenterPoint = new Point(dartboardProjectionFrame.Width / 2, dartboardProjectionFrame.Height / 2);
         }
 
         private Point FindMiddlePoint(Point point1, Point point2)
@@ -101,6 +102,30 @@ namespace DartboardRecognition
                                           Y = cam.surfaceCenterPoint1.Y - 50
                                       };
             drawman.DrawLine(cam.linedFrame, cam.surfaceCenterPoint1, cam.surfaceCenterPoint2, view.SurfaceLineColor.MCvScalar, view.SurfaceLineThickness);
+
+            cam.surfaceLeftPoint1 = new Point
+                                    {
+                                        X = (int) cam.surfaceLeftSlider.Value,
+                                        Y = (int) cam.surfaceSlider.Value
+                                    };
+            cam.surfaceLeftPoint2 = new Point
+                                    {
+                                        X = (int) cam.surfaceLeftPoint1.X,
+                                        Y = (int) cam.surfaceLeftPoint1.Y - 50
+                                    };
+            drawman.DrawLine(cam.linedFrame, cam.surfaceLeftPoint1, cam.surfaceLeftPoint2, view.SurfaceLineColor.MCvScalar, view.SurfaceLineThickness);
+
+            cam.surfaceRightPoint1 = new Point
+                                     {
+                                         X = (int) cam.surfaceRightSlider.Value,
+                                         Y = (int) cam.surfaceSlider.Value
+                                     };
+            cam.surfaceRightPoint2 = new Point
+                                     {
+                                         X = (int) cam.surfaceRightPoint1.X,
+                                         Y = (int) cam.surfaceRightPoint1.Y - 50
+                                     };
+            drawman.DrawLine(cam.linedFrame, cam.surfaceRightPoint1, cam.surfaceRightPoint2, view.SurfaceLineColor.MCvScalar, view.SurfaceLineThickness);
         }
 
         public void CalculateRoiRegion(Cam cam)
@@ -112,8 +137,6 @@ namespace DartboardRecognition
         public void CalculateDartboardProjection()
         {
             // Draw dartboard projection
-            dartboardProjectionFrame = new Image<Bgr, byte>(view.DartboardProjectionFrameWidth, view.DartboardProjectionFrameHeight);
-            dartboardCenterPoint = new Point(dartboardProjectionFrame.Width / 2, dartboardProjectionFrame.Height / 2);
             drawman.DrawCircle(dartboardProjectionFrame, dartboardCenterPoint, view.DartboardProjectionCoefficent * 7, view.DartboardProjectionColor, view.DartboardProjectionThickness);
             drawman.DrawCircle(dartboardProjectionFrame, dartboardCenterPoint, view.DartboardProjectionCoefficent * 17, view.DartboardProjectionColor, view.DartboardProjectionThickness);
             drawman.DrawCircle(dartboardProjectionFrame, dartboardCenterPoint, view.DartboardProjectionCoefficent * 95, view.DartboardProjectionColor, view.DartboardProjectionThickness);
@@ -171,9 +194,22 @@ namespace DartboardRecognition
                     continue;
                 }
 
-                CalculateMomentsAndCenterPoints(cam, i);
+                // Find moments and centerpoint
+                contourMoments = CvInvoke.Moments(cam.contours[i]);
+                contourCenterPoint = new Point((int)(contourMoments.M10 / contourMoments.M00), (int)cam.roiPosYSlider.Value + (int)(contourMoments.M01 / contourMoments.M00));
+                drawman.DrawCircle(cam.linedFrame, contourCenterPoint, 4, new Bgr(Color.Blue).MCvScalar, 3);
 
-                CalculateContourRectangle(cam, i);
+                // Find contour rectangle
+                var rect = CvInvoke.MinAreaRect(cam.contours[i]);
+                var box = CvInvoke.BoxPoints(rect);
+                contourBoxPoint1 = new Point((int)box[0].X, (int)cam.roiPosYSlider.Value + (int)box[0].Y);
+                contourBoxPoint2 = new Point((int)box[1].X, (int)cam.roiPosYSlider.Value + (int)box[1].Y);
+                contourBoxPoint3 = new Point((int)box[2].X, (int)cam.roiPosYSlider.Value + (int)box[2].Y);
+                contourBoxPoint4 = new Point((int)box[3].X, (int)cam.roiPosYSlider.Value + (int)box[3].Y);
+                drawman.DrawLine(cam.linedFrame, contourBoxPoint1, contourBoxPoint2, view.ContourRectColor, view.ContourRectThickness);
+                drawman.DrawLine(cam.linedFrame, contourBoxPoint2, contourBoxPoint3, view.ContourRectColor, view.ContourRectThickness);
+                drawman.DrawLine(cam.linedFrame, contourBoxPoint3, contourBoxPoint4, view.ContourRectColor, view.ContourRectThickness);
+                drawman.DrawLine(cam.linedFrame, contourBoxPoint4, contourBoxPoint1, view.ContourRectColor, view.ContourRectThickness);
 
                 SetupMiddlePoints();
 
@@ -181,33 +217,45 @@ namespace DartboardRecognition
 
                 CalculatePoi(cam);
 
-                // Find distance between POI and centerpoint
-                poiToCenterDistance = FindDistance(pointOfImpact.Value, cam.surfaceCenterPoint1);
+                // Translate cam surface POI to dartboard projection
+                var surfaceLeftToRightDistance = FindDistance(cam.surfaceLeftPoint1, cam.surfaceRightPoint1);
+                var projectionLeftToRightDistance = FindDistance(surfaceProjectionLineCam1Point1, surfaceProjectionLineCam1Point2);
+                var surfaceProjectionCoeff = (double) projectionLeftToRightDistance / surfaceLeftToRightDistance;
+                var surfacePoiToCenterDistance = FindDistance(cam.surfaceCenterPoint1, pointOfImpact.GetValueOrDefault());
+                var surfaceLeftToPoiDistance = FindDistance(cam.surfaceLeftPoint1, pointOfImpact.GetValueOrDefault());
+                var surfaceRightToPoiDistance = FindDistance(cam.surfaceRightPoint1, pointOfImpact.GetValueOrDefault());
+                var projectionPoi = new Point();
 
+                if (cam is Cam1)
+                {
+                    if (surfaceLeftToPoiDistance < surfaceRightToPoiDistance)
+                    {
+                        projectionPoi.X = (int) (dartboardCenterPoint.X + Math.Cos(-0.785398) * surfacePoiToCenterDistance * surfaceProjectionCoeff);
+                        projectionPoi.Y = (int) (dartboardCenterPoint.Y + Math.Sin(-0.785398) * surfacePoiToCenterDistance * surfaceProjectionCoeff);
+                    }
+                    else
+                    {
+                        projectionPoi.X = (int) (dartboardCenterPoint.X + Math.Cos(-3.92699) * surfacePoiToCenterDistance * surfaceProjectionCoeff);
+                        projectionPoi.Y = (int) (dartboardCenterPoint.Y + Math.Sin(-3.92699) * surfacePoiToCenterDistance * surfaceProjectionCoeff);
+                    }
+                }
+                else
+                {
+                    if (surfaceLeftToPoiDistance < surfaceRightToPoiDistance)
+                    {
+                        projectionPoi.X = (int) (dartboardCenterPoint.X + Math.Cos(0.785398) * surfacePoiToCenterDistance * surfaceProjectionCoeff);
+                        projectionPoi.Y = (int) (dartboardCenterPoint.Y + Math.Sin(0.785398) * surfacePoiToCenterDistance * surfaceProjectionCoeff);
+                    }
+                    else
+                    {
+                        projectionPoi.X = (int) (dartboardCenterPoint.X + Math.Cos(3.92699) * surfacePoiToCenterDistance * surfaceProjectionCoeff);
+                        projectionPoi.Y = (int) (dartboardCenterPoint.Y + Math.Sin(3.92699) * surfacePoiToCenterDistance * surfaceProjectionCoeff);
+                    }
+                }
+
+                drawman.DrawCircle(dartboardProjectionFrame, projectionPoi, 6, new Bgr(Color.Yellow).MCvScalar, 6);
+                drawman.SaveBitmapToImageBox(dartboardProjectionFrame, view.ImageBox3);
             }
-        }
-
-        private void CalculateMomentsAndCenterPoints(Cam cam, int i)
-        {
-            // Find moments and centerpoint
-            contourMoments = CvInvoke.Moments(cam.contours[i]);
-            contourCenterPoint = new Point((int) (contourMoments.M10 / contourMoments.M00), (int) cam.roiPosYSlider.Value + (int) (contourMoments.M01 / contourMoments.M00));
-            drawman.DrawCircle(cam.linedFrame, contourCenterPoint, 4, new Bgr(Color.Blue).MCvScalar, 3);
-        }
-
-        private void CalculateContourRectangle(Cam cam, int i)
-        {
-            // Find contour rectangle
-            var rect = CvInvoke.MinAreaRect(cam.contours[i]);
-            var box = CvInvoke.BoxPoints(rect);
-            contourBoxPoint1 = new Point((int) box[0].X, (int) cam.roiPosYSlider.Value + (int) box[0].Y);
-            contourBoxPoint2 = new Point((int) box[1].X, (int) cam.roiPosYSlider.Value + (int) box[1].Y);
-            contourBoxPoint3 = new Point((int) box[2].X, (int) cam.roiPosYSlider.Value + (int) box[2].Y);
-            contourBoxPoint4 = new Point((int) box[3].X, (int) cam.roiPosYSlider.Value + (int) box[3].Y);
-            drawman.DrawLine(cam.linedFrame, contourBoxPoint1, contourBoxPoint2, view.ContourRectColor, view.ContourRectThickness);
-            drawman.DrawLine(cam.linedFrame, contourBoxPoint2, contourBoxPoint3, view.ContourRectColor, view.ContourRectThickness);
-            drawman.DrawLine(cam.linedFrame, contourBoxPoint3, contourBoxPoint4, view.ContourRectColor, view.ContourRectThickness);
-            drawman.DrawLine(cam.linedFrame, contourBoxPoint4, contourBoxPoint1, view.ContourRectColor, view.ContourRectThickness);
         }
 
         private void SetupMiddlePoints()
