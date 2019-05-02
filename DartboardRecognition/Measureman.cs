@@ -14,6 +14,25 @@ namespace DartboardRecognition
     {
         private MainWindow view;
         private Drawman drawman;
+        private Rectangle roiRectangle;
+        private Moments contourMoments;
+        private Point contourCenterPoint;
+        private Point contourBoxPoint1;
+        private Point contourBoxPoint2;
+        private Point contourBoxPoint3;
+        private Point contourBoxPoint4;
+        private Point contourBoxMiddlePoint1;
+        private Point contourBoxMiddlePoint2;
+        private Point spikeLinePoint1;
+        private Point spikeLinePoint2;
+        private Point dartboardCenterPoint;
+        private Point surfaceProjectionLineCam1Point1;
+        private Point surfaceProjectionLineCam1Point2;
+        private Point surfaceProjectionLineCam2Point1;
+        private Point surfaceProjectionLineCam2Point2;
+        private Point? pointOfImpact;
+        private int poiToCenterDistance;
+        private Image<Bgr, byte> dartboardProjectionFrame;
 
         public Measureman(MainWindow view, Drawman drawman)
         {
@@ -57,14 +76,14 @@ namespace DartboardRecognition
             }
         }
 
-        public void CalculateLines(Cam cam)
+        public void CalculateSetupLines(Cam cam)
         {
             cam.linedFrame = cam.originFrame.Clone();
 
-            var roiRectangle = new Rectangle((int) cam.roiPosXSlider.Value,
-                                             (int) cam.roiPosYSlider.Value,
-                                             (int) cam.roiWidthSlider.Value,
-                                             (int) cam.roiHeightSlider.Value);
+            roiRectangle = new Rectangle((int) cam.roiPosXSlider.Value,
+                                         (int) cam.roiPosYSlider.Value,
+                                         (int) cam.roiWidthSlider.Value,
+                                         (int) cam.roiHeightSlider.Value);
             drawman.DrawRectangle(cam.linedFrame, roiRectangle, view.RoiRectColor.MCvScalar, view.RoiRectThickness);
 
             cam.surfacePoint1 = new Point(0, (int) cam.surfaceSlider.Value);
@@ -86,12 +105,50 @@ namespace DartboardRecognition
 
         public void CalculateRoiRegion(Cam cam)
         {
-            var roiRectangle = new Rectangle((int) cam.roiPosXSlider.Value,
-                                             (int) cam.roiPosYSlider.Value,
-                                             (int) cam.roiWidthSlider.Value,
-                                             (int) cam.roiHeightSlider.Value);
             cam.roiFrame = cam.originFrame.Clone();
             cam.roiFrame.ROI = roiRectangle;
+        }
+
+        public void CalculateDartboardProjection()
+        {
+            // Draw dartboard projection
+            dartboardProjectionFrame = new Image<Bgr, byte>(view.DartboardProjectionFrameWidth, view.DartboardProjectionFrameHeight);
+            dartboardCenterPoint = new Point(dartboardProjectionFrame.Width / 2, dartboardProjectionFrame.Height / 2);
+            drawman.DrawCircle(dartboardProjectionFrame, dartboardCenterPoint, view.DartboardProjectionCoefficent * 7, view.DartboardProjectionColor, view.DartboardProjectionThickness);
+            drawman.DrawCircle(dartboardProjectionFrame, dartboardCenterPoint, view.DartboardProjectionCoefficent * 17, view.DartboardProjectionColor, view.DartboardProjectionThickness);
+            drawman.DrawCircle(dartboardProjectionFrame, dartboardCenterPoint, view.DartboardProjectionCoefficent * 95, view.DartboardProjectionColor, view.DartboardProjectionThickness);
+            drawman.DrawCircle(dartboardProjectionFrame, dartboardCenterPoint, view.DartboardProjectionCoefficent * 105, view.DartboardProjectionColor, view.DartboardProjectionThickness);
+            drawman.DrawCircle(dartboardProjectionFrame, dartboardCenterPoint, view.DartboardProjectionCoefficent * 160, view.DartboardProjectionColor, view.DartboardProjectionThickness);
+            drawman.DrawCircle(dartboardProjectionFrame, dartboardCenterPoint, view.DartboardProjectionCoefficent * 170, view.DartboardProjectionColor, view.DartboardProjectionThickness);
+            for (var i = 0; i <= 360; i += 9)
+            {
+                var segmentPoint1 = new Point
+                                    {
+                                        X = (int)(dartboardCenterPoint.X + Math.Cos(0.314159 * i - 0.15708) * view.DartboardProjectionCoefficent * 170),
+                                        Y = (int)(dartboardCenterPoint.Y + Math.Sin(0.314159 * i - 0.15708) * view.DartboardProjectionCoefficent * 170)
+                                    };
+                var segmentPoint2 = new Point
+                                    {
+                                        X = (int)(dartboardCenterPoint.X + Math.Cos(0.314159 * i - 0.15708) * view.DartboardProjectionCoefficent * 17),
+                                        Y = (int)(dartboardCenterPoint.Y + Math.Sin(0.314159 * i - 0.15708) * view.DartboardProjectionCoefficent * 17)
+                                    };
+                drawman.DrawLine(dartboardProjectionFrame, segmentPoint1, segmentPoint2, view.DartboardProjectionColor, view.DartboardProjectionThickness);
+            }
+
+            // Draw surface projection lines
+            surfaceProjectionLineCam1Point1.X = (int) (dartboardCenterPoint.X + Math.Cos(-0.785398) * view.DartboardProjectionCoefficent * 170);
+            surfaceProjectionLineCam1Point1.Y = (int)(dartboardCenterPoint.Y + Math.Sin(-0.785398) * view.DartboardProjectionCoefficent * 170);
+            surfaceProjectionLineCam1Point2.X = (int) (dartboardCenterPoint.X + Math.Cos(-3.92699) * view.DartboardProjectionCoefficent * 170);
+            surfaceProjectionLineCam1Point2.Y = (int)(dartboardCenterPoint.Y + Math.Sin(-3.92699) * view.DartboardProjectionCoefficent * 170);
+            drawman.DrawLine(dartboardProjectionFrame, surfaceProjectionLineCam1Point1, surfaceProjectionLineCam1Point2, view.SurfaceProjectionLineColor, view.SurfaceProjectionLineThickness);
+
+            surfaceProjectionLineCam2Point1.X = (int) (dartboardCenterPoint.X + Math.Cos(0.785398) * view.DartboardProjectionCoefficent * 170);
+            surfaceProjectionLineCam2Point1.Y = (int)(dartboardCenterPoint.Y + Math.Sin(0.785398) * view.DartboardProjectionCoefficent * 170);
+            surfaceProjectionLineCam2Point2.X = (int) (dartboardCenterPoint.X + Math.Cos(3.92699) * view.DartboardProjectionCoefficent * 170);
+            surfaceProjectionLineCam2Point2.Y = (int)(dartboardCenterPoint.Y + Math.Sin(3.92699) * view.DartboardProjectionCoefficent * 170);
+            drawman.DrawLine(dartboardProjectionFrame, surfaceProjectionLineCam2Point1, surfaceProjectionLineCam2Point2, view.SurfaceProjectionLineColor, view.SurfaceProjectionLineThickness);
+
+            drawman.SaveBitmapToImageBox(dartboardProjectionFrame, view.ImageBox3);
         }
 
         public void CalculateDartContours(Cam cam)
@@ -100,70 +157,94 @@ namespace DartboardRecognition
             CvInvoke.FindContours(cam.roiTrasholdFrame, cam.contours, cam.matHierarсhy, Emgu.CV.CvEnum.RetrType.External, Emgu.CV.CvEnum.ChainApproxMethod.ChainApproxNone);
             //CvInvoke.DrawContours(linedFrame, contours, -1, contourColor, contourThickness, offset: new System.Drawing.Point(0, (int)RoiPosYSlider.Value));
 
-            if (cam.contours.Size > 0)
+            if (cam.contours.Size <= 0)
             {
-                for (var i = 0; i < cam.contours.Size; i++)
+                return;
+            }
+
+            for (var i = 0; i < cam.contours.Size; i++)
+            {
+                // Filter contour
+                var arclength = CvInvoke.ArcLength(cam.contours[i], true);
+                if (arclength < cam.minContourArcLength)
                 {
-                    // Filter contour
-                    var arclength = CvInvoke.ArcLength(cam.contours[i], true);
-                    if (arclength < cam.minContourArcLength)
-                    {
-                        continue;
-                    }
-
-                    // Find moments and centerpoint
-                    var moments = CvInvoke.Moments(cam.contours[i]);
-                    var centerPoint = new Point((int) (moments.M10 / moments.M00), (int) cam.roiPosYSlider.Value + (int) (moments.M01 / moments.M00));
-                    drawman.DrawCircle(cam.linedFrame, centerPoint, 4, new Bgr(Color.Blue).MCvScalar, 3);
-
-                    // Find contour rectangle
-                    var rect = CvInvoke.MinAreaRect(cam.contours[i]);
-                    var box = CvInvoke.BoxPoints(rect);
-                    var point1 = new Point((int) box[0].X, (int) cam.roiPosYSlider.Value + (int) box[0].Y);
-                    var point2 = new Point((int) box[1].X, (int) cam.roiPosYSlider.Value + (int) box[1].Y);
-                    var point3 = new Point((int) box[2].X, (int) cam.roiPosYSlider.Value + (int) box[2].Y);
-                    var point4 = new Point((int) box[3].X, (int) cam.roiPosYSlider.Value + (int) box[3].Y);
-                    drawman.DrawLine(cam.linedFrame, point1, point2, view.ContourRectColor, view.ContourRectThickness);
-                    drawman.DrawLine(cam.linedFrame, point2, point3, view.ContourRectColor, view.ContourRectThickness);
-                    drawman.DrawLine(cam.linedFrame, point3, point4, view.ContourRectColor, view.ContourRectThickness);
-                    drawman.DrawLine(cam.linedFrame, point4, point1, view.ContourRectColor, view.ContourRectThickness);
-
-                    // Setup vertical contour middlepoints 
-                    Point middlePoint1;
-                    Point middlePoint2;
-                    if (FindDistance(point1, point2) < FindDistance(point4, point1))
-                    {
-                        middlePoint1 = FindMiddlePoint(point1, point2);
-                        middlePoint2 = FindMiddlePoint(point4, point3);
-                    }
-                    else
-                    {
-                        middlePoint1 = FindMiddlePoint(point4, point1);
-                        middlePoint2 = FindMiddlePoint(point3, point2);
-                    }
-
-                    FindSpikelineAndPoi(cam, middlePoint1, middlePoint2);
+                    continue;
                 }
+
+                CalculateMomentsAndCenterPoints(cam, i);
+
+                CalculateContourRectangle(cam, i);
+
+                SetupMiddlePoints();
+
+                CalculateSpikeLine(cam);
+
+                CalculatePoi(cam);
+
+                // Find distance between POI and centerpoint
+                poiToCenterDistance = FindDistance(pointOfImpact.Value, cam.surfaceCenterPoint1);
+
             }
         }
 
-        private void FindSpikelineAndPoi(Cam cam, Point middlePoint1, Point middlePoint2)
+        private void CalculateMomentsAndCenterPoints(Cam cam, int i)
         {
-            // Find spikeLine to surface
-            var spikePoint1 = middlePoint1;
-            var spikePoint2 = middlePoint2;
-            cam.spikeLineLength = cam.surfacePoint2.Y - middlePoint2.Y;
-            var angle = Math.Atan2(middlePoint1.Y - middlePoint2.Y, middlePoint1.X - middlePoint2.X);
-            spikePoint1.X = (int) (middlePoint2.X + Math.Cos(angle) * cam.spikeLineLength);
-            spikePoint1.Y = (int) (middlePoint2.Y + Math.Sin(angle) * cam.spikeLineLength);
-            drawman.DrawLine(cam.linedFrame, spikePoint1, spikePoint2, view.SpikeLineColor, view.SpikeLineThickness);
+            // Find moments and centerpoint
+            contourMoments = CvInvoke.Moments(cam.contours[i]);
+            contourCenterPoint = new Point((int) (contourMoments.M10 / contourMoments.M00), (int) cam.roiPosYSlider.Value + (int) (contourMoments.M01 / contourMoments.M00));
+            drawman.DrawCircle(cam.linedFrame, contourCenterPoint, 4, new Bgr(Color.Blue).MCvScalar, 3);
+        }
 
+        private void CalculateContourRectangle(Cam cam, int i)
+        {
+            // Find contour rectangle
+            var rect = CvInvoke.MinAreaRect(cam.contours[i]);
+            var box = CvInvoke.BoxPoints(rect);
+            contourBoxPoint1 = new Point((int) box[0].X, (int) cam.roiPosYSlider.Value + (int) box[0].Y);
+            contourBoxPoint2 = new Point((int) box[1].X, (int) cam.roiPosYSlider.Value + (int) box[1].Y);
+            contourBoxPoint3 = new Point((int) box[2].X, (int) cam.roiPosYSlider.Value + (int) box[2].Y);
+            contourBoxPoint4 = new Point((int) box[3].X, (int) cam.roiPosYSlider.Value + (int) box[3].Y);
+            drawman.DrawLine(cam.linedFrame, contourBoxPoint1, contourBoxPoint2, view.ContourRectColor, view.ContourRectThickness);
+            drawman.DrawLine(cam.linedFrame, contourBoxPoint2, contourBoxPoint3, view.ContourRectColor, view.ContourRectThickness);
+            drawman.DrawLine(cam.linedFrame, contourBoxPoint3, contourBoxPoint4, view.ContourRectColor, view.ContourRectThickness);
+            drawman.DrawLine(cam.linedFrame, contourBoxPoint4, contourBoxPoint1, view.ContourRectColor, view.ContourRectThickness);
+        }
+
+        private void SetupMiddlePoints()
+        {
+            // Setup vertical contour middlepoints 
+            if (FindDistance(contourBoxPoint1, contourBoxPoint2) < FindDistance(contourBoxPoint4, contourBoxPoint1))
+            {
+                contourBoxMiddlePoint1 = FindMiddlePoint(contourBoxPoint1, contourBoxPoint2);
+                contourBoxMiddlePoint2 = FindMiddlePoint(contourBoxPoint4, contourBoxPoint3);
+            }
+            else
+            {
+                contourBoxMiddlePoint1 = FindMiddlePoint(contourBoxPoint4, contourBoxPoint1);
+                contourBoxMiddlePoint2 = FindMiddlePoint(contourBoxPoint3, contourBoxPoint2);
+            }
+        }
+
+        private void CalculatePoi(Cam cam)
+        {
             // Find point of impact with surface
-            var pointOfImpact = FindIntersectionPoint(spikePoint1, spikePoint2, cam.surfacePoint1, cam.surfacePoint2);
+            pointOfImpact = FindIntersectionPoint(spikeLinePoint1, spikeLinePoint2, cam.surfacePoint1, cam.surfacePoint2);
             if (pointOfImpact != null)
             {
                 drawman.DrawCircle(cam.linedFrame, pointOfImpact.Value, view.PointOfImpactRadius, view.PointOfImpactColor, view.PointOfImpactThickness);
             }
+        }
+
+        private void CalculateSpikeLine(Cam cam)
+        {
+            // Find spikeLine to surface
+            spikeLinePoint1 = contourBoxMiddlePoint1;
+            spikeLinePoint2 = contourBoxMiddlePoint2;
+            cam.spikeLineLength = cam.surfacePoint2.Y - contourBoxMiddlePoint2.Y;
+            var angle = Math.Atan2(contourBoxMiddlePoint1.Y - contourBoxMiddlePoint2.Y, contourBoxMiddlePoint1.X - contourBoxMiddlePoint2.X);
+            spikeLinePoint1.X = (int) (contourBoxMiddlePoint2.X + Math.Cos(angle) * cam.spikeLineLength);
+            spikeLinePoint1.Y = (int) (contourBoxMiddlePoint2.Y + Math.Sin(angle) * cam.spikeLineLength);
+            drawman.DrawLine(cam.linedFrame, spikeLinePoint1, spikeLinePoint2, view.SpikeLineColor, view.SpikeLineThickness);
         }
     }
 }

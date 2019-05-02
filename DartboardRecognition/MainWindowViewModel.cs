@@ -20,7 +20,7 @@ namespace DartboardRecognition
         public MainWindowViewModel(MainWindow view)
         {
             this.view = view;
-            drawman = new Drawman(view);
+            drawman = new Drawman();
             measureman = new Measureman(view, drawman);
             dispatcher = Dispatcher.CurrentDispatcher;
             LoadSettings();
@@ -115,7 +115,7 @@ namespace DartboardRecognition
 
         private void CaptureImage(Cam cam)
         {
-            drawman.DrawDartboardProjection();
+            measureman.CalculateDartboardProjection();
 
             cam.originFrame = view.UseCamsRadioButton.IsChecked.Value
                                   ? cam.videoCapture.QueryFrame().ToImage<Bgr, byte>()
@@ -127,7 +127,7 @@ namespace DartboardRecognition
                     return;
                 }
 
-                measureman.CalculateLines(cam);
+                measureman.CalculateSetupLines(cam);
 
                 measureman.CalculateRoiRegion(cam);
 
