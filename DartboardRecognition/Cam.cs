@@ -81,9 +81,9 @@ namespace DartboardRecognition
     {
         public Cam1(MainWindow view)
         {
-            testCaptureThrow1 = new Image<Bgr, byte>(@"C:\Users\YellowFive\Dropbox\MY\[Darts recognition]\MyC#\TestPhoto\Ethalon images\cam1_1.png");
-            testCaptureThrow2 = new Image<Bgr, byte>(@"C:\Users\YellowFive\Dropbox\MY\[Darts recognition]\MyC#\TestPhoto\Ethalon images\cam1_2.png");
-            testCaptureThrow3 = new Image<Bgr, byte>(@"C:\Users\YellowFive\Dropbox\MY\[Darts recognition]\MyC#\TestPhoto\Ethalon images\cam1_3.png");
+            testCaptureThrow1 = new Image<Bgr, byte>(@"..\..\..\..\TestPhoto\Ethalon images\cam1_1.png");
+            testCaptureThrow2 = new Image<Bgr, byte>(@"..\..\..\..\TestPhoto\Ethalon images\cam1_2.png");
+            testCaptureThrow3 = new Image<Bgr, byte>(@"..\..\..\..\TestPhoto\Ethalon images\cam1_3.png");
             camIndexBox = view.Cam1IndexBox;
             tresholdMinSlider = view.Cam1TresholdMinSlider;
             tresholdMaxSlider = view.Cam1TresholdMaxSlider;
@@ -105,9 +105,9 @@ namespace DartboardRecognition
     {
         public Cam2(MainWindow view)
         {
-            testCaptureThrow1 = new Image<Bgr, byte>(@"C:\Users\YellowFive\Dropbox\MY\[Darts recognition]\MyC#\TestPhoto\Ethalon images\cam2_1.png");
-            testCaptureThrow2 = new Image<Bgr, byte>(@"C:\Users\YellowFive\Dropbox\MY\[Darts recognition]\MyC#\TestPhoto\Ethalon images\cam2_2.png");
-            testCaptureThrow3 = new Image<Bgr, byte>(@"C:\Users\YellowFive\Dropbox\MY\[Darts recognition]\MyC#\TestPhoto\Ethalon images\cam2_3.png");
+            testCaptureThrow1 = new Image<Bgr, byte>(@"..\..\..\..\TestPhoto\Ethalon images\cam2_1.png");
+            testCaptureThrow2 = new Image<Bgr, byte>(@"..\..\..\..\TestPhoto\Ethalon images\cam2_2.png");
+            testCaptureThrow3 = new Image<Bgr, byte>(@"..\..\..\..\TestPhoto\Ethalon images\cam2_3.png");
             camIndexBox = view.Cam2IndexBox;
             tresholdMinSlider = view.Cam2TresholdMinSlider;
             tresholdMaxSlider = view.Cam2TresholdMaxSlider;
