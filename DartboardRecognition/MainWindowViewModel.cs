@@ -31,6 +31,8 @@ namespace DartboardRecognition
             drawman = new Drawman();
             measureman = new Measureman(view, drawman);
 
+            measureman.CalculateDartboardProjection();
+
             if (view.Throw1RadioButton.IsChecked.Value)
             {
                 cam1.SetProcessingCapture(1);
@@ -134,8 +136,6 @@ namespace DartboardRecognition
                 {
                     return;
                 }
-
-                measureman.CalculateDartboardProjection();
 
                 measureman.CalculateSetupLines(cam);
 
