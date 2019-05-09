@@ -25,28 +25,26 @@ namespace DartboardRecognition
         private Point contourBoxMiddlePoint2;
         private Point spikeLinePoint1;
         private Point spikeLinePoint2;
-        private Point dartboardCenterPoint;
-        private Point surfaceProjectionLineCam1Point1;
-        private Point surfaceProjectionLineCam1Point2;
-        private Point surfaceProjectionLineCam2Point1;
-        private Point surfaceProjectionLineCam2Point2;
-        private Point? pointOfImpact;
+        private Point projectionCenterPoint;
+        private Point projectionLineCam1Point1;
+        private Point projectionLineCam1Point2;
+        private Point projectionLineCam2Point1;
+        private Point projectionLineCam2Point2;
+        private Point? camPoi;
         private Image<Bgr, byte> dartboardProjectionFrame;
-        private int surfaceProjectionLineCam1Bias = 112;
-        private int surfaceProjectionLineCam2Bias = 112;
+        private int projectionLineCam1Bias = 0;
+        private int surfaceProjectionLineCam2Bias = 0;
         private Point cam1SetupPoint;
         private Point cam2SetupPoint;
-
-
 
         public Measureman(MainWindow view, Drawman drawman)
         {
             this.view = view;
             this.drawman = drawman;
             dartboardProjectionFrame = new Image<Bgr, byte>(view.DartboardProjectionFrameWidth, view.DartboardProjectionFrameHeight);
-            dartboardCenterPoint = new Point(dartboardProjectionFrame.Width / 2, dartboardProjectionFrame.Height / 2);
-            cam1SetupPoint = new Point(-700, -700);
-            cam2SetupPoint = new Point(dartboardProjectionFrame.Cols + 700, -700);
+            projectionCenterPoint = new Point(dartboardProjectionFrame.Width / 2, dartboardProjectionFrame.Height / 2);
+            cam1SetupPoint = new Point(0, 0);
+            cam2SetupPoint = new Point(dartboardProjectionFrame.Cols , 0);
         }
 
         private Point FindMiddlePoint(Point point1, Point point2)
@@ -55,13 +53,49 @@ namespace DartboardRecognition
             var mpY = (point1.Y + point2.Y) / 2;
             return new Point(mpX, mpY);
         }
+        private Point? FindLineCircleIntersectionPoint(
+            float cPointX, float cPointY, float radius,
+            Point linePoint1, Point linePoint2)
+        {
+            float dx, dy, A, B, C, det, t;
 
+            dx = linePoint2.X - linePoint1.X;
+            dy = linePoint2.Y - linePoint1.Y;
+
+            A = dx * dx + dy * dy;
+            B = 2 * (dx * (linePoint1.X - cPointX) + dy * (linePoint1.Y - cPointY));
+            C = (linePoint1.X - cPointX) * (linePoint1.X - cPointX) +
+                (linePoint1.Y - cPointY) * (linePoint1.Y - cPointY) -
+                radius * radius;
+
+            det = B * B - 4 * A * C;
+            if ((A <= 0.0000001) || (det < 0))
+            {
+                // No real solutions.
+                return null;
+            }
+            else if (det == 0)
+            {
+                // One solution.
+                t = -B / (2 * A);
+                return new Point((int)(linePoint1.X + t * dx), (int)(linePoint1.Y + t * dy));
+            }
+            else
+            {
+                // Two solutions.
+                t = (float)((-B - Math.Sqrt(det)) / (2 * A));
+                //t = (float)((-B - Math.Sqrt(det)) / (2 * A));
+                //intersection2 =
+                //    new PointF(linePoint1.X + t * dx, linePoint1.Y + t * dy);
+                return new Point((int)(linePoint1.X + t * dx), (int)(linePoint1.Y + t * dy));
+            }
+        }
         private int FindDistance(Point point1, Point point2)
         {
             return (int) Math.Sqrt(Math.Pow(point1.X - point2.X, 2) + Math.Pow(point1.Y - point2.Y, 2));
         }
 
-        private Point? FindIntersectionPoint(Point line1Point1, Point line1Point2, Point line2Point1,
+        private Point? FindLinesIntersectionPoint(Point line1Point1, Point line1Point2, Point line2Point1,
                                             Point line2Point2)
         {
             float a1 = line1Point2.Y - line1Point1.Y;
@@ -145,39 +179,39 @@ namespace DartboardRecognition
         public void CalculateDartboardProjection()
         {
             // Draw dartboard projection
-            drawman.DrawCircle(dartboardProjectionFrame, dartboardCenterPoint, view.DartboardProjectionCoefficent * 7, view.DartboardProjectionColor, view.DartboardProjectionThickness);
-            drawman.DrawCircle(dartboardProjectionFrame, dartboardCenterPoint, view.DartboardProjectionCoefficent * 17, view.DartboardProjectionColor, view.DartboardProjectionThickness);
-            drawman.DrawCircle(dartboardProjectionFrame, dartboardCenterPoint, view.DartboardProjectionCoefficent * 95, view.DartboardProjectionColor, view.DartboardProjectionThickness);
-            drawman.DrawCircle(dartboardProjectionFrame, dartboardCenterPoint, view.DartboardProjectionCoefficent * 105, view.DartboardProjectionColor, view.DartboardProjectionThickness);
-            drawman.DrawCircle(dartboardProjectionFrame, dartboardCenterPoint, view.DartboardProjectionCoefficent * 160, view.DartboardProjectionColor, view.DartboardProjectionThickness);
-            drawman.DrawCircle(dartboardProjectionFrame, dartboardCenterPoint, view.DartboardProjectionCoefficent * 170, view.DartboardProjectionColor, view.DartboardProjectionThickness);
+            drawman.DrawCircle(dartboardProjectionFrame, projectionCenterPoint, view.DartboardProjectionCoefficent * 7, view.DartboardProjectionColor, view.DartboardProjectionThickness);
+            drawman.DrawCircle(dartboardProjectionFrame, projectionCenterPoint, view.DartboardProjectionCoefficent * 17, view.DartboardProjectionColor, view.DartboardProjectionThickness);
+            drawman.DrawCircle(dartboardProjectionFrame, projectionCenterPoint, view.DartboardProjectionCoefficent * 95, view.DartboardProjectionColor, view.DartboardProjectionThickness);
+            drawman.DrawCircle(dartboardProjectionFrame, projectionCenterPoint, view.DartboardProjectionCoefficent * 105, view.DartboardProjectionColor, view.DartboardProjectionThickness);
+            drawman.DrawCircle(dartboardProjectionFrame, projectionCenterPoint, view.DartboardProjectionCoefficent * 160, view.DartboardProjectionColor, view.DartboardProjectionThickness);
+            drawman.DrawCircle(dartboardProjectionFrame, projectionCenterPoint, view.DartboardProjectionCoefficent * 170, view.DartboardProjectionColor, view.DartboardProjectionThickness);
             for (var i = 0; i <= 360; i += 9)
             {
                 var segmentPoint1 = new Point
                                     {
-                                        X = (int)(dartboardCenterPoint.X + Math.Cos(0.314159 * i - 0.15708) * view.DartboardProjectionCoefficent * 170),
-                                        Y = (int)(dartboardCenterPoint.Y + Math.Sin(0.314159 * i - 0.15708) * view.DartboardProjectionCoefficent * 170)
+                                        X = (int)(projectionCenterPoint.X + Math.Cos(0.314159 * i - 0.15708) * view.DartboardProjectionCoefficent * 170),
+                                        Y = (int)(projectionCenterPoint.Y + Math.Sin(0.314159 * i - 0.15708) * view.DartboardProjectionCoefficent * 170)
                                     };
                 var segmentPoint2 = new Point
                                     {
-                                        X = (int)(dartboardCenterPoint.X + Math.Cos(0.314159 * i - 0.15708) * view.DartboardProjectionCoefficent * 17),
-                                        Y = (int)(dartboardCenterPoint.Y + Math.Sin(0.314159 * i - 0.15708) * view.DartboardProjectionCoefficent * 17)
+                                        X = (int)(projectionCenterPoint.X + Math.Cos(0.314159 * i - 0.15708) * view.DartboardProjectionCoefficent * 17),
+                                        Y = (int)(projectionCenterPoint.Y + Math.Sin(0.314159 * i - 0.15708) * view.DartboardProjectionCoefficent * 17)
                                     };
                 drawman.DrawLine(dartboardProjectionFrame, segmentPoint1, segmentPoint2, view.DartboardProjectionColor, view.DartboardProjectionThickness);
             }
 
             // Draw surface projection lines
-            surfaceProjectionLineCam1Point1.X = (int) (dartboardCenterPoint.X + Math.Cos(-0.785398) * view.DartboardProjectionCoefficent * 170)- view.DartboardProjectionCoefficent * surfaceProjectionLineCam1Bias;
-            surfaceProjectionLineCam1Point1.Y = (int)(dartboardCenterPoint.Y + Math.Sin(-0.785398) * view.DartboardProjectionCoefficent * 170) - view.DartboardProjectionCoefficent * surfaceProjectionLineCam1Bias;
-            surfaceProjectionLineCam1Point2.X = (int) (dartboardCenterPoint.X + Math.Cos(-3.92699) * view.DartboardProjectionCoefficent * 170) - view.DartboardProjectionCoefficent * surfaceProjectionLineCam1Bias;
-            surfaceProjectionLineCam1Point2.Y = (int)(dartboardCenterPoint.Y + Math.Sin(-3.92699) * view.DartboardProjectionCoefficent * 170) - view.DartboardProjectionCoefficent * surfaceProjectionLineCam1Bias;
-            drawman.DrawLine(dartboardProjectionFrame, surfaceProjectionLineCam1Point1, surfaceProjectionLineCam1Point2, view.SurfaceProjectionLineColor, view.SurfaceProjectionLineThickness);
+            projectionLineCam1Point1.X = (int) (projectionCenterPoint.X + Math.Cos(-0.785398) * view.DartboardProjectionCoefficent * 170)- view.DartboardProjectionCoefficent * projectionLineCam1Bias;
+            projectionLineCam1Point1.Y = (int)(projectionCenterPoint.Y + Math.Sin(-0.785398) * view.DartboardProjectionCoefficent * 170) - view.DartboardProjectionCoefficent * projectionLineCam1Bias;
+            projectionLineCam1Point2.X = (int) (projectionCenterPoint.X + Math.Cos(2.35619) * view.DartboardProjectionCoefficent * 170) - view.DartboardProjectionCoefficent * projectionLineCam1Bias;
+            projectionLineCam1Point2.Y = (int)(projectionCenterPoint.Y + Math.Sin(2.35619) * view.DartboardProjectionCoefficent * 170) - view.DartboardProjectionCoefficent * projectionLineCam1Bias;
+            drawman.DrawLine(dartboardProjectionFrame, projectionLineCam1Point1, projectionLineCam1Point2, view.SurfaceProjectionLineColor, view.SurfaceProjectionLineThickness);
 
-            surfaceProjectionLineCam2Point1.X = (int) (dartboardCenterPoint.X + Math.Cos(0.785398) * view.DartboardProjectionCoefficent * 170) + view.DartboardProjectionCoefficent * surfaceProjectionLineCam2Bias;
-            surfaceProjectionLineCam2Point1.Y = (int)(dartboardCenterPoint.Y + Math.Sin(0.785398) * view.DartboardProjectionCoefficent * 170) - view.DartboardProjectionCoefficent * surfaceProjectionLineCam2Bias;
-            surfaceProjectionLineCam2Point2.X = (int) (dartboardCenterPoint.X + Math.Cos(3.92699) * view.DartboardProjectionCoefficent * 170) + view.DartboardProjectionCoefficent * surfaceProjectionLineCam2Bias;
-            surfaceProjectionLineCam2Point2.Y = (int)(dartboardCenterPoint.Y + Math.Sin(3.92699) * view.DartboardProjectionCoefficent * 170) - view.DartboardProjectionCoefficent * surfaceProjectionLineCam2Bias;
-            drawman.DrawLine(dartboardProjectionFrame, surfaceProjectionLineCam2Point1, surfaceProjectionLineCam2Point2, view.SurfaceProjectionLineColor, view.SurfaceProjectionLineThickness);
+            projectionLineCam2Point1.X = (int) (projectionCenterPoint.X + Math.Cos(0.785398) * view.DartboardProjectionCoefficent * 170) + view.DartboardProjectionCoefficent * surfaceProjectionLineCam2Bias;
+            projectionLineCam2Point1.Y = (int)(projectionCenterPoint.Y + Math.Sin(0.785398) * view.DartboardProjectionCoefficent * 170) - view.DartboardProjectionCoefficent * surfaceProjectionLineCam2Bias;
+            projectionLineCam2Point2.X = (int) (projectionCenterPoint.X + Math.Cos(3.92699) * view.DartboardProjectionCoefficent * 170) + view.DartboardProjectionCoefficent * surfaceProjectionLineCam2Bias;
+            projectionLineCam2Point2.Y = (int)(projectionCenterPoint.Y + Math.Sin(3.92699) * view.DartboardProjectionCoefficent * 170) - view.DartboardProjectionCoefficent * surfaceProjectionLineCam2Bias;
+            drawman.DrawLine(dartboardProjectionFrame, projectionLineCam2Point1, projectionLineCam2Point2, view.SurfaceProjectionLineColor, view.SurfaceProjectionLineThickness);
 
             drawman.SaveBitmapToImageBox(dartboardProjectionFrame, view.ImageBox3);
         }
@@ -227,11 +261,11 @@ namespace DartboardRecognition
 
                 // Translate cam surface POI to dartboard projection
                 var surfaceLeftToRightDistance = FindDistance(cam.surfaceLeftPoint1, cam.surfaceRightPoint1);
-                var projectionLeftToRightDistance = FindDistance(surfaceProjectionLineCam1Point1, surfaceProjectionLineCam1Point2);
-                var surfaceProjectionCoeff = (double) projectionLeftToRightDistance / surfaceLeftToRightDistance;
-                var surfacePoiToCenterDistance = FindDistance(cam.surfaceCenterPoint1, pointOfImpact.GetValueOrDefault());
-                var surfaceLeftToPoiDistance = FindDistance(cam.surfaceLeftPoint1, pointOfImpact.GetValueOrDefault());
-                var surfaceRightToPoiDistance = FindDistance(cam.surfaceRightPoint1, pointOfImpact.GetValueOrDefault());
+                var projectionLeftToRightDistance = FindDistance(projectionLineCam1Point1, projectionLineCam1Point2);
+                var surfaceProjectionCoeff = (double)projectionLeftToRightDistance / surfaceLeftToRightDistance;
+                var surfacePoiToCenterDistance = FindDistance(cam.surfaceCenterPoint1, camPoi.GetValueOrDefault());
+                var surfaceLeftToPoiDistance = FindDistance(cam.surfaceLeftPoint1, camPoi.GetValueOrDefault());
+                var surfaceRightToPoiDistance = FindDistance(cam.surfaceRightPoint1, camPoi.GetValueOrDefault());
                 var projectionPoi = new Point();
                 var cam1Cos1 = Math.Cos(-0.785398);
                 var cam1Sin1 = Math.Sin(-0.785398);
@@ -241,12 +275,11 @@ namespace DartboardRecognition
                 var cam2Sin1 = Math.Sin(0.785398);
                 var cam2Cos2 = Math.Cos(3.92699);
                 var cam2Sin2 = Math.Sin(3.92699);
-                double sin1 = 0;
-                double cos1 = 0;
-                double sin2 = 0;
-                double cos2 = 0;
+                double cos1;
+                double sin1;
+                double cos2;
+                double sin2;
                 var surfaceProjectionMiddlePoint = new Point();
-
 
                 if (cam is Cam1)
                 {
@@ -254,7 +287,7 @@ namespace DartboardRecognition
                     cos1 = cam1Cos1;
                     sin2 = cam1Sin2;
                     cos2 = cam1Cos2;
-                    surfaceProjectionMiddlePoint = FindMiddlePoint(surfaceProjectionLineCam1Point1, surfaceProjectionLineCam1Point2);
+                    surfaceProjectionMiddlePoint = FindMiddlePoint(projectionLineCam1Point1, projectionLineCam1Point2);
                 }
                 else
                 {
@@ -262,7 +295,7 @@ namespace DartboardRecognition
                     cos1 = cam2Cos1;
                     sin2 = cam2Sin2;
                     cos2 = cam2Cos2;
-                    surfaceProjectionMiddlePoint = FindMiddlePoint(surfaceProjectionLineCam2Point1, surfaceProjectionLineCam2Point2);
+                    surfaceProjectionMiddlePoint = FindMiddlePoint(projectionLineCam2Point1, projectionLineCam2Point2);
                 }
 
                 if (surfaceLeftToPoiDistance < surfaceRightToPoiDistance)
@@ -322,10 +355,10 @@ namespace DartboardRecognition
         private void CalculatePoi(Cam cam)
         {
             // Find point of impact with surface
-            pointOfImpact = FindIntersectionPoint(spikeLinePoint1, spikeLinePoint2, cam.surfacePoint1, cam.surfacePoint2);
-            if (pointOfImpact != null)
+            camPoi = FindLinesIntersectionPoint(spikeLinePoint1, spikeLinePoint2, cam.surfacePoint1, cam.surfacePoint2);
+            if (camPoi != null)
             {
-                drawman.DrawCircle(cam.linedFrame, pointOfImpact.Value, view.PointOfImpactRadius, view.PointOfImpactColor, view.PointOfImpactThickness);
+                drawman.DrawCircle(cam.linedFrame, camPoi.Value, view.PointOfImpactRadius, view.PointOfImpactColor, view.PointOfImpactThickness);
             }
         }
 
