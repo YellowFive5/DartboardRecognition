@@ -30,7 +30,7 @@ namespace DartboardRecognition
             CvInvoke.Circle(image, centerpoint, radius, color, thickness);
         }
 
-        public void SaveBitmapToImageBox(IImage image, Image imageBox)
+        public void SaveToImageBox(IImage image, Image imageBox)
         {
             using (var stream = new MemoryStream())
             {

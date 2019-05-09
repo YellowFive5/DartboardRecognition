@@ -145,8 +145,8 @@ namespace DartboardRecognition
 
                 measureman.CalculateDartContours(cam);
 
-                drawman.SaveBitmapToImageBox(cam.linedFrame, cam.imageBox);
-                drawman.SaveBitmapToImageBox(cam.roiTrasholdFrame, cam.imageBoxRoi);
+                drawman.SaveToImageBox(cam.linedFrame, cam.imageBox);
+                drawman.SaveToImageBox(cam.roiTrasholdFrame, cam.imageBoxRoi);
             }
 
         }

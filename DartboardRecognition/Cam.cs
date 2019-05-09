@@ -33,7 +33,6 @@ namespace DartboardRecognition
         public Point surfaceRightPoint1;
         public Point surfaceRightPoint2;
         public int spikeLineLength;
-        public int minContourArcLength = 250;
         public readonly VectorOfVectorOfPoint contours;
         public readonly Mat matHierarсhy;
         public Image imageBox;
@@ -99,6 +98,11 @@ namespace DartboardRecognition
             surfaceRightSlider = view.Cam1SurfaceRightSlider;
             videoCapture = new VideoCapture(int.Parse(camIndexBox.Text));
         }
+
+        public override string ToString()
+        {
+            return "Cam1";
+        }
     }
 
     public class Cam2 : Cam
@@ -122,6 +126,11 @@ namespace DartboardRecognition
             surfaceLeftSlider = view.Cam2SurfaceLeftSlider;
             surfaceRightSlider = view.Cam2SurfaceRightSlider;
             videoCapture = new VideoCapture(int.Parse(camIndexBox.Text));
+        }
+
+        public override string ToString()
+        {
+            return "Cam2";
         }
     }
 }
