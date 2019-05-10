@@ -126,7 +126,6 @@ namespace DartboardRecognition
 
         private void CaptureImage(Cam cam)
         {
-
             cam.originFrame = view.UseCamsRadioButton.IsChecked.Value
                                   ? cam.videoCapture.QueryFrame().ToImage<Bgr, byte>()
                                   : cam.processingCapture.Clone();
@@ -145,7 +144,6 @@ namespace DartboardRecognition
                 drawman.SaveToImageBox(cam.linedFrame, cam.imageBox);
                 drawman.SaveToImageBox(cam.roiTrasholdFrame, cam.imageBoxRoi);
             }
-
         }
     }
 }

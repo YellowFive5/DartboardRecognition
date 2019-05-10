@@ -15,6 +15,7 @@ namespace DartboardRecognition
     {
         private MainWindow view;
         private Drawman drawman;
+        private Storage storage;
         private Rectangle roiRectangle;
         private Moments contourMoments;
         private Point contourCenterPoint;
@@ -39,10 +40,6 @@ namespace DartboardRecognition
         private Point cam2SetupPoint;
         private int minContourArcLength = 250;
         private int maxContourArcLength = 350;
-        private Queue<Point> cam1RaysCollection = new Queue<Point>();
-        private Queue<Point> cam2RaysCollection = new Queue<Point>();
-        private Queue<Point> poiCollection = new Queue<Point>();
-        private Queue<Throw> throwsCollection = new Queue<Throw>();
         private Cam workingCam;
 
 
@@ -50,6 +47,7 @@ namespace DartboardRecognition
         {
             this.view = view;
             this.drawman = drawman;
+            storage = new Storage();
         }
 
         public void SetupWorkingCam(Cam cam)
@@ -214,22 +212,16 @@ namespace DartboardRecognition
             drawman.SaveToImageBox(dartboardProjectionFrame, view.ImageBox3);
         }
 
-        private void CollectRay(Point rayPoint2)
+        private void CollectRay(Point rayPoint)
         {
             // Save rays to collection
             if (workingCam is Cam1)
             {
-                if (!cam1RaysCollection.Contains(rayPoint2))
-                {
-                    cam1RaysCollection.Enqueue(rayPoint2);
-                }
+                storage.SaveCam1Ray(rayPoint);
             }
             else
             {
-                if (!cam2RaysCollection.Contains(rayPoint2))
-                {
-                    cam2RaysCollection.Enqueue(rayPoint2);
-                }
+                storage.SaveCam2Ray(rayPoint);
             }
         }
 
@@ -309,30 +301,30 @@ namespace DartboardRecognition
         private void FindProjectionPois()
         {
             // Find lines intersection to find projection POI and save to collection
-            if (cam1RaysCollection.Count != cam2RaysCollection.Count ||
-                cam1RaysCollection.Count == 0 ||
-                cam2RaysCollection.Count == 0)
+            if (storage.Cam1RaysCollection.Count != storage.Cam2RaysCollection.Count ||
+                storage.Cam1RaysCollection.Count == 0 ||
+                storage.Cam2RaysCollection.Count == 0)
             {
-                if (cam1RaysCollection.Count == 0 && cam2RaysCollection.Count == 0)
+                if (storage.Cam1RaysCollection.Count == 0 && storage.Cam2RaysCollection.Count == 0)
                 {
-                    poiCollection.Clear();
+                    storage.ClearPoiCollection();
                 }
 
                 return;
             }
 
-            var counter = cam2RaysCollection.Count;
+            var counter = storage.Cam2RaysCollection.Count;
             for (var i = 0; i < counter; i++)
             {
                 var poi = FindLinesIntersection(cam1SetupPoint,
-                                                cam1RaysCollection.Dequeue(),
+                                                storage.Cam1RaysCollection.Dequeue(),
                                                 cam2SetupPoint,
-                                                cam2RaysCollection.Dequeue());
-                if (!poiCollection.Contains(poi))
+                                                storage.Cam2RaysCollection.Dequeue());
+                if (!storage.PoiCollection.Contains(poi))
                 {
-                    poiCollection.Enqueue(poi);
+                    storage.SavePoi(poi);
                     var anotherThrow = PrepareThrowData(poi);
-                    throwsCollection.Enqueue(anotherThrow);
+                    storage.SaveThrow(anotherThrow);
                     drawman.DrawCircle(dartboardProjectionFrame, poi, 6, new Bgr(Color.Magenta).MCvScalar, 6);
                 }
             }
@@ -534,7 +526,6 @@ namespace DartboardRecognition
                 var c2 = -m2 * x3 + y3;
                 x = (c1 - c2) / (m2 - m1);
                 y = c2 + m2 * x;
-
             }
 
             return new Point {X = (int) x, Y = (int) y};
