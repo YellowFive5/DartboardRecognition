@@ -40,9 +40,9 @@ namespace DartboardRecognition
         private Point cam2SetupPoint;
         private int minContourArcLength = 250;
         private int maxContourArcLength = 350;
-        private Dictionary<string, Point> cam1RaysPoints = new Dictionary<string, Point>();
-        private Dictionary<string, Point> cam2RaysPoints = new Dictionary<string, Point>();
-        private Dictionary<string, Point> poiPoints = new Dictionary<string, Point>();
+        private Queue<Point> cam1RaysCollection = new Queue<Point>();
+        private Queue<Point> cam2RaysCollection = new Queue<Point>();
+        private Queue<Point> poiCollection = new Queue<Point>();
 
         public Measureman(MainWindow view, Drawman drawman)
         {
@@ -268,77 +268,55 @@ namespace DartboardRecognition
                 // Save rays to collection
                 if (cam is Cam1)
                 {
-                    if (!cam1RaysPoints.ContainsKey($"{cam}_contour_{rayPoint2.X}x{rayPoint2.Y}"))
+                    if (!cam1RaysCollection.Contains(rayPoint2))
                     {
-                        cam1RaysPoints.Add($"{cam}_contour_{rayPoint2.X}x{rayPoint2.Y}", rayPoint2);
+                        cam1RaysCollection.Enqueue(rayPoint2);
                     }
                 }
                 else
                 {
-                    if (!cam2RaysPoints.ContainsKey($"{cam}_contour_{rayPoint2.X}x{rayPoint2.Y}"))
+                    if (!cam2RaysCollection.Contains(rayPoint2))
                     {
-                        cam2RaysPoints.Add($"{cam}_contour_{rayPoint2.X}x{rayPoint2.Y}", rayPoint2);
+                        cam2RaysCollection.Enqueue(rayPoint2);
                     }
                 }
             }
 
-            FindProjectionPoi();
+            FindProjectionPois();
 
             drawman.SaveToImageBox(dartboardProjectionFrame, view.ImageBox3);
         }
 
-        private void FindProjectionPoi()
+        private void FindProjectionPois()
         {
             // Find lines intersection to find projection POI and save to collection
-            var poi1 = new Point();
-            var poi2 = new Point();
-            var poi3 = new Point();
-
-            if (cam1RaysPoints.Count != 0 &&
-                cam2RaysPoints.Count != 0)
+            if (cam1RaysCollection.Count != cam2RaysCollection.Count ||
+                cam1RaysCollection.Count == 0 ||
+                cam2RaysCollection.Count == 0)
             {
-                if (cam1RaysPoints.Count == 1 && cam2RaysPoints.Count == 1)
+                if (cam1RaysCollection.Count == 0 && cam2RaysCollection.Count == 0)
                 {
-                    if (!poiPoints.ContainsKey("Throw_1"))
-                    {
-                        poi1 = FindLinesIntersection(cam1SetupPoint,
-                                                          cam1RaysPoints.ElementAt(0).Value,
-                                                          cam2SetupPoint,
-                                                          cam2RaysPoints.ElementAt(0).Value);
-                        FindPoiSector(poi1);
-                        poiPoints.Add("Throw_1", poi1);
-                        drawman.DrawCircle(dartboardProjectionFrame, poi1, 6, new Bgr(Color.Magenta).MCvScalar, 6);
-                    }
+                    poiCollection.Clear();
                 }
 
-                if (cam1RaysPoints.Count == 2 && cam2RaysPoints.Count == 2)
-                {
-                    if (!poiPoints.ContainsKey("Throw_2"))
-                    {
-                        poi2 = FindLinesIntersection(cam1SetupPoint,
-                                                          cam1RaysPoints.ElementAt(1).Value,
-                                                          cam2SetupPoint,
-                                                          cam2RaysPoints.ElementAt(1).Value);
-                        FindPoiSector(poi2);
-                        poiPoints.Add("Throw_2", poi2);
-                        drawman.DrawCircle(dartboardProjectionFrame, poi2, 6, new Bgr(Color.Magenta).MCvScalar, 6);
-                    }
-                }
+                return;
+            }
 
-                if (cam1RaysPoints.Count == 3 && cam2RaysPoints.Count == 3)
+            var counter = cam2RaysCollection.Count;
+            for (var i = 0; i < counter; i++)
+            {
+                var poi = FindLinesIntersection(cam1SetupPoint,
+                                                cam1RaysCollection.Dequeue(),
+                                                cam2SetupPoint,
+                                                cam2RaysCollection.Dequeue());
+                if (!poiCollection.Contains(poi))
                 {
-                    if (!poiPoints.ContainsKey("Throw_3"))
-                    {
-                        poi3 = FindLinesIntersection(cam1SetupPoint,
-                                                          cam1RaysPoints.ElementAt(2).Value,
-                                                          cam2SetupPoint,
-                                                          cam2RaysPoints.ElementAt(2).Value);
-                        FindPoiSector(poi3);
-                        poiPoints.Add("Throw_3", poi3);
-                        drawman.DrawCircle(dartboardProjectionFrame, poi3, 6, new Bgr(Color.Magenta).MCvScalar, 6);
-                    }
+                    poiCollection.Enqueue(poi);
+                    drawman.DrawCircle(dartboardProjectionFrame, poi, 6, new Bgr(Color.Magenta).MCvScalar, 6);
                 }
             }
+
+            //FindPoiSector(poi);
         }
 
         private void FindPoiSector(Point poi)
