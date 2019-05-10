@@ -137,14 +137,11 @@ namespace DartboardRecognition
                     return;
                 }
 
-                measureman.CalculateSetupLines(cam);
-
-                measureman.CalculateRoiRegion(cam);
-
+                measureman.SetupWorkingCam(cam);
+                measureman.CalculateSetupLines();
+                measureman.CalculateRoiRegion();
                 drawman.TresholdRoiRegion(cam);
-
-                measureman.CalculateDartContours(cam);
-
+                measureman.CalculateDartContours();
                 drawman.SaveToImageBox(cam.linedFrame, cam.imageBox);
                 drawman.SaveToImageBox(cam.roiTrasholdFrame, cam.imageBoxRoi);
             }

@@ -98,11 +98,6 @@ namespace DartboardRecognition
             surfaceRightSlider = view.Cam1SurfaceRightSlider;
             videoCapture = new VideoCapture(int.Parse(camIndexBox.Text));
         }
-
-        public override string ToString()
-        {
-            return "Cam1";
-        }
     }
 
     public class Cam2 : Cam
@@ -126,11 +121,6 @@ namespace DartboardRecognition
             surfaceLeftSlider = view.Cam2SurfaceLeftSlider;
             surfaceRightSlider = view.Cam2SurfaceRightSlider;
             videoCapture = new VideoCapture(int.Parse(camIndexBox.Text));
-        }
-
-        public override string ToString()
-        {
-            return "Cam2";
         }
     }
 }
