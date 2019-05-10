@@ -48,10 +48,6 @@ namespace DartboardRecognition
         {
             this.view = view;
             this.drawman = drawman;
-            dartboardProjectionFrame = new Image<Bgr, byte>(view.DartboardProjectionFrameWidth, view.DartboardProjectionFrameHeight);
-            projectionCenterPoint = new Point(dartboardProjectionFrame.Width / 2, dartboardProjectionFrame.Height / 2);
-            cam1SetupPoint = new Point(0, 0);
-            cam2SetupPoint = new Point(dartboardProjectionFrame.Cols, 0);
         }
 
         public void CalculateSetupLines(Cam cam)
@@ -114,6 +110,11 @@ namespace DartboardRecognition
         public void CalculateDartboardProjection()
         {
             // Draw dartboard projection
+            dartboardProjectionFrame = new Image<Bgr, byte>(view.DartboardProjectionFrameWidth, view.DartboardProjectionFrameHeight);
+            projectionCenterPoint = new Point(dartboardProjectionFrame.Width / 2, dartboardProjectionFrame.Height / 2);
+            cam1SetupPoint = new Point(0, 0);
+            cam2SetupPoint = new Point(dartboardProjectionFrame.Cols, 0);
+
             drawman.DrawCircle(dartboardProjectionFrame, projectionCenterPoint, view.DartboardProjectionCoefficent * 7, view.DartboardProjectionColor, view.DartboardProjectionThickness);
             drawman.DrawCircle(dartboardProjectionFrame, projectionCenterPoint, view.DartboardProjectionCoefficent * 17, view.DartboardProjectionColor, view.DartboardProjectionThickness);
             drawman.DrawCircle(dartboardProjectionFrame, projectionCenterPoint, view.DartboardProjectionCoefficent * 95, view.DartboardProjectionColor, view.DartboardProjectionThickness);
