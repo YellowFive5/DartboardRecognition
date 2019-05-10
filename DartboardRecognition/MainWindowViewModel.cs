@@ -141,6 +141,7 @@ namespace DartboardRecognition
                 measureman.CalculateRoiRegion();
                 drawman.TresholdRoiRegion(cam);
                 measureman.CalculateDartContours();
+
                 drawman.SaveToImageBox(cam.linedFrame, cam.imageBox);
                 drawman.SaveToImageBox(cam.roiTrasholdFrame, cam.imageBoxRoi);
             }

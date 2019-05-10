@@ -14,26 +14,33 @@ namespace DartboardRecognition
     public partial class MainWindow
     {
         private MainWindowViewModel viewModel;
-        public Bgr SurfaceLineColor { get; } = new Bgr(System.Drawing.Color.Red);
-        public int SurfaceLineThickness { get; } = 5;
-        public Bgr RoiRectColor { get; } = new Bgr(System.Drawing.Color.LawnGreen);
-        public int RoiRectThickness { get; } = 5;
-        public MCvScalar ContourColor { get; } = new Bgr(System.Drawing.Color.Violet).MCvScalar;
-        public int CountourThickness { get; } = 2;
-        public MCvScalar ContourRectColor { get; } = new Bgr(System.Drawing.Color.Blue).MCvScalar;
-        public int ContourRectThickness { get; } = 5;
-        public MCvScalar SpikeLineColor { get; } = new Bgr(System.Drawing.Color.White).MCvScalar;
-        public int SpikeLineThickness { get; } = 4;
-        public MCvScalar PointOfImpactColor { get; } = new Bgr(System.Drawing.Color.Yellow).MCvScalar;
-        public int PointOfImpactRadius { get; } = 6;
-        public int PointOfImpactThickness { get; } = 6;
-        public MCvScalar DartboardProjectionColor { get; } = new Bgr(System.Drawing.Color.White).MCvScalar;
-        public int DartboardProjectionFrameHeight { get; } = 1200;
-        public int DartboardProjectionFrameWidth { get; } = 1200;
-        public int DartboardProjectionCoefficent { get; } = 3;
-        public int DartboardProjectionThickness { get; } = 2;
-        public MCvScalar SurfaceProjectionLineColor { get; } = new Bgr(System.Drawing.Color.Red).MCvScalar;
-        public int SurfaceProjectionLineThickness { get; } = 2;
+        public Bgr CamSurfaceLineColor { get; } = new Bgr(System.Drawing.Color.Red);
+        public int CamSurfaceLineThickness { get; } = 5;
+        public Bgr CamRoiRectColor { get; } = new Bgr(System.Drawing.Color.LawnGreen);
+        public int CamRoiRectThickness { get; } = 5;
+        public MCvScalar CamContourColor { get; } = new Bgr(System.Drawing.Color.Violet).MCvScalar;
+        public int CamCountourThickness { get; } = 2;
+        public MCvScalar CamContourRectColor { get; } = new Bgr(System.Drawing.Color.Blue).MCvScalar;
+        public int CamContourRectThickness { get; } = 5;
+        public MCvScalar CamSpikeLineColor { get; } = new Bgr(System.Drawing.Color.White).MCvScalar;
+        public int CamSpikeLineThickness { get; } = 4;
+        public MCvScalar ProjectionPoiColor { get; } = new Bgr(System.Drawing.Color.Yellow).MCvScalar;
+        public int ProjectionPoiRadius { get; } = 6;
+        public int ProjectionPoiThickness { get; } = 6;
+        public MCvScalar ProjectionGridColor { get; } = new Bgr(System.Drawing.Color.DarkGray).MCvScalar;
+        public int ProjectionFrameHeight { get; } = 1200;
+        public int ProjectionFrameWidth { get; } = 1200;
+        public int ProjectionCoefficent { get; } = 3;
+        public int ProjectionGridThickness { get; } = 2;
+        public MCvScalar ProjectionSurfaceLineColor { get; } = new Bgr(System.Drawing.Color.Red).MCvScalar;
+        public int ProjectionSurfaceLineThickness { get; } = 2;
+        public MCvScalar ProjectionRayColor { get; } = new Bgr(System.Drawing.Color.White).MCvScalar;
+        public int ProjectionRayThickness { get; } = 2;
+        public MCvScalar PoiColor { get; } = new Bgr(System.Drawing.Color.Magenta).MCvScalar;
+        public int PoiRadius { get; } = 6;
+        public int PoiThickness { get; } = 6;
+
+
 
         public MainWindow()
         {

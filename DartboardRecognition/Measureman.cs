@@ -63,11 +63,11 @@ namespace DartboardRecognition
                                          (int) workingCam.roiPosYSlider.Value,
                                          (int) workingCam.roiWidthSlider.Value,
                                          (int) workingCam.roiHeightSlider.Value);
-            drawman.DrawRectangle(workingCam.linedFrame, roiRectangle, view.RoiRectColor.MCvScalar, view.RoiRectThickness);
+            drawman.DrawRectangle(workingCam.linedFrame, roiRectangle, view.CamRoiRectColor.MCvScalar, view.CamRoiRectThickness);
 
             workingCam.surfacePoint1 = new Point(0, (int) workingCam.surfaceSlider.Value);
             workingCam.surfacePoint2 = new Point(workingCam.originFrame.Cols, (int) workingCam.surfaceSlider.Value);
-            drawman.DrawLine(workingCam.linedFrame, workingCam.surfacePoint1, workingCam.surfacePoint2, view.SurfaceLineColor.MCvScalar, view.SurfaceLineThickness);
+            drawman.DrawLine(workingCam.linedFrame, workingCam.surfacePoint1, workingCam.surfacePoint2, view.CamSurfaceLineColor.MCvScalar, view.CamSurfaceLineThickness);
 
             workingCam.surfaceCenterPoint1 = new Point
                                              {
@@ -79,7 +79,7 @@ namespace DartboardRecognition
                                                  X = workingCam.surfaceCenterPoint1.X,
                                                  Y = workingCam.surfaceCenterPoint1.Y - 50
                                              };
-            drawman.DrawLine(workingCam.linedFrame, workingCam.surfaceCenterPoint1, workingCam.surfaceCenterPoint2, view.SurfaceLineColor.MCvScalar, view.SurfaceLineThickness);
+            drawman.DrawLine(workingCam.linedFrame, workingCam.surfaceCenterPoint1, workingCam.surfaceCenterPoint2, view.CamSurfaceLineColor.MCvScalar, view.CamSurfaceLineThickness);
 
             workingCam.surfaceLeftPoint1 = new Point
                                            {
@@ -91,7 +91,7 @@ namespace DartboardRecognition
                                                X = workingCam.surfaceLeftPoint1.X,
                                                Y = workingCam.surfaceLeftPoint1.Y - 50
                                            };
-            drawman.DrawLine(workingCam.linedFrame, workingCam.surfaceLeftPoint1, workingCam.surfaceLeftPoint2, view.SurfaceLineColor.MCvScalar, view.SurfaceLineThickness);
+            drawman.DrawLine(workingCam.linedFrame, workingCam.surfaceLeftPoint1, workingCam.surfaceLeftPoint2, view.CamSurfaceLineColor.MCvScalar, view.CamSurfaceLineThickness);
 
             workingCam.surfaceRightPoint1 = new Point
                                             {
@@ -103,7 +103,7 @@ namespace DartboardRecognition
                                                 X = workingCam.surfaceRightPoint1.X,
                                                 Y = workingCam.surfaceRightPoint1.Y - 50
                                             };
-            drawman.DrawLine(workingCam.linedFrame, workingCam.surfaceRightPoint1, workingCam.surfaceRightPoint2, view.SurfaceLineColor.MCvScalar, view.SurfaceLineThickness);
+            drawman.DrawLine(workingCam.linedFrame, workingCam.surfaceRightPoint1, workingCam.surfaceRightPoint2, view.CamSurfaceLineColor.MCvScalar, view.CamSurfaceLineThickness);
         }
 
         public void CalculateRoiRegion()
@@ -115,44 +115,44 @@ namespace DartboardRecognition
         public void CalculateDartboardProjection()
         {
             // Draw dartboard projection
-            dartboardProjectionFrame = new Image<Bgr, byte>(view.DartboardProjectionFrameWidth, view.DartboardProjectionFrameHeight);
+            dartboardProjectionFrame = new Image<Bgr, byte>(view.ProjectionFrameWidth, view.ProjectionFrameHeight);
             projectionCenterPoint = new Point(dartboardProjectionFrame.Width / 2, dartboardProjectionFrame.Height / 2);
             cam1SetupPoint = new Point(0, 0);
             cam2SetupPoint = new Point(dartboardProjectionFrame.Cols, 0);
 
-            drawman.DrawCircle(dartboardProjectionFrame, projectionCenterPoint, view.DartboardProjectionCoefficent * 7, view.DartboardProjectionColor, view.DartboardProjectionThickness);
-            drawman.DrawCircle(dartboardProjectionFrame, projectionCenterPoint, view.DartboardProjectionCoefficent * 17, view.DartboardProjectionColor, view.DartboardProjectionThickness);
-            drawman.DrawCircle(dartboardProjectionFrame, projectionCenterPoint, view.DartboardProjectionCoefficent * 95, view.DartboardProjectionColor, view.DartboardProjectionThickness);
-            drawman.DrawCircle(dartboardProjectionFrame, projectionCenterPoint, view.DartboardProjectionCoefficent * 105, view.DartboardProjectionColor, view.DartboardProjectionThickness);
-            drawman.DrawCircle(dartboardProjectionFrame, projectionCenterPoint, view.DartboardProjectionCoefficent * 160, view.DartboardProjectionColor, view.DartboardProjectionThickness);
-            drawman.DrawCircle(dartboardProjectionFrame, projectionCenterPoint, view.DartboardProjectionCoefficent * 170, view.DartboardProjectionColor, view.DartboardProjectionThickness);
+            drawman.DrawCircle(dartboardProjectionFrame, projectionCenterPoint, view.ProjectionCoefficent * 7, view.ProjectionGridColor, view.ProjectionGridThickness);
+            drawman.DrawCircle(dartboardProjectionFrame, projectionCenterPoint, view.ProjectionCoefficent * 17, view.ProjectionGridColor, view.ProjectionGridThickness);
+            drawman.DrawCircle(dartboardProjectionFrame, projectionCenterPoint, view.ProjectionCoefficent * 95, view.ProjectionGridColor, view.ProjectionGridThickness);
+            drawman.DrawCircle(dartboardProjectionFrame, projectionCenterPoint, view.ProjectionCoefficent * 105, view.ProjectionGridColor, view.ProjectionGridThickness);
+            drawman.DrawCircle(dartboardProjectionFrame, projectionCenterPoint, view.ProjectionCoefficent * 160, view.ProjectionGridColor, view.ProjectionGridThickness);
+            drawman.DrawCircle(dartboardProjectionFrame, projectionCenterPoint, view.ProjectionCoefficent * 170, view.ProjectionGridColor, view.ProjectionGridThickness);
             for (var i = 0; i <= 360; i += 9)
             {
                 var segmentPoint1 = new Point
                                     {
-                                        X = (int) (projectionCenterPoint.X + Math.Cos(0.314159 * i - 0.15708) * view.DartboardProjectionCoefficent * 170),
-                                        Y = (int) (projectionCenterPoint.Y + Math.Sin(0.314159 * i - 0.15708) * view.DartboardProjectionCoefficent * 170)
+                                        X = (int) (projectionCenterPoint.X + Math.Cos(0.314159 * i - 0.15708) * view.ProjectionCoefficent * 170),
+                                        Y = (int) (projectionCenterPoint.Y + Math.Sin(0.314159 * i - 0.15708) * view.ProjectionCoefficent * 170)
                                     };
                 var segmentPoint2 = new Point
                                     {
-                                        X = (int) (projectionCenterPoint.X + Math.Cos(0.314159 * i - 0.15708) * view.DartboardProjectionCoefficent * 17),
-                                        Y = (int) (projectionCenterPoint.Y + Math.Sin(0.314159 * i - 0.15708) * view.DartboardProjectionCoefficent * 17)
+                                        X = (int) (projectionCenterPoint.X + Math.Cos(0.314159 * i - 0.15708) * view.ProjectionCoefficent * 17),
+                                        Y = (int) (projectionCenterPoint.Y + Math.Sin(0.314159 * i - 0.15708) * view.ProjectionCoefficent * 17)
                                     };
-                drawman.DrawLine(dartboardProjectionFrame, segmentPoint1, segmentPoint2, view.DartboardProjectionColor, view.DartboardProjectionThickness);
+                drawman.DrawLine(dartboardProjectionFrame, segmentPoint1, segmentPoint2, view.ProjectionGridColor, view.ProjectionGridThickness);
             }
 
             // Draw surface projection lines
-            projectionLineCam1Point1.X = (int) (projectionCenterPoint.X + Math.Cos(-0.785398) * view.DartboardProjectionCoefficent * 170) - view.DartboardProjectionCoefficent * projectionLineCam1Bias;
-            projectionLineCam1Point1.Y = (int) (projectionCenterPoint.Y + Math.Sin(-0.785398) * view.DartboardProjectionCoefficent * 170) - view.DartboardProjectionCoefficent * projectionLineCam1Bias;
-            projectionLineCam1Point2.X = (int) (projectionCenterPoint.X + Math.Cos(2.35619) * view.DartboardProjectionCoefficent * 170) - view.DartboardProjectionCoefficent * projectionLineCam1Bias;
-            projectionLineCam1Point2.Y = (int) (projectionCenterPoint.Y + Math.Sin(2.35619) * view.DartboardProjectionCoefficent * 170) - view.DartboardProjectionCoefficent * projectionLineCam1Bias;
-            drawman.DrawLine(dartboardProjectionFrame, projectionLineCam1Point1, projectionLineCam1Point2, view.SurfaceProjectionLineColor, view.SurfaceProjectionLineThickness);
+            projectionLineCam1Point1.X = (int) (projectionCenterPoint.X + Math.Cos(-0.785398) * view.ProjectionCoefficent * 170) - view.ProjectionCoefficent * projectionLineCam1Bias;
+            projectionLineCam1Point1.Y = (int) (projectionCenterPoint.Y + Math.Sin(-0.785398) * view.ProjectionCoefficent * 170) - view.ProjectionCoefficent * projectionLineCam1Bias;
+            projectionLineCam1Point2.X = (int) (projectionCenterPoint.X + Math.Cos(2.35619) * view.ProjectionCoefficent * 170) - view.ProjectionCoefficent * projectionLineCam1Bias;
+            projectionLineCam1Point2.Y = (int) (projectionCenterPoint.Y + Math.Sin(2.35619) * view.ProjectionCoefficent * 170) - view.ProjectionCoefficent * projectionLineCam1Bias;
+            drawman.DrawLine(dartboardProjectionFrame, projectionLineCam1Point1, projectionLineCam1Point2, view.ProjectionSurfaceLineColor, view.ProjectionSurfaceLineThickness);
 
-            projectionLineCam2Point1.X = (int) (projectionCenterPoint.X + Math.Cos(0.785398) * view.DartboardProjectionCoefficent * 170) + view.DartboardProjectionCoefficent * projectionLineCam2Bias;
-            projectionLineCam2Point1.Y = (int) (projectionCenterPoint.Y + Math.Sin(0.785398) * view.DartboardProjectionCoefficent * 170) - view.DartboardProjectionCoefficent * projectionLineCam2Bias;
-            projectionLineCam2Point2.X = (int) (projectionCenterPoint.X + Math.Cos(3.92699) * view.DartboardProjectionCoefficent * 170) + view.DartboardProjectionCoefficent * projectionLineCam2Bias;
-            projectionLineCam2Point2.Y = (int) (projectionCenterPoint.Y + Math.Sin(3.92699) * view.DartboardProjectionCoefficent * 170) - view.DartboardProjectionCoefficent * projectionLineCam2Bias;
-            drawman.DrawLine(dartboardProjectionFrame, projectionLineCam2Point1, projectionLineCam2Point2, view.SurfaceProjectionLineColor, view.SurfaceProjectionLineThickness);
+            projectionLineCam2Point1.X = (int) (projectionCenterPoint.X + Math.Cos(0.785398) * view.ProjectionCoefficent * 170) + view.ProjectionCoefficent * projectionLineCam2Bias;
+            projectionLineCam2Point1.Y = (int) (projectionCenterPoint.Y + Math.Sin(0.785398) * view.ProjectionCoefficent * 170) - view.ProjectionCoefficent * projectionLineCam2Bias;
+            projectionLineCam2Point2.X = (int) (projectionCenterPoint.X + Math.Cos(3.92699) * view.ProjectionCoefficent * 170) + view.ProjectionCoefficent * projectionLineCam2Bias;
+            projectionLineCam2Point2.Y = (int) (projectionCenterPoint.Y + Math.Sin(3.92699) * view.ProjectionCoefficent * 170) - view.ProjectionCoefficent * projectionLineCam2Bias;
+            drawman.DrawLine(dartboardProjectionFrame, projectionLineCam2Point1, projectionLineCam2Point2, view.ProjectionSurfaceLineColor, view.ProjectionSurfaceLineThickness);
 
             drawman.SaveToImageBox(dartboardProjectionFrame, view.ImageBox3);
         }
@@ -189,10 +189,10 @@ namespace DartboardRecognition
                 contourBoxPoint2 = new Point((int) box[1].X, (int) workingCam.roiPosYSlider.Value + (int) box[1].Y);
                 contourBoxPoint3 = new Point((int) box[2].X, (int) workingCam.roiPosYSlider.Value + (int) box[2].Y);
                 contourBoxPoint4 = new Point((int) box[3].X, (int) workingCam.roiPosYSlider.Value + (int) box[3].Y);
-                drawman.DrawLine(workingCam.linedFrame, contourBoxPoint1, contourBoxPoint2, view.ContourRectColor, view.ContourRectThickness);
-                drawman.DrawLine(workingCam.linedFrame, contourBoxPoint2, contourBoxPoint3, view.ContourRectColor, view.ContourRectThickness);
-                drawman.DrawLine(workingCam.linedFrame, contourBoxPoint3, contourBoxPoint4, view.ContourRectColor, view.ContourRectThickness);
-                drawman.DrawLine(workingCam.linedFrame, contourBoxPoint4, contourBoxPoint1, view.ContourRectColor, view.ContourRectThickness);
+                drawman.DrawLine(workingCam.linedFrame, contourBoxPoint1, contourBoxPoint2, view.CamContourRectColor, view.CamContourRectThickness);
+                drawman.DrawLine(workingCam.linedFrame, contourBoxPoint2, contourBoxPoint3, view.CamContourRectColor, view.CamContourRectThickness);
+                drawman.DrawLine(workingCam.linedFrame, contourBoxPoint3, contourBoxPoint4, view.CamContourRectColor, view.CamContourRectThickness);
+                drawman.DrawLine(workingCam.linedFrame, contourBoxPoint4, contourBoxPoint1, view.CamContourRectColor, view.CamContourRectThickness);
 
                 SetupMiddlePoints();
 
@@ -238,7 +238,7 @@ namespace DartboardRecognition
             rayPoint2.X = (int) (rayPoint1.X + Math.Cos(angle) * 2000);
             rayPoint2.Y = (int) (rayPoint1.Y + Math.Sin(angle) * 2000);
 
-            drawman.DrawLine(dartboardProjectionFrame, rayPoint2, rayPoint1, new Bgr(Color.White).MCvScalar, 2);
+            drawman.DrawLine(dartboardProjectionFrame, rayPoint2, rayPoint1, view.ProjectionRayColor, view.ProjectionRayThickness);
             return rayPoint2;
         }
 
@@ -325,7 +325,7 @@ namespace DartboardRecognition
                     storage.SavePoi(poi);
                     var anotherThrow = PrepareThrowData(poi);
                     storage.SaveThrow(anotherThrow);
-                    drawman.DrawCircle(dartboardProjectionFrame, poi, 6, new Bgr(Color.Magenta).MCvScalar, 6);
+                    drawman.DrawCircle(dartboardProjectionFrame, poi, view.PoiRadius, view.PoiColor, view.PoiThickness);
                 }
             }
         }
@@ -339,30 +339,30 @@ namespace DartboardRecognition
             var sector = 0;
             var multiplier = 1;
 
-            if (distance <= view.DartboardProjectionCoefficent * 7)
+            if (distance <= view.ProjectionCoefficent * 7)
             {
                 sector = 50;
             }
 
-            if (distance > view.DartboardProjectionCoefficent * 7 &&
-                distance <= view.DartboardProjectionCoefficent * 17)
+            if (distance > view.ProjectionCoefficent * 7 &&
+                distance <= view.ProjectionCoefficent * 17)
             {
                 sector = 25;
             }
 
-            if (distance > view.DartboardProjectionCoefficent * 170)
+            if (distance > view.ProjectionCoefficent * 170)
             {
                 sector = 0;
             }
 
-            if (distance >= view.DartboardProjectionCoefficent * 95 &&
-                distance <= view.DartboardProjectionCoefficent * 105)
+            if (distance >= view.ProjectionCoefficent * 95 &&
+                distance <= view.ProjectionCoefficent * 105)
             {
                 multiplier = 2;
             }
 
-            if (distance >= view.DartboardProjectionCoefficent * 160 &&
-                distance <= view.DartboardProjectionCoefficent * 170)
+            if (distance >= view.ProjectionCoefficent * 160 &&
+                distance <= view.ProjectionCoefficent * 170)
             {
                 multiplier = 3;
             }
@@ -473,7 +473,7 @@ namespace DartboardRecognition
             camPoi = FindLinesIntersection(spikeLinePoint1, spikeLinePoint2, workingCam.surfacePoint1, workingCam.surfacePoint2);
             if (camPoi != null)
             {
-                drawman.DrawCircle(workingCam.linedFrame, camPoi.Value, view.PointOfImpactRadius, view.PointOfImpactColor, view.PointOfImpactThickness);
+                drawman.DrawCircle(workingCam.linedFrame, camPoi.Value, view.ProjectionPoiRadius, view.ProjectionPoiColor, view.ProjectionPoiThickness);
             }
         }
 
@@ -486,7 +486,7 @@ namespace DartboardRecognition
             var angle = FindAngle(contourBoxMiddlePoint2, contourBoxMiddlePoint1);
             spikeLinePoint1.X = (int) (contourBoxMiddlePoint2.X + Math.Cos(angle) * workingCam.spikeLineLength);
             spikeLinePoint1.Y = (int) (contourBoxMiddlePoint2.Y + Math.Sin(angle) * workingCam.spikeLineLength);
-            drawman.DrawLine(workingCam.linedFrame, spikeLinePoint1, spikeLinePoint2, view.SpikeLineColor, view.SpikeLineThickness);
+            drawman.DrawLine(workingCam.linedFrame, spikeLinePoint1, spikeLinePoint2, view.CamSpikeLineColor, view.CamSpikeLineThickness);
         }
 
         private Point FindLinesIntersection(Point line1Point1, Point line1Point2, Point line2Point1,
