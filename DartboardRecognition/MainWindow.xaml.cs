@@ -39,6 +39,9 @@ namespace DartboardRecognition
         public MCvScalar PoiColor { get; } = new Bgr(System.Drawing.Color.Magenta).MCvScalar;
         public int PoiRadius { get; } = 6;
         public int PoiThickness { get; } = 6;
+        public Bgr ProjectionDigitsColor { get; } = new Bgr(System.Drawing.Color.White);
+        public double ProjectionDigitsScale { get; } = 2;
+        public int ProjectionDigitsThickness { get; } = 2;
 
 
 

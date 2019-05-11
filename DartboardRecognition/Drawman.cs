@@ -5,6 +5,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Media.Imaging;
 using Emgu.CV;
+using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
 using Point = System.Drawing.Point;
 using Image = System.Windows.Controls.Image;
@@ -28,6 +29,11 @@ namespace DartboardRecognition
         public void DrawCircle(Image<Bgr, byte> image, Point centerpoint, int radius, MCvScalar color, int thickness)
         {
             CvInvoke.Circle(image, centerpoint, radius, color, thickness);
+        }
+
+        public void DrawString(Image<Bgr, byte> image, string text, int pointX, int pointY, double scale, Bgr color, int thickness)
+        {
+            image.Draw(text, new Point(pointX, pointY), FontFace.HersheySimplex, scale, color, thickness);
         }
 
         public void SaveToImageBox(IImage image, Image imageBox)
