@@ -76,6 +76,7 @@ namespace DartboardRecognition
             ImageBox2.Source = null;
             ImageBox2Roi.Source = null;
             ImageBox3.Source = null;
+            PointsBox.Text = "";
         }
 
         private void ToggleControls()

@@ -63,6 +63,8 @@
         <Label Content="Surface center" HorizontalAlignment="Left" Margin="692,644,0,0" VerticalAlignment="Top" Width="92" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" HorizontalContentAlignment="Center" RenderTransformOrigin="0.594,0.181"/>
         <Label Content="Surface left" HorizontalAlignment="Left" Margin="692,667,0,0" VerticalAlignment="Top" Width="92" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" HorizontalContentAlignment="Center" RenderTransformOrigin="0.594,0.181"/>
         <Label Content="Surface right" HorizontalAlignment="Left" Margin="692,690,0,0" VerticalAlignment="Top" Width="92" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" HorizontalContentAlignment="Center" RenderTransformOrigin="0.594,0.181"/>
+        
+        <TextBox x:Name="PointsBox" HorizontalAlignment="Left" Height="84" Margin="583,729,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="302"/>
 
     </Grid>
 </Window>

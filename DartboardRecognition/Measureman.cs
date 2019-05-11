@@ -458,6 +458,7 @@ namespace DartboardRecognition
                     var anotherThrow = PrepareThrowData(poi);
                     storage.SaveThrow(anotherThrow);
                     drawman.DrawCircle(dartboardProjectionFrame, poi, view.PoiRadius, view.PoiColor, view.PoiThickness);
+                    view.PointsBox.Text += $"{anotherThrow.Sector} x {anotherThrow.Multiplier} = {anotherThrow.TotalPoints}\n";
                 }
             }
         }
