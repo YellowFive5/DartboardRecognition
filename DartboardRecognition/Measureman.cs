@@ -346,13 +346,13 @@ namespace DartboardRecognition
             if (distance >= view.ProjectionCoefficent * 95 &&
                 distance <= view.ProjectionCoefficent * 105)
             {
-                multiplier = 2;
+                multiplier = 3;
             }
 
             if (distance >= view.ProjectionCoefficent * 160 &&
                 distance <= view.ProjectionCoefficent * 170)
             {
-                multiplier = 3;
+                multiplier = 2;
             }
 
             // Find sector
@@ -412,27 +412,28 @@ namespace DartboardRecognition
             {
                 sector = 8;
             }
-            else if (angle >= 2.984506 && angle < 3.298665)
+            else if (angle >= 2.984506 && angle < 3.14159 ||
+                     angle >= -3.14159 && angle < -3.29868)
             {
                 sector = 11;
             }
-            else if (angle >= 3.298665 && angle < 3.612824)
+            else if (angle >= -3.29868 && angle < -2.67036)
             {
                 sector = 14;
             }
-            else if (angle >= 3.612824 && angle < 3.926983)
+            else if (angle >= -2.67036 && angle < -2.3562)
             {
                 sector = 9;
             }
-            else if (angle >= 3.926983 && angle < 4.241142)
+            else if (angle >= -2.3562 && angle < -2.04204)
             {
                 sector = 12;
             }
-            else if (angle >= 4.241142 && angle < 4.555301)
+            else if (angle >= -2.04204 && angle < -1.72788)
             {
                 sector = 5;
             }
-            else if (angle >= 4.555301 && angle < 4.555301) // todo natural?
+            else if (angle >= -1.72788 && angle < -1.41372)
             {
                 sector = 20;
             }
