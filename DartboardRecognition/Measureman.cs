@@ -243,64 +243,43 @@ namespace DartboardRecognition
         private Point TranslateCamPoiToProjection()
         {
             // Translate cam surface POI to dartboard projection
-            var surfaceLeftToRightDistance = FindDistance(workingCam.surfaceLeftPoint1, workingCam.surfaceRightPoint1);
-            var projectionLeftToRightDistance = FindDistance(projectionLineCam1Point1, projectionLineCam1Point2);
-            var surfaceProjectionCoeff = (double)projectionLeftToRightDistance / surfaceLeftToRightDistance;
-
-            var surfacePoiToCenterDistance = FindDistance(workingCam.surfaceCenterPoint1, camPoi.GetValueOrDefault());
-            var surfaceLeftToPoiDistance = FindDistance(workingCam.surfaceLeftPoint1, camPoi.GetValueOrDefault());
-            var surfaceRightToPoiDistance = FindDistance(workingCam.surfaceRightPoint1, camPoi.GetValueOrDefault());
-            var projectionPoi = new Point();
-            var projectionToCenter = new Point();
-            Point camSetupPoint;
-
             var frameWidth = workingCam.originFrame.Cols;
             var frameSemiWidth = frameWidth / 2;
             var camFovAngle = 100;
             var camFovSemiAngle = camFovAngle / 2;
-
+            var projectionPoi = new Point();
+            var projectionToCenter = new Point();
+            Point camSetupPoint;
+            double toCenterAngle;
+            var surfacePoiToCenterDistance = FindDistance(workingCam.surfaceCenterPoint1, camPoi.GetValueOrDefault());
+            var surfaceLeftToPoiDistance = FindDistance(workingCam.surfaceLeftPoint1, camPoi.GetValueOrDefault());
+            var surfaceRightToPoiDistance = FindDistance(workingCam.surfaceRightPoint1, camPoi.GetValueOrDefault());
             var projectionCamToCenterDistance = frameSemiWidth / Math.Sin(Math.PI * camFovSemiAngle / 180.0) * Math.Cos(Math.PI * camFovSemiAngle / 180.0);
             var projectionCamToPoiDistance = (Math.Sqrt(Math.Pow(projectionCamToCenterDistance, 2) + Math.Pow(surfacePoiToCenterDistance, 2)));
             var projectionPoiToCenterDistance = Math.Sqrt(Math.Pow(projectionCamToPoiDistance, 2) - Math.Pow(projectionCamToCenterDistance, 2));
             var poiCamCenterAngle = Math.Asin(projectionPoiToCenterDistance / projectionCamToPoiDistance);
-            double angle;
 
             if (workingCam is Cam1)
             {
-                angle = 2.35619;
+                toCenterAngle = 2.35619;
                 camSetupPoint = cam1SetupPoint;
-                projectionToCenter.X = (int) (camSetupPoint.X - Math.Cos(angle) * projectionCamToCenterDistance);
-                projectionToCenter.Y = (int) (camSetupPoint.Y - Math.Sin(angle) * projectionCamToCenterDistance);
-
-                if (surfaceLeftToPoiDistance < surfaceRightToPoiDistance)
-                {
-                    projectionPoi.X = (int)(camSetupPoint.X - Math.Cos(angle - poiCamCenterAngle) * 2000);
-                    projectionPoi.Y = (int)(camSetupPoint.Y - Math.Sin(angle - poiCamCenterAngle) * 2000);
-                }
-                else
-                {
-                    projectionPoi.X = (int)(camSetupPoint.X - Math.Cos(angle + poiCamCenterAngle) * 2000);
-                    projectionPoi.Y = (int)(camSetupPoint.Y - Math.Sin(angle + poiCamCenterAngle) * 2000);
-                }
             }
             else
             {
-                angle = 0.785398;
+                toCenterAngle = 0.785398;
                 camSetupPoint = cam2SetupPoint;
-                projectionToCenter.X = (int)(camSetupPoint.X - Math.Cos(angle) * projectionCamToCenterDistance);
-                projectionToCenter.Y = (int)(camSetupPoint.Y - Math.Sin(angle) * projectionCamToCenterDistance);
-
-                if (surfaceLeftToPoiDistance < surfaceRightToPoiDistance)
-                {
-                    projectionPoi.X = (int)(camSetupPoint.X - Math.Cos(angle - poiCamCenterAngle) * 2000);
-                    projectionPoi.Y = (int)(camSetupPoint.Y - Math.Sin(angle - poiCamCenterAngle) * 2000);
-                }
-                else
-                {
-                    projectionPoi.X = (int)(camSetupPoint.X - Math.Cos(angle + poiCamCenterAngle) * 2000);
-                    projectionPoi.Y = (int)(camSetupPoint.Y - Math.Sin(angle + poiCamCenterAngle) * 2000);
-                }
             }
+
+            projectionToCenter.X = (int)(camSetupPoint.X - Math.Cos(toCenterAngle) * projectionCamToCenterDistance);
+            projectionToCenter.Y = (int)(camSetupPoint.Y - Math.Sin(toCenterAngle) * projectionCamToCenterDistance);
+
+            if (surfaceLeftToPoiDistance < surfaceRightToPoiDistance)
+            {
+                poiCamCenterAngle *= -1;
+            }
+
+            projectionPoi.X = (int)(camSetupPoint.X - Math.Cos(toCenterAngle + poiCamCenterAngle) * 2000);
+            projectionPoi.Y = (int)(camSetupPoint.Y - Math.Sin(toCenterAngle + poiCamCenterAngle) * 2000);
 
             //drawman.DrawCircle(dartboardProjectionFrame, projectionToCenter, view.ProjectionPoiRadius, view.ProjectionPoiColor, view.ProjectionPoiThickness);
             //drawman.DrawCircle(dartboardProjectionFrame, projectionPoi, view.ProjectionPoiRadius, view.ProjectionPoiColor, view.ProjectionPoiThickness);
