@@ -44,7 +44,6 @@ namespace DartboardRecognition
         public int ProjectionDigitsThickness { get; } = 2;
 
 
-
         public MainWindow()
         {
             InitializeComponent();

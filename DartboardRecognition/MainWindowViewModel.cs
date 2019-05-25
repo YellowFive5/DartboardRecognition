@@ -90,7 +90,6 @@ namespace DartboardRecognition
             view.Cam2SurfaceCenterSlider.Value = double.Parse(ConfigurationManager.AppSettings["Cam2SurfaceCenterSlider"]);
             view.Cam2SurfaceLeftSlider.Value = double.Parse(ConfigurationManager.AppSettings["Cam2SurfaceLeftSlider"]);
             view.Cam2SurfaceRightSlider.Value = double.Parse(ConfigurationManager.AppSettings["Cam2SurfaceRightSlider"]);
-
         }
 
         public void SaveSettings()
@@ -140,7 +139,11 @@ namespace DartboardRecognition
                 measureman.CalculateSetupLines();
                 measureman.CalculateRoiRegion();
                 drawman.TresholdRoiRegion(cam);
-                measureman.CalculateDartContours();
+
+                if (measureman.ThrowDetected())
+                {
+                    measureman.CalculateDartContour();
+                }
 
                 drawman.SaveToImageBox(cam.linedFrame, cam.imageBox);
                 drawman.SaveToImageBox(cam.roiTrasholdFrame, cam.imageBoxRoi);

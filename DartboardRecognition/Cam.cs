@@ -4,7 +4,9 @@ using Emgu.CV;
 using Emgu.CV.Structure;
 using Emgu.CV.Util;
 using System;
+using System.Collections.Generic;
 using System.Windows.Controls;
+using Emgu.CV.CvEnum;
 using Point = System.Drawing.Point;
 
 #endregion
@@ -33,7 +35,8 @@ namespace DartboardRecognition
         public Point surfaceRightPoint1;
         public Point surfaceRightPoint2;
         public int spikeLineLength;
-        public readonly VectorOfVectorOfPoint contours;
+        public Stack<VectorOfPoint> workingContours;
+        public readonly VectorOfVectorOfPoint allContours;
         public readonly Mat matHierarсhy;
         public Image imageBox;
         public Image imageBoxRoi;
@@ -53,7 +56,8 @@ namespace DartboardRecognition
         {
             surfacePoint1 = new Point();
             surfacePoint2 = new Point();
-            contours = new VectorOfVectorOfPoint();
+            allContours = new VectorOfVectorOfPoint();
+            workingContours = new Stack<VectorOfPoint>();
             matHierarсhy = new Mat();
         }
 
@@ -97,6 +101,8 @@ namespace DartboardRecognition
             surfaceLeftSlider = view.Cam1SurfaceLeftSlider;
             surfaceRightSlider = view.Cam1SurfaceRightSlider;
             videoCapture = new VideoCapture(int.Parse(camIndexBox.Text));
+            videoCapture.SetCaptureProperty(CapProp.FrameWidth, 1920);
+            videoCapture.SetCaptureProperty(CapProp.FrameHeight, 1080);
         }
     }
 
@@ -121,6 +127,8 @@ namespace DartboardRecognition
             surfaceLeftSlider = view.Cam2SurfaceLeftSlider;
             surfaceRightSlider = view.Cam2SurfaceRightSlider;
             videoCapture = new VideoCapture(int.Parse(camIndexBox.Text));
+            videoCapture.SetCaptureProperty(CapProp.FrameWidth, 1920);
+            videoCapture.SetCaptureProperty(CapProp.FrameHeight, 1080);
         }
     }
 }

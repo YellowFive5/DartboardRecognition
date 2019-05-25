@@ -2,6 +2,7 @@
 
 using System;
 using System.Drawing;
+using System.Threading;
 using Emgu.CV;
 using Emgu.CV.Structure;
 using Point = System.Drawing.Point;
@@ -33,14 +34,14 @@ namespace DartboardRecognition
         private Point projectionLineCam2Point2;
         private Point? camPoi;
         private Image<Bgr, byte> dartboardProjectionFrame;
+        private Image<Bgr, byte> dartboardWorkingProjectionFrame;
         private int projectionLineCam1Bias = 0;
         private int projectionLineCam2Bias = 0;
         private Point cam1SetupPoint;
         private Point cam2SetupPoint;
-        private int minContourArcLength = 250;
-        private int maxContourArcLength = 350;
+        private int minContourArcLength = 190;
+        private int maxContourArcLength = 600;
         private Cam workingCam;
-
 
         public Measureman(MainWindow view, Drawman drawman)
         {
@@ -116,8 +117,8 @@ namespace DartboardRecognition
             // Draw dartboard projection
             dartboardProjectionFrame = new Image<Bgr, byte>(view.ProjectionFrameWidth, view.ProjectionFrameHeight);
             projectionCenterPoint = new Point(dartboardProjectionFrame.Width / 2, dartboardProjectionFrame.Height / 2);
-            cam1SetupPoint = new Point(180, 1020);
-            cam2SetupPoint = new Point(dartboardProjectionFrame.Cols - 180, 1020);
+            cam1SetupPoint = new Point(30, 30);
+            cam2SetupPoint = new Point(dartboardProjectionFrame.Cols - 30, 30);
 
             drawman.DrawCircle(dartboardProjectionFrame, projectionCenterPoint, view.ProjectionCoefficent * 7, view.ProjectionGridColor, view.ProjectionGridThickness);
             drawman.DrawCircle(dartboardProjectionFrame, projectionCenterPoint, view.ProjectionCoefficent * 17, view.ProjectionGridColor, view.ProjectionGridThickness);
@@ -300,59 +301,81 @@ namespace DartboardRecognition
             drawman.SaveToImageBox(dartboardProjectionFrame, view.ImageBox3);
         }
 
-        public void CalculateDartContours()
+        public void CalculateDartContour()
         {
-            workingCam.roiContourFrame = workingCam.roiFrame.Clone();
-            CvInvoke.FindContours(workingCam.roiTrasholdFrame, workingCam.contours, workingCam.matHierarсhy, Emgu.CV.CvEnum.RetrType.External, Emgu.CV.CvEnum.ChainApproxMethod.ChainApproxNone);
+            // workingCam.roiContourFrame = workingCam.roiFrame.Clone();
+            var firstImage = workingCam.roiTrasholdFrame;
+            var secondImage = workingCam.videoCapture.QueryFrame().ToImage<Gray, byte>().Not()
+                                        .ThresholdBinary(new Gray(workingCam.tresholdMinSlider.Value),
+                                                         new Gray(workingCam.tresholdMaxSlider.Value));
+            secondImage.ROI = roiRectangle;
+            var diffImage = secondImage.AbsDiff(firstImage);
+            workingCam.roiTrasholdFrame = diffImage;
+
+            CvInvoke.FindContours(diffImage, workingCam.allContours, workingCam.matHierarсhy, Emgu.CV.CvEnum.RetrType.External, Emgu.CV.CvEnum.ChainApproxMethod.ChainApproxNone);
             //CvInvoke.DrawContours(linedFrame, contours, -1, contourColor, contourThickness, offset: new System.Drawing.Point(0, (int)RoiPosYSlider.Value));
 
-            if (workingCam.contours.Size <= 0)
+            if (workingCam.allContours.Size <= 0)
             {
                 return;
             }
 
-            for (var i = 0; i < workingCam.contours.Size; i++)
+            for (var i = 0; i < workingCam.allContours.Size; i++)
             {
-                // Filter contour
-                var arclength = CvInvoke.ArcLength(workingCam.contours[i], true);
-                if (arclength < minContourArcLength || arclength > maxContourArcLength)
+                var contour = workingCam.allContours[i];
+                var arclength = CvInvoke.ArcLength(contour, true);
+                if (arclength > minContourArcLength &&
+                    arclength < maxContourArcLength)
                 {
-                    continue;
+                    workingCam.workingContours.Push(contour);
                 }
-
-                // Find moments and centerpoint
-                contourMoments = CvInvoke.Moments(workingCam.contours[i]);
-                contourCenterPoint = new Point((int) (contourMoments.M10 / contourMoments.M00), (int) workingCam.roiPosYSlider.Value + (int) (contourMoments.M01 / contourMoments.M00));
-                drawman.DrawCircle(workingCam.linedFrame, contourCenterPoint, 4, new Bgr(Color.Blue).MCvScalar, 3);
-
-                // Find contour rectangle
-                var rect = CvInvoke.MinAreaRect(workingCam.contours[i]);
-                var box = CvInvoke.BoxPoints(rect);
-                contourBoxPoint1 = new Point((int) box[0].X, (int) workingCam.roiPosYSlider.Value + (int) box[0].Y);
-                contourBoxPoint2 = new Point((int) box[1].X, (int) workingCam.roiPosYSlider.Value + (int) box[1].Y);
-                contourBoxPoint3 = new Point((int) box[2].X, (int) workingCam.roiPosYSlider.Value + (int) box[2].Y);
-                contourBoxPoint4 = new Point((int) box[3].X, (int) workingCam.roiPosYSlider.Value + (int) box[3].Y);
-                drawman.DrawLine(workingCam.linedFrame, contourBoxPoint1, contourBoxPoint2, view.CamContourRectColor, view.CamContourRectThickness);
-                drawman.DrawLine(workingCam.linedFrame, contourBoxPoint2, contourBoxPoint3, view.CamContourRectColor, view.CamContourRectThickness);
-                drawman.DrawLine(workingCam.linedFrame, contourBoxPoint3, contourBoxPoint4, view.CamContourRectColor, view.CamContourRectThickness);
-                drawman.DrawLine(workingCam.linedFrame, contourBoxPoint4, contourBoxPoint1, view.CamContourRectColor, view.CamContourRectThickness);
-
-                SetupMiddlePoints();
-
-                CalculateSpikeLine();
-
-                CalculateCamPoi();
-
-                var projectionPoi = TranslateCamPoiToProjection();
-
-                var rayPoint2 = CalculateLineThroughPoi(projectionPoi);
-
-                CollectRay(rayPoint2);
             }
+
+            if (workingCam.workingContours.Count != 0)
+            {
+                Work();
+            }
+        }
+
+        private void Work()
+        {
+            dartboardWorkingProjectionFrame = dartboardProjectionFrame.Clone();
+            var contour = workingCam.workingContours.Pop();
+
+            contourMoments = CvInvoke.Moments(contour);
+            contourCenterPoint = new Point((int) (contourMoments.M10 / contourMoments.M00), (int) workingCam.roiPosYSlider.Value + (int) (contourMoments.M01 / contourMoments.M00));
+            drawman.DrawCircle(workingCam.linedFrame, contourCenterPoint, 4, new Bgr(Color.Blue).MCvScalar, 3);
+
+            // Find contour rectangle
+            var rect = CvInvoke.MinAreaRect(contour);
+            var box = CvInvoke.BoxPoints(rect);
+            contourBoxPoint1 = new Point((int) box[0].X, (int) workingCam.roiPosYSlider.Value + (int) box[0].Y);
+            contourBoxPoint2 = new Point((int) box[1].X, (int) workingCam.roiPosYSlider.Value + (int) box[1].Y);
+            contourBoxPoint3 = new Point((int) box[2].X, (int) workingCam.roiPosYSlider.Value + (int) box[2].Y);
+            contourBoxPoint4 = new Point((int) box[3].X, (int) workingCam.roiPosYSlider.Value + (int) box[3].Y);
+            drawman.DrawLine(workingCam.linedFrame, contourBoxPoint1, contourBoxPoint2, view.CamContourRectColor, view.CamContourRectThickness);
+            drawman.DrawLine(workingCam.linedFrame, contourBoxPoint2, contourBoxPoint3, view.CamContourRectColor, view.CamContourRectThickness);
+            drawman.DrawLine(workingCam.linedFrame, contourBoxPoint3, contourBoxPoint4, view.CamContourRectColor, view.CamContourRectThickness);
+            drawman.DrawLine(workingCam.linedFrame, contourBoxPoint4, contourBoxPoint1, view.CamContourRectColor, view.CamContourRectThickness);
+
+            SetupMiddlePoints();
+
+            CalculateSpikeLine();
+
+            CalculateCamPoi();
+
+            var projectionPoi = TranslateCamPoiToProjection();
+
+            var rayPoint2 = CalculateLineThroughPoi(projectionPoi);
+
+            CollectRay(rayPoint2);
 
             FindProjectionPois();
 
-            drawman.SaveToImageBox(dartboardProjectionFrame, view.ImageBox3);
+            // drawman.SaveToImageBox(dartboardWorkingProjectionFrame, view.ImageBox3);
+
+            workingCam.allContours.Clear();
+            workingCam.workingContours.Clear();
         }
 
         private void CollectRay(Point rayPoint)
@@ -372,15 +395,15 @@ namespace DartboardRecognition
         {
             // Draw line from cam through projection POI
             var rayPoint1 = workingCam is Cam1
-                                  ? cam1SetupPoint
-                                  : cam2SetupPoint;
+                                ? cam1SetupPoint
+                                : cam2SetupPoint;
 
             var rayPoint2 = projectionPoi;
             var angle = FindAngle(rayPoint1, rayPoint2);
             rayPoint2.X = (int) (rayPoint1.X + Math.Cos(angle) * 2000);
             rayPoint2.Y = (int) (rayPoint1.Y + Math.Sin(angle) * 2000);
 
-            drawman.DrawLine(dartboardProjectionFrame, rayPoint2, rayPoint1, view.ProjectionRayColor, view.ProjectionRayThickness);
+            //drawman.DrawLine(dartboardProjectionFrame, rayPoint2, rayPoint1, view.ProjectionRayColor, view.ProjectionRayThickness);
             return rayPoint2;
         }
 
@@ -399,31 +422,31 @@ namespace DartboardRecognition
             var surfaceLeftToPoiDistance = FindDistance(workingCam.surfaceLeftPoint1, camPoi.GetValueOrDefault());
             var surfaceRightToPoiDistance = FindDistance(workingCam.surfaceRightPoint1, camPoi.GetValueOrDefault());
             var projectionCamToCenterDistance = frameSemiWidth / Math.Sin(Math.PI * camFovSemiAngle / 180.0) * Math.Cos(Math.PI * camFovSemiAngle / 180.0);
-            var projectionCamToPoiDistance = (Math.Sqrt(Math.Pow(projectionCamToCenterDistance, 2) + Math.Pow(surfacePoiToCenterDistance, 2)));
+            var projectionCamToPoiDistance = Math.Sqrt(Math.Pow(projectionCamToCenterDistance, 2) + Math.Pow(surfacePoiToCenterDistance, 2));
             var projectionPoiToCenterDistance = Math.Sqrt(Math.Pow(projectionCamToPoiDistance, 2) - Math.Pow(projectionCamToCenterDistance, 2));
             var poiCamCenterAngle = Math.Asin(projectionPoiToCenterDistance / projectionCamToPoiDistance);
 
             if (workingCam is Cam1)
             {
-                toCenterAngle = 2.35619;
+                toCenterAngle = 0.785398;
                 camSetupPoint = cam1SetupPoint;
             }
             else
             {
-                toCenterAngle = 0.785398;
+                toCenterAngle = 2.35619;
                 camSetupPoint = cam2SetupPoint;
             }
 
-            projectionToCenter.X = (int)(camSetupPoint.X - Math.Cos(toCenterAngle) * projectionCamToCenterDistance);
-            projectionToCenter.Y = (int)(camSetupPoint.Y - Math.Sin(toCenterAngle) * projectionCamToCenterDistance);
+            projectionToCenter.X = (int) (camSetupPoint.X - Math.Cos(toCenterAngle) * projectionCamToCenterDistance);
+            projectionToCenter.Y = (int) (camSetupPoint.Y - Math.Sin(toCenterAngle) * projectionCamToCenterDistance);
 
             if (surfaceLeftToPoiDistance < surfaceRightToPoiDistance)
             {
                 poiCamCenterAngle *= -1;
             }
 
-            projectionPoi.X = (int)(camSetupPoint.X - Math.Cos(toCenterAngle + poiCamCenterAngle) * 2000);
-            projectionPoi.Y = (int)(camSetupPoint.Y - Math.Sin(toCenterAngle + poiCamCenterAngle) * 2000);
+            projectionPoi.X = (int) (camSetupPoint.X + Math.Cos(toCenterAngle + poiCamCenterAngle) * 2000);
+            projectionPoi.Y = (int) (camSetupPoint.Y + Math.Sin(toCenterAngle + poiCamCenterAngle) * 2000);
 
             //drawman.DrawCircle(dartboardProjectionFrame, projectionToCenter, view.ProjectionPoiRadius, view.ProjectionPoiColor, view.ProjectionPoiThickness);
             //drawman.DrawCircle(dartboardProjectionFrame, projectionPoi, view.ProjectionPoiRadius, view.ProjectionPoiColor, view.ProjectionPoiThickness);
@@ -433,15 +456,8 @@ namespace DartboardRecognition
         private void FindProjectionPois()
         {
             // Find lines intersection to find projection POI and save to collection
-            if (storage.Cam1RaysCollection.Count != storage.Cam2RaysCollection.Count ||
-                storage.Cam1RaysCollection.Count == 0 ||
-                storage.Cam2RaysCollection.Count == 0)
+            if (storage.Cam1RaysCollection.Count != storage.Cam2RaysCollection.Count)
             {
-                if (storage.Cam1RaysCollection.Count == 0 && storage.Cam2RaysCollection.Count == 0)
-                {
-                    storage.ClearPoiCollection();
-                }
-
                 return;
             }
 
@@ -452,14 +468,12 @@ namespace DartboardRecognition
                                                 storage.Cam1RaysCollection.Dequeue(),
                                                 cam2SetupPoint,
                                                 storage.Cam2RaysCollection.Dequeue());
-                if (!storage.PoiCollection.Contains(poi))
-                {
-                    storage.SavePoi(poi);
-                    var anotherThrow = PrepareThrowData(poi);
-                    storage.SaveThrow(anotherThrow);
-                    drawman.DrawCircle(dartboardProjectionFrame, poi, view.PoiRadius, view.PoiColor, view.PoiThickness);
-                    view.PointsBox.Text += $"{anotherThrow.Sector} x {anotherThrow.Multiplier} = {anotherThrow.TotalPoints}\n";
-                }
+                storage.SavePoi(poi);
+                var anotherThrow = PrepareThrowData(poi);
+                storage.SaveThrow(anotherThrow);
+                drawman.DrawCircle(dartboardWorkingProjectionFrame, poi, view.PoiRadius, view.PoiColor, view.PoiThickness);
+                drawman.SaveToImageBox(dartboardWorkingProjectionFrame, view.ImageBox3);
+                view.PointsBox.Text += $"{anotherThrow.Sector} x {anotherThrow.Multiplier} = {anotherThrow.TotalPoints}\n";
             }
         }
 
@@ -680,6 +694,27 @@ namespace DartboardRecognition
         private double FindAngle(Point point1, Point point2)
         {
             return Math.Atan2(point2.Y - point1.Y, point2.X - point1.X);
+        }
+
+        public bool ThrowDetected()
+        {
+            var firstImage = workingCam.originFrame.ToUMat().ToImage<Gray, byte>();
+            firstImage.ROI = roiRectangle;
+            var secondImage = workingCam.videoCapture.QueryFrame().ToImage<Gray, byte>();
+            secondImage.ROI = roiRectangle;
+            var diffImage = secondImage.AbsDiff(firstImage);
+
+            var moves = diffImage.CountNonzero()[0];
+
+            view.PointsBox.Text = $"{moves.ToString()}\n";
+
+            if (moves > 190000)
+            {
+                Thread.Sleep(50);
+                return true;
+            }
+
+            return false;
         }
     }
 }

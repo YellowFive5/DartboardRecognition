@@ -43,6 +43,7 @@ namespace DartboardRecognition
                     IsTremble = true;
                     break;
             }
+
             switch (sector)
             {
                 case 25:
