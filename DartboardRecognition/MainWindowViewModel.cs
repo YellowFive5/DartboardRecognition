@@ -1,6 +1,8 @@
 ﻿#region Usings
 
 using System.Configuration;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Threading;
 using Emgu.CV.Structure;
 
@@ -16,12 +18,16 @@ namespace DartboardRecognition
         private Dispatcher dispatcher;
         private Measureman measureman;
         private Drawman drawman;
+        private CancellationToken cancelToken;
+        private CancellationTokenSource cts;
 
         public MainWindowViewModel(MainWindow view)
         {
             this.view = view;
             dispatcher = Dispatcher.CurrentDispatcher;
             LoadSettings();
+            cts = new CancellationTokenSource();
+            cancelToken = cts.Token;
         }
 
         public void StartCapture()
@@ -51,16 +57,19 @@ namespace DartboardRecognition
                 cam2.SetProcessingCapture(3);
             }
 
-            cam1.camHandler = (s, e2) => CaptureImage(cam1);
-            cam2.camHandler = (s, e2) => CaptureImage(cam2);
-            dispatcher.Hooks.DispatcherInactive += cam1.camHandler;
-            dispatcher.Hooks.DispatcherInactive += cam2.camHandler;
+            new Task(() => CaptureImage(cam1)).Start();
+            new Task(() => CaptureImage(cam2)).Start();
+            // cam1.camHandler = (s, e2) => CaptureImage(cam1);
+            // cam2.camHandler = (s, e2) => CaptureImage(cam2);
+            // dispatcher.Hooks.DispatcherInactive += cam1.camHandler;
+            // dispatcher.Hooks.DispatcherInactive += cam2.camHandler;
         }
 
         public void StopCapture()
         {
-            dispatcher.Hooks.DispatcherInactive -= cam1.camHandler;
-            dispatcher.Hooks.DispatcherInactive -= cam2.camHandler;
+            cts.Cancel();
+            // dispatcher.Hooks.DispatcherInactive -= cam1.camHandler;
+            // dispatcher.Hooks.DispatcherInactive -= cam2.camHandler;
             cam1.videoCapture.Dispose();
             cam2.videoCapture.Dispose();
         }
@@ -125,28 +134,32 @@ namespace DartboardRecognition
 
         private void CaptureImage(Cam cam)
         {
-            cam.originFrame = view.UseCamsRadioButton.IsChecked.Value
-                                  ? cam.videoCapture.QueryFrame().ToImage<Bgr, byte>()
-                                  : cam.processingCapture.Clone();
-            using (cam.originFrame)
+            while (!cancelToken.IsCancellationRequested)
             {
-                if (cam.originFrame == null)
+                // cam.originFrame = view.UseCamsRadioButton.IsChecked.Value
+                //                       ? cam.videoCapture.QueryFrame().ToImage<Bgr, byte>()
+                //                       : cam.processingCapture.Clone();
+                cam.originFrame = cam.videoCapture.QueryFrame().ToImage<Bgr, byte>();
+                using (cam.originFrame)
                 {
-                    return;
+                    if (cam.originFrame == null)
+                    {
+                        return;
+                    }
+
+                    measureman.SetupWorkingCam(cam);
+                    measureman.CalculateSetupLines();
+                    measureman.CalculateRoiRegion();
+                    drawman.TresholdRoiRegion(cam);
+
+                    if (measureman.ThrowDetected())
+                    {
+                        measureman.CalculateDartContour();
+                    }
+
+                    drawman.SaveToImageBox(cam.linedFrame, cam.imageBox);
+                    drawman.SaveToImageBox(cam.roiTrasholdFrame, cam.imageBoxRoi);
                 }
-
-                measureman.SetupWorkingCam(cam);
-                measureman.CalculateSetupLines();
-                measureman.CalculateRoiRegion();
-                drawman.TresholdRoiRegion(cam);
-
-                if (measureman.ThrowDetected())
-                {
-                    measureman.CalculateDartContour();
-                }
-
-                drawman.SaveToImageBox(cam.linedFrame, cam.imageBox);
-                drawman.SaveToImageBox(cam.roiTrasholdFrame, cam.imageBoxRoi);
             }
         }
     }
