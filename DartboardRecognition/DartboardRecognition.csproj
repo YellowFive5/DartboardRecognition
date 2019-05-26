@@ -69,6 +69,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="IMainWindowViewModel.cs">
+      <DependentUpon>MainWindowViewModel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MainWindowViewModel.cs" />
+    <Compile Include="Measureman.cs" />
+    <Compile Include="MeasuremanService.cs">
+      <DependentUpon>Measureman.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Storage.cs" />
     <Compile Include="Throw.cs" />
@@ -82,14 +90,12 @@
     </Compile>
     <Compile Include="Cam.cs" />
     <Compile Include="Drawman.cs" />
-    <Compile Include="Measureman.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MainWindowViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

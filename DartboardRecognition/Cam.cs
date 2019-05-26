@@ -33,7 +33,6 @@ namespace DartboardRecognition
         public Stack<VectorOfPoint> workingContours;
         public readonly VectorOfVectorOfPoint allContours;
         public readonly Mat matHierarсhy;
-        protected TextBox camIndexBox;
         public double tresholdMinSlider;
         public double tresholdMaxSlider;
         public double roiPosXSlider;
@@ -59,7 +58,6 @@ namespace DartboardRecognition
     {
         public Cam1(MainWindow view)
         {
-            camIndexBox = view.Cam1IndexBox;
             tresholdMinSlider = view.Cam1TresholdMinSlider.Value;
             tresholdMaxSlider = view.Cam1TresholdMaxSlider.Value;
             roiPosXSlider = view.Cam1RoiPosXSlider.Value;
@@ -70,7 +68,7 @@ namespace DartboardRecognition
             surfaceCenterSlider = view.Cam1SurfaceCenterSlider.Value;
             surfaceLeftSlider = view.Cam1SurfaceLeftSlider.Value;
             surfaceRightSlider = view.Cam1SurfaceRightSlider.Value;
-            videoCapture = new VideoCapture(int.Parse(camIndexBox.Text));
+            videoCapture = new VideoCapture(int.Parse(view.Cam1IndexBox.Text));
             videoCapture.SetCaptureProperty(CapProp.FrameWidth, 1920);
             videoCapture.SetCaptureProperty(CapProp.FrameHeight, 1080);
         }
@@ -80,7 +78,6 @@ namespace DartboardRecognition
     {
         public Cam2(MainWindow view)
         {
-            camIndexBox = view.Cam2IndexBox;
             tresholdMinSlider = view.Cam2TresholdMinSlider.Value;
             tresholdMaxSlider = view.Cam2TresholdMaxSlider.Value;
             roiPosXSlider = view.Cam2RoiPosXSlider.Value;
@@ -91,7 +88,7 @@ namespace DartboardRecognition
             surfaceCenterSlider = view.Cam2SurfaceCenterSlider.Value;
             surfaceLeftSlider = view.Cam2SurfaceLeftSlider.Value;
             surfaceRightSlider = view.Cam2SurfaceRightSlider.Value;
-            videoCapture = new VideoCapture(int.Parse(camIndexBox.Text));
+            videoCapture = new VideoCapture(int.Parse(view.Cam2IndexBox.Text));
             videoCapture.SetCaptureProperty(CapProp.FrameWidth, 1920);
             videoCapture.SetCaptureProperty(CapProp.FrameHeight, 1080);
         }

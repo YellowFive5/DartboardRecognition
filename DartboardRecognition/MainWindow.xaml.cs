@@ -19,7 +19,7 @@ namespace DartboardRecognition
         public Bgr CamRoiRectColor { get; } = new Bgr(System.Drawing.Color.LawnGreen);
         public int CamRoiRectThickness { get; } = 5;
         public MCvScalar CamContourColor { get; } = new Bgr(System.Drawing.Color.Violet).MCvScalar;
-        public int CamCountourThickness { get; } = 2;
+        public int CamContourThickness { get; } = 2;
         public MCvScalar CamContourRectColor { get; } = new Bgr(System.Drawing.Color.Blue).MCvScalar;
         public int CamContourRectThickness { get; } = 5;
         public MCvScalar CamSpikeLineColor { get; } = new Bgr(System.Drawing.Color.White).MCvScalar;

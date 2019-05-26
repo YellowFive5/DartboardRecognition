@@ -14,7 +14,7 @@ using Emgu.CV.Structure;
 
 namespace DartboardRecognition
 {
-    public class MainWindowViewModel : INotifyPropertyChanged
+    public class MainWindowViewModel : IMainWindowViewModel
     {
         private Cam cam1;
         private Cam cam2;
@@ -79,7 +79,6 @@ namespace DartboardRecognition
             this.view = view;
             LoadSettings();
         }
-
 
         public void StartCapture()
         {
@@ -193,6 +192,7 @@ namespace DartboardRecognition
                     Cam1ImageBoxRoi.Dispatcher.BeginInvoke(new Action(() => Cam1ImageBoxRoi = drawman1.ConvertToBitmap(cam1.roiTrasholdFrame)));
                 }
             }
+
             cam1.videoCapture.Dispose();
             Cam1ImageBox.Dispatcher.BeginInvoke(new Action(() => Cam1ImageBox = new BitmapImage()));
             Cam1ImageBoxRoi.Dispatcher.BeginInvoke(new Action(() => Cam1ImageBoxRoi = new BitmapImage()));
@@ -224,6 +224,7 @@ namespace DartboardRecognition
                     Cam2ImageBoxRoi.Dispatcher.BeginInvoke(new Action(() => Cam2ImageBoxRoi = drawman2.ConvertToBitmap(cam2.roiTrasholdFrame)));
                 }
             }
+
             cam2.videoCapture.Dispose();
             Cam2ImageBox.Dispatcher.BeginInvoke(new Action(() => Cam2ImageBox = new BitmapImage()));
             Cam2ImageBoxRoi.Dispatcher.BeginInvoke(new Action(() => Cam2ImageBoxRoi = new BitmapImage()));
