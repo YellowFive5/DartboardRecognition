@@ -18,6 +18,7 @@ namespace DartboardRecognition
     {
         private MainWindow view;
         private Drawman drawman;
+        private Storage storage;
         private Cam cam1;
         private Cam cam2;
         private Measureman measureman1;
@@ -76,6 +77,7 @@ namespace DartboardRecognition
         public MainWindowViewModel(MainWindow view)
         {
             this.view = view;
+            storage = new Storage();
             LoadSettings();
         }
 
@@ -84,8 +86,8 @@ namespace DartboardRecognition
             cam1 = new Cam1(view);
             cam2 = new Cam2(view);
             drawman = new Drawman();
-            measureman1 = new Measureman(view, drawman);
-            measureman2 = new Measureman(view, drawman);
+            measureman1 = new Measureman(view, drawman, storage);
+            measureman2 = new Measureman(view, drawman, storage);
             Cam1ImageBox = new BitmapImage();
             Cam2ImageBox = new BitmapImage();
             Cam1ImageBoxRoi = new BitmapImage();

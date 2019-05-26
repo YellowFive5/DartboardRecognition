@@ -43,11 +43,11 @@ namespace DartboardRecognition
         private int maxContourArcLength = 600;
         private Cam workingCam;
 
-        public Measureman(MainWindow view, Drawman drawman)
+        public Measureman(MainWindow view, Drawman drawman, Storage storage)
         {
             this.view = view;
             this.drawman = drawman;
-            storage = new Storage();
+            this.storage = storage;
         }
 
         public void SetupWorkingCam(Cam cam)
