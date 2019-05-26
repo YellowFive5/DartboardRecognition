@@ -71,11 +71,11 @@ namespace DartboardRecognition
 
         private void ClearImageBoxes()
         {
-            ImageBox1.Source = null;
-            ImageBox1Roi.Source = null;
-            ImageBox2.Source = null;
-            ImageBox2Roi.Source = null;
-            ImageBox3.Source = null;
+            Cam1ImageBox.Source = null;
+            Cam1ImageBoxRoi.Source = null;
+            Cam2ImageBox.Source = null;
+            Cam2ImageBoxRoi.Source = null;
+            DartboardProjectionImageBox.Source = null;
             PointsBox.Text = "";
         }
 

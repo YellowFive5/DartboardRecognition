@@ -54,6 +54,7 @@ namespace DartboardRecognition
             matHierarсhy = new Mat();
         }
     }
+
     public class Cam1 : Cam
     {
         public Cam1(MainWindow view)

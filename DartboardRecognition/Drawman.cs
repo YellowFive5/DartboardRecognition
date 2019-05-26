@@ -1,11 +1,9 @@
 ﻿#region Usings
 
-using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Media.Imaging;
-using System.Windows.Threading;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
@@ -49,18 +47,6 @@ namespace DartboardRecognition
         {
             var bitmap = ConvertToBitmap(image);
             imageBox.Dispatcher.Invoke(() => { imageBox.Source = bitmap; });
-        }
-
-        public void SaveToImageBox1(IImage image, Image imageBox)
-        {
-            var bitmap = ConvertToBitmap(image);
-            view.ImageBox1.Dispatcher.BeginInvoke(new Action(() => view.ImageBox1.Source = bitmap), DispatcherPriority.ContextIdle);
-        }
-
-        public void SaveToImageBox2(IImage image, Image imageBox)
-        {
-            var bitmap = ConvertToBitmap(image);
-            view.ImageBox2.Dispatcher.BeginInvoke(new Action(() => view.ImageBox2.Source = bitmap), DispatcherPriority.ContextIdle);
         }
 
         public BitmapImage ConvertToBitmap(IImage image)

@@ -298,7 +298,7 @@ namespace DartboardRecognition
                                view.ProjectionDigitsColor,
                                view.ProjectionDigitsThickness);
 
-            drawman.SaveToImageBox(dartboardProjectionFrame, view.ImageBox3);
+            drawman.SaveToImageBox(dartboardProjectionFrame, view.DartboardProjectionImageBox);
         }
 
         public void CalculateDartContour()
@@ -472,7 +472,7 @@ namespace DartboardRecognition
                 var anotherThrow = PrepareThrowData(poi);
                 storage.SaveThrow(anotherThrow);
                 drawman.DrawCircle(dartboardWorkingProjectionFrame, poi, view.PoiRadius, view.PoiColor, view.PoiThickness);
-                drawman.SaveToImageBox(dartboardWorkingProjectionFrame, view.ImageBox3);
+                drawman.SaveToImageBox(dartboardWorkingProjectionFrame, view.DartboardProjectionImageBox);
                 view.PointsBox.Text += $"{anotherThrow.Sector} x {anotherThrow.Multiplier} = {anotherThrow.TotalPoints}\n";
             }
         }

@@ -25,30 +25,52 @@ namespace DartboardRecognition
         private Drawman drawman2;
         private CancellationToken cancelToken;
         private CancellationTokenSource cts;
-        private BitmapImage imageBox1;
-        private BitmapImage imageBox2;
+        private BitmapImage cam1ImageBox;
+        private BitmapImage cam2ImageBox;
+        private BitmapImage cam1ImageBoxRoi;
+        private BitmapImage cam2ImageBoxRoi;
 
         public MainWindowViewModel()
         {
         }
 
-        public BitmapImage ImageBox1
+        public BitmapImage Cam1ImageBox
         {
-            get => imageBox1;
+            get => cam1ImageBox;
             set
             {
-                imageBox1 = value;
-                OnPropertyChanged($"{nameof(ImageBox1)}");
+                cam1ImageBox = value;
+                OnPropertyChanged($"{nameof(Cam1ImageBox)}");
             }
         }
 
-        public BitmapImage ImageBox2
+        public BitmapImage Cam2ImageBox
         {
-            get => imageBox2;
+            get => cam2ImageBox;
             set
             {
-                imageBox2 = value;
-                OnPropertyChanged($"{nameof(ImageBox2)}");
+                cam2ImageBox = value;
+                OnPropertyChanged($"{nameof(Cam2ImageBox)}");
+            }
+        }
+
+        public BitmapImage Cam1ImageBoxRoi
+        {
+            get => cam1ImageBoxRoi;
+            set
+            {
+                cam1ImageBoxRoi = value;
+                OnPropertyChanged($"{nameof(Cam1ImageBoxRoi)}");
+            }
+        }
+
+        public BitmapImage Cam2ImageBoxRoi
+        {
+            get => cam2ImageBoxRoi;
+            set
+            {
+                cam2ImageBoxRoi = value;
+                OnPropertyChanged($"{nameof(Cam2ImageBoxRoi)}");
             }
         }
 
@@ -69,8 +91,10 @@ namespace DartboardRecognition
             drawman2 = new Drawman(view);
             measureman1 = new Measureman(view, drawman1);
             measureman2 = new Measureman(view, drawman2);
-            ImageBox1 = new BitmapImage();
-            ImageBox2 = new BitmapImage();
+            Cam1ImageBox = new BitmapImage();
+            Cam2ImageBox = new BitmapImage();
+            Cam1ImageBoxRoi = new BitmapImage();
+            Cam2ImageBoxRoi = new BitmapImage();
 
             measureman1.CalculateDartboardProjection();
 
@@ -167,12 +191,8 @@ namespace DartboardRecognition
                         measureman1.CalculateDartContour();
                     }
 
-                    // drawman1.SaveToImageBox1(cam1.linedFrame, view.ImageBox1);
-
-                    ImageBox1.Dispatcher.BeginInvoke(new Action(() => ImageBox1 = drawman1.ConvertToBitmap(cam1.linedFrame)));
-
-                    // drawman1.SaveToImageBox(cam1.roiTrasholdFrame, view.ImageBox1Roi);
-                    // Test = cam1.allContours.ToString();
+                    Cam1ImageBox.Dispatcher.BeginInvoke(new Action(() => Cam1ImageBox = drawman1.ConvertToBitmap(cam1.linedFrame)));
+                    Cam1ImageBoxRoi.Dispatcher.BeginInvoke(new Action(() => Cam1ImageBoxRoi = drawman1.ConvertToBitmap(cam1.roiTrasholdFrame)));
                 }
             }
         }
@@ -199,10 +219,8 @@ namespace DartboardRecognition
                         measureman2.CalculateDartContour();
                     }
 
-                    ImageBox2.Dispatcher.BeginInvoke(new Action(() => ImageBox2 = drawman2.ConvertToBitmap(cam2.linedFrame)));
-
-                    // drawman2.SaveToImageBox2(cam2.linedFrame, view.ImageBox2);
-                    // drawman2.SaveToImageBox(cam2.roiTrasholdFrame, view.ImageBox2Roi);
+                    Cam2ImageBox.Dispatcher.BeginInvoke(new Action(() => Cam2ImageBox = drawman2.ConvertToBitmap(cam2.linedFrame)));
+                    Cam2ImageBoxRoi.Dispatcher.BeginInvoke(new Action(() => Cam2ImageBoxRoi = drawman2.ConvertToBitmap(cam2.roiTrasholdFrame)));
                 }
             }
         }
