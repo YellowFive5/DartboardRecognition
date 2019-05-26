@@ -59,20 +59,20 @@ namespace DartboardRecognition
         {
             workingCam.linedFrame = workingCam.originFrame.Clone();
 
-            roiRectangle = new Rectangle((int) workingCam.roiPosXSlider.Value,
-                                         (int) workingCam.roiPosYSlider.Value,
-                                         (int) workingCam.roiWidthSlider.Value,
-                                         (int) workingCam.roiHeightSlider.Value);
+            roiRectangle = new Rectangle((int) workingCam.roiPosXSlider,
+                                         (int) workingCam.roiPosYSlider,
+                                         (int) workingCam.roiWidthSlider,
+                                         (int) workingCam.roiHeightSlider);
             drawman.DrawRectangle(workingCam.linedFrame, roiRectangle, view.CamRoiRectColor.MCvScalar, view.CamRoiRectThickness);
 
-            workingCam.surfacePoint1 = new Point(0, (int) workingCam.surfaceSlider.Value);
-            workingCam.surfacePoint2 = new Point(workingCam.originFrame.Cols, (int) workingCam.surfaceSlider.Value);
+            workingCam.surfacePoint1 = new Point(0, (int) workingCam.surfaceSlider);
+            workingCam.surfacePoint2 = new Point(workingCam.originFrame.Cols, (int) workingCam.surfaceSlider);
             drawman.DrawLine(workingCam.linedFrame, workingCam.surfacePoint1, workingCam.surfacePoint2, view.CamSurfaceLineColor.MCvScalar, view.CamSurfaceLineThickness);
 
             workingCam.surfaceCenterPoint1 = new Point
                                              {
-                                                 X = (int) workingCam.surfaceCenterSlider.Value,
-                                                 Y = (int) workingCam.surfaceSlider.Value
+                                                 X = (int) workingCam.surfaceCenterSlider,
+                                                 Y = (int) workingCam.surfaceSlider
                                              };
             workingCam.surfaceCenterPoint2 = new Point
                                              {
@@ -83,8 +83,8 @@ namespace DartboardRecognition
 
             workingCam.surfaceLeftPoint1 = new Point
                                            {
-                                               X = (int) workingCam.surfaceLeftSlider.Value,
-                                               Y = (int) workingCam.surfaceSlider.Value
+                                               X = (int) workingCam.surfaceLeftSlider,
+                                               Y = (int) workingCam.surfaceSlider
                                            };
             workingCam.surfaceLeftPoint2 = new Point
                                            {
@@ -95,8 +95,8 @@ namespace DartboardRecognition
 
             workingCam.surfaceRightPoint1 = new Point
                                             {
-                                                X = (int) workingCam.surfaceRightSlider.Value,
-                                                Y = (int) workingCam.surfaceSlider.Value
+                                                X = (int) workingCam.surfaceRightSlider,
+                                                Y = (int) workingCam.surfaceSlider
                                             };
             workingCam.surfaceRightPoint2 = new Point
                                             {
@@ -306,8 +306,8 @@ namespace DartboardRecognition
             // workingCam.roiContourFrame = workingCam.roiFrame.Clone();
             var firstImage = workingCam.roiTrasholdFrame;
             var secondImage = workingCam.videoCapture.QueryFrame().ToImage<Gray, byte>().Not()
-                                        .ThresholdBinary(new Gray(workingCam.tresholdMinSlider.Value),
-                                                         new Gray(workingCam.tresholdMaxSlider.Value));
+                                        .ThresholdBinary(new Gray(workingCam.tresholdMinSlider),
+                                                         new Gray(workingCam.tresholdMaxSlider));
             secondImage.ROI = roiRectangle;
             var diffImage = secondImage.AbsDiff(firstImage);
             workingCam.roiTrasholdFrame = diffImage;
@@ -343,16 +343,16 @@ namespace DartboardRecognition
             var contour = workingCam.workingContours.Pop();
 
             contourMoments = CvInvoke.Moments(contour);
-            contourCenterPoint = new Point((int) (contourMoments.M10 / contourMoments.M00), (int) workingCam.roiPosYSlider.Value + (int) (contourMoments.M01 / contourMoments.M00));
+            contourCenterPoint = new Point((int) (contourMoments.M10 / contourMoments.M00), (int) workingCam.roiPosYSlider + (int) (contourMoments.M01 / contourMoments.M00));
             drawman.DrawCircle(workingCam.linedFrame, contourCenterPoint, 4, new Bgr(Color.Blue).MCvScalar, 3);
 
             // Find contour rectangle
             var rect = CvInvoke.MinAreaRect(contour);
             var box = CvInvoke.BoxPoints(rect);
-            contourBoxPoint1 = new Point((int) box[0].X, (int) workingCam.roiPosYSlider.Value + (int) box[0].Y);
-            contourBoxPoint2 = new Point((int) box[1].X, (int) workingCam.roiPosYSlider.Value + (int) box[1].Y);
-            contourBoxPoint3 = new Point((int) box[2].X, (int) workingCam.roiPosYSlider.Value + (int) box[2].Y);
-            contourBoxPoint4 = new Point((int) box[3].X, (int) workingCam.roiPosYSlider.Value + (int) box[3].Y);
+            contourBoxPoint1 = new Point((int) box[0].X, (int) workingCam.roiPosYSlider + (int) box[0].Y);
+            contourBoxPoint2 = new Point((int) box[1].X, (int) workingCam.roiPosYSlider + (int) box[1].Y);
+            contourBoxPoint3 = new Point((int) box[2].X, (int) workingCam.roiPosYSlider + (int) box[2].Y);
+            contourBoxPoint4 = new Point((int) box[3].X, (int) workingCam.roiPosYSlider + (int) box[3].Y);
             drawman.DrawLine(workingCam.linedFrame, contourBoxPoint1, contourBoxPoint2, view.CamContourRectColor, view.CamContourRectThickness);
             drawman.DrawLine(workingCam.linedFrame, contourBoxPoint2, contourBoxPoint3, view.CamContourRectColor, view.CamContourRectThickness);
             drawman.DrawLine(workingCam.linedFrame, contourBoxPoint3, contourBoxPoint4, view.CamContourRectColor, view.CamContourRectThickness);
@@ -706,9 +706,9 @@ namespace DartboardRecognition
 
             var moves = diffImage.CountNonzero()[0];
 
-            view.PointsBox.Text = $"{moves.ToString()}\n";
+            // view.PointsBox.Text = $"{moves.ToString()}\n";
 
-            if (moves > 190000)
+            if (moves > 590000)
             {
                 Thread.Sleep(50);
                 return true;

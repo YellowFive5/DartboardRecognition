@@ -46,11 +46,11 @@
         <Slider x:Name="Cam2SurfaceLeftSlider"  HorizontalAlignment="Left" Margin="810,672,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="627" Maximum="2000" Value="536"/>
         <Slider x:Name="Cam2SurfaceRightSlider"  HorizontalAlignment="Left" Margin="810,695,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="627" Maximum="2000" Value="536"/>
 
-        <Image x:Name="ImageBox1"  HorizontalAlignment="Left" Height="308" Margin="10,34,0,0" VerticalAlignment="Top" Width="550" />
-        <Image x:Name="ImageBox1Roi"  HorizontalAlignment="Left" Height="72" Margin="9,370,0,0" VerticalAlignment="Top" Width="551" />
-        <Image x:Name="ImageBox2"  HorizontalAlignment="Left" Height="308" Margin="895,34,0,0" VerticalAlignment="Top" Width="550" />
-        <Image x:Name="ImageBox2Roi"  HorizontalAlignment="Left" Height="72" Margin="895,370,0,0" VerticalAlignment="Top" Width="550" />
-        <Image x:Name="ImageBox3" HorizontalAlignment="Left" Height="308" Margin="571,34,0,0" VerticalAlignment="Top" Width="314" />
+        <Image x:Name="ImageBox1" x:FieldModifier="public" HorizontalAlignment="Left" Height="308" Margin="10,34,0,0" VerticalAlignment="Top" Width="550" />
+        <Image x:Name="ImageBox1Roi" x:FieldModifier="public" HorizontalAlignment="Left" Height="72" Margin="9,370,0,0" VerticalAlignment="Top" Width="551" />
+        <Image x:Name="ImageBox2" x:FieldModifier="public" HorizontalAlignment="Left" Height="308" Margin="895,34,0,0" VerticalAlignment="Top" Width="550" />
+        <Image x:Name="ImageBox2Roi" x:FieldModifier="public" HorizontalAlignment="Left" Height="72" Margin="895,370,0,0" VerticalAlignment="Top" Width="550" />
+        <Image x:Name="ImageBox3" x:FieldModifier="public" HorizontalAlignment="Left" Height="308" Margin="571,34,0,0" VerticalAlignment="Top" Width="314" />
 
         <Label Content="Camera index" HorizontalAlignment="Left" Margin="692,454,0,0" VerticalAlignment="Top" Width="92" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" HorizontalContentAlignment="Center" RenderTransformOrigin="0.594,0.181"/>
         <Label Content="Treshold min" HorizontalAlignment="Left" Margin="692,479,0,0" VerticalAlignment="Top" Width="92" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" HorizontalContentAlignment="Center" RenderTransformOrigin="0.594,0.181"/>

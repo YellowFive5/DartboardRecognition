@@ -16,8 +16,10 @@ namespace DartboardRecognition
         private Cam cam2;
         private MainWindow view;
         private Dispatcher dispatcher;
-        private Measureman measureman;
-        private Drawman drawman;
+        private Measureman measureman1;
+        private Measureman measureman2;
+        private Drawman drawman1;
+        private Drawman drawman2;
         private CancellationToken cancelToken;
         private CancellationTokenSource cts;
 
@@ -34,10 +36,12 @@ namespace DartboardRecognition
         {
             cam1 = new Cam1(view);
             cam2 = new Cam2(view);
-            drawman = new Drawman();
-            measureman = new Measureman(view, drawman);
+            drawman1 = new Drawman(view);
+            drawman2 = new Drawman(view);
+            measureman1 = new Measureman(view, drawman1);
+            measureman2 = new Measureman(view, drawman2);
 
-            measureman.CalculateDartboardProjection();
+            measureman1.CalculateDartboardProjection();
 
             if (view.Throw1RadioButton.IsChecked.Value)
             {
@@ -57,19 +61,15 @@ namespace DartboardRecognition
                 cam2.SetProcessingCapture(3);
             }
 
-            new Task(() => CaptureImage(cam1)).Start();
-            new Task(() => CaptureImage(cam2)).Start();
-            // cam1.camHandler = (s, e2) => CaptureImage(cam1);
-            // cam2.camHandler = (s, e2) => CaptureImage(cam2);
-            // dispatcher.Hooks.DispatcherInactive += cam1.camHandler;
-            // dispatcher.Hooks.DispatcherInactive += cam2.camHandler;
+            var t = new Task(CaptureImageCam1);
+            var t2 = new Task(CaptureImageCam2);
+            t.Start();
+            t2.Start();
         }
 
         public void StopCapture()
         {
             cts.Cancel();
-            // dispatcher.Hooks.DispatcherInactive -= cam1.camHandler;
-            // dispatcher.Hooks.DispatcherInactive -= cam2.camHandler;
             cam1.videoCapture.Dispose();
             cam2.videoCapture.Dispose();
         }
@@ -132,33 +132,58 @@ namespace DartboardRecognition
             configManager.Save(ConfigurationSaveMode.Modified);
         }
 
-        private void CaptureImage(Cam cam)
+        private void CaptureImageCam1()
         {
             while (!cancelToken.IsCancellationRequested)
             {
-                // cam.originFrame = view.UseCamsRadioButton.IsChecked.Value
-                //                       ? cam.videoCapture.QueryFrame().ToImage<Bgr, byte>()
-                //                       : cam.processingCapture.Clone();
-                cam.originFrame = cam.videoCapture.QueryFrame().ToImage<Bgr, byte>();
-                using (cam.originFrame)
+                cam1.originFrame = cam1.videoCapture.QueryFrame().ToImage<Bgr, byte>();
+                using (cam1.originFrame)
                 {
-                    if (cam.originFrame == null)
+                    if (cam1.originFrame == null)
                     {
                         return;
                     }
 
-                    measureman.SetupWorkingCam(cam);
-                    measureman.CalculateSetupLines();
-                    measureman.CalculateRoiRegion();
-                    drawman.TresholdRoiRegion(cam);
+                    measureman1.SetupWorkingCam(cam1);
+                    measureman1.CalculateSetupLines();
+                    measureman1.CalculateRoiRegion();
+                    drawman1.TresholdRoiRegion(cam1);
 
-                    if (measureman.ThrowDetected())
+                    if (measureman1.ThrowDetected())
                     {
-                        measureman.CalculateDartContour();
+                        measureman1.CalculateDartContour();
                     }
 
-                    drawman.SaveToImageBox(cam.linedFrame, cam.imageBox);
-                    drawman.SaveToImageBox(cam.roiTrasholdFrame, cam.imageBoxRoi);
+                    drawman1.SaveToImageBox1(cam1.linedFrame, view.ImageBox1);
+                    // drawman1.SaveToImageBox(cam1.roiTrasholdFrame, view.ImageBox1Roi);
+                }
+            }
+        }
+
+        private void CaptureImageCam2()
+        {
+            while (!cancelToken.IsCancellationRequested)
+            {
+                cam2.originFrame = cam2.videoCapture.QueryFrame().ToImage<Bgr, byte>();
+                using (cam2.originFrame)
+                {
+                    if (cam2.originFrame == null)
+                    {
+                        return;
+                    }
+
+                    measureman2.SetupWorkingCam(cam2);
+                    measureman2.CalculateSetupLines();
+                    measureman2.CalculateRoiRegion();
+                    drawman2.TresholdRoiRegion(cam2);
+
+                    if (measureman2.ThrowDetected())
+                    {
+                        measureman2.CalculateDartContour();
+                    }
+
+                    drawman2.SaveToImageBox2(cam2.linedFrame, view.ImageBox2);
+                    // drawman2.SaveToImageBox(cam2.roiTrasholdFrame, view.ImageBox2Roi);
                 }
             }
         }
