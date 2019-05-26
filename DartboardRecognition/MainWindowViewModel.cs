@@ -78,8 +78,6 @@ namespace DartboardRecognition
         {
             this.view = view;
             LoadSettings();
-            cts = new CancellationTokenSource();
-            cancelToken = cts.Token;
         }
 
 
@@ -95,6 +93,8 @@ namespace DartboardRecognition
             Cam2ImageBox = new BitmapImage();
             Cam1ImageBoxRoi = new BitmapImage();
             Cam2ImageBoxRoi = new BitmapImage();
+            cts = new CancellationTokenSource();
+            cancelToken = cts.Token;
 
             measureman1.CalculateDartboardProjection();
 
@@ -107,8 +107,6 @@ namespace DartboardRecognition
         public void StopCapture()
         {
             cts.Cancel();
-            cam1.videoCapture.Dispose();
-            cam2.videoCapture.Dispose();
         }
 
         private void LoadSettings()
@@ -195,6 +193,9 @@ namespace DartboardRecognition
                     Cam1ImageBoxRoi.Dispatcher.BeginInvoke(new Action(() => Cam1ImageBoxRoi = drawman1.ConvertToBitmap(cam1.roiTrasholdFrame)));
                 }
             }
+            cam1.videoCapture.Dispose();
+            Cam1ImageBox.Dispatcher.BeginInvoke(new Action(() => Cam1ImageBox = new BitmapImage()));
+            Cam1ImageBoxRoi.Dispatcher.BeginInvoke(new Action(() => Cam1ImageBoxRoi = new BitmapImage()));
         }
 
         private void CaptureImageCam2()
@@ -223,6 +224,9 @@ namespace DartboardRecognition
                     Cam2ImageBoxRoi.Dispatcher.BeginInvoke(new Action(() => Cam2ImageBoxRoi = drawman2.ConvertToBitmap(cam2.roiTrasholdFrame)));
                 }
             }
+            cam2.videoCapture.Dispose();
+            Cam2ImageBox.Dispatcher.BeginInvoke(new Action(() => Cam2ImageBox = new BitmapImage()));
+            Cam2ImageBoxRoi.Dispatcher.BeginInvoke(new Action(() => Cam2ImageBoxRoi = new BitmapImage()));
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
