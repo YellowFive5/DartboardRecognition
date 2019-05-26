@@ -48,6 +48,7 @@ namespace DartboardRecognition
         {
             InitializeComponent();
             viewModel = new MainWindowViewModel(this);
+            DataContext = viewModel;
         }
 
         private void OnClosing(object sender, CancelEventArgs e)

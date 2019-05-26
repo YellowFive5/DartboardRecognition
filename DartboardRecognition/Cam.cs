@@ -3,7 +3,6 @@
 using Emgu.CV;
 using Emgu.CV.Structure;
 using Emgu.CV.Util;
-using System;
 using System.Collections.Generic;
 using System.Windows.Controls;
 using Emgu.CV.CvEnum;
@@ -15,9 +14,6 @@ namespace DartboardRecognition
 {
     public class Cam
     {
-        protected Image<Bgr, byte> testCaptureThrow1;
-        protected Image<Bgr, byte> testCaptureThrow2;
-        protected Image<Bgr, byte> testCaptureThrow3;
         public Image<Bgr, byte> processingCapture;
         public VideoCapture videoCapture;
         public Image<Bgr, byte> originFrame;
@@ -57,33 +53,11 @@ namespace DartboardRecognition
             workingContours = new Stack<VectorOfPoint>();
             matHierarсhy = new Mat();
         }
-
-        public void SetProcessingCapture(int throwIndex)
-        {
-            switch (throwIndex)
-            {
-                case 1:
-                    processingCapture = testCaptureThrow1;
-                    break;
-                case 2:
-                    processingCapture = testCaptureThrow2;
-                    break;
-                case 3:
-                    processingCapture = testCaptureThrow3;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException("Only 3 throws avaliable");
-            }
-        }
     }
-
     public class Cam1 : Cam
     {
         public Cam1(MainWindow view)
         {
-            testCaptureThrow1 = new Image<Bgr, byte>(@"..\..\..\..\TestPhoto\Ethalon images\cam1_1.png");
-            testCaptureThrow2 = new Image<Bgr, byte>(@"..\..\..\..\TestPhoto\Ethalon images\cam1_2.png");
-            testCaptureThrow3 = new Image<Bgr, byte>(@"..\..\..\..\TestPhoto\Ethalon images\cam1_3.png");
             camIndexBox = view.Cam1IndexBox;
             tresholdMinSlider = view.Cam1TresholdMinSlider.Value;
             tresholdMaxSlider = view.Cam1TresholdMaxSlider.Value;
@@ -105,9 +79,6 @@ namespace DartboardRecognition
     {
         public Cam2(MainWindow view)
         {
-            testCaptureThrow1 = new Image<Bgr, byte>(@"..\..\..\..\TestPhoto\Ethalon images\cam2_1.png");
-            testCaptureThrow2 = new Image<Bgr, byte>(@"..\..\..\..\TestPhoto\Ethalon images\cam2_2.png");
-            testCaptureThrow3 = new Image<Bgr, byte>(@"..\..\..\..\TestPhoto\Ethalon images\cam2_3.png");
             camIndexBox = view.Cam2IndexBox;
             tresholdMinSlider = view.Cam2TresholdMinSlider.Value;
             tresholdMaxSlider = view.Cam2TresholdMaxSlider.Value;

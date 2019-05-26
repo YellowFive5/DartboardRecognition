@@ -63,7 +63,7 @@ namespace DartboardRecognition
             view.ImageBox2.Dispatcher.BeginInvoke(new Action(() => view.ImageBox2.Source = bitmap), DispatcherPriority.ContextIdle);
         }
 
-        private BitmapImage ConvertToBitmap(IImage image)
+        public BitmapImage ConvertToBitmap(IImage image)
         {
             using (var stream = new MemoryStream())
             {

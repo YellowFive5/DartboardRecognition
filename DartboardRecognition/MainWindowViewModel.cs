@@ -1,36 +1,65 @@
 ﻿#region Usings
 
+using System;
+using System.ComponentModel;
 using System.Configuration;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Threading;
+using System.Windows.Media.Imaging;
+using DartboardRecognition.Annotations;
 using Emgu.CV.Structure;
 
 #endregion
 
 namespace DartboardRecognition
 {
-    public class MainWindowViewModel
+    public class MainWindowViewModel : INotifyPropertyChanged
     {
         private Cam cam1;
         private Cam cam2;
         private MainWindow view;
-        private Dispatcher dispatcher;
         private Measureman measureman1;
         private Measureman measureman2;
         private Drawman drawman1;
         private Drawman drawman2;
         private CancellationToken cancelToken;
         private CancellationTokenSource cts;
+        private BitmapImage imageBox1;
+        private BitmapImage imageBox2;
+
+        public MainWindowViewModel()
+        {
+        }
+
+        public BitmapImage ImageBox1
+        {
+            get => imageBox1;
+            set
+            {
+                imageBox1 = value;
+                OnPropertyChanged($"{nameof(ImageBox1)}");
+            }
+        }
+
+        public BitmapImage ImageBox2
+        {
+            get => imageBox2;
+            set
+            {
+                imageBox2 = value;
+                OnPropertyChanged($"{nameof(ImageBox2)}");
+            }
+        }
 
         public MainWindowViewModel(MainWindow view)
         {
             this.view = view;
-            dispatcher = Dispatcher.CurrentDispatcher;
             LoadSettings();
             cts = new CancellationTokenSource();
             cancelToken = cts.Token;
         }
+
 
         public void StartCapture()
         {
@@ -40,26 +69,10 @@ namespace DartboardRecognition
             drawman2 = new Drawman(view);
             measureman1 = new Measureman(view, drawman1);
             measureman2 = new Measureman(view, drawman2);
+            ImageBox1 = new BitmapImage();
+            ImageBox2 = new BitmapImage();
 
             measureman1.CalculateDartboardProjection();
-
-            if (view.Throw1RadioButton.IsChecked.Value)
-            {
-                cam1.SetProcessingCapture(1);
-                cam2.SetProcessingCapture(1);
-            }
-
-            if (view.Throw2RadioButton.IsChecked.Value)
-            {
-                cam1.SetProcessingCapture(2);
-                cam2.SetProcessingCapture(2);
-            }
-
-            if (view.Throw3RadioButton.IsChecked.Value)
-            {
-                cam1.SetProcessingCapture(3);
-                cam2.SetProcessingCapture(3);
-            }
 
             var t = new Task(CaptureImageCam1);
             var t2 = new Task(CaptureImageCam2);
@@ -154,8 +167,12 @@ namespace DartboardRecognition
                         measureman1.CalculateDartContour();
                     }
 
-                    drawman1.SaveToImageBox1(cam1.linedFrame, view.ImageBox1);
+                    // drawman1.SaveToImageBox1(cam1.linedFrame, view.ImageBox1);
+
+                    ImageBox1.Dispatcher.BeginInvoke(new Action(() => ImageBox1 = drawman1.ConvertToBitmap(cam1.linedFrame)));
+
                     // drawman1.SaveToImageBox(cam1.roiTrasholdFrame, view.ImageBox1Roi);
+                    // Test = cam1.allContours.ToString();
                 }
             }
         }
@@ -182,10 +199,20 @@ namespace DartboardRecognition
                         measureman2.CalculateDartContour();
                     }
 
-                    drawman2.SaveToImageBox2(cam2.linedFrame, view.ImageBox2);
+                    ImageBox2.Dispatcher.BeginInvoke(new Action(() => ImageBox2 = drawman2.ConvertToBitmap(cam2.linedFrame)));
+
+                    // drawman2.SaveToImageBox2(cam2.linedFrame, view.ImageBox2);
                     // drawman2.SaveToImageBox(cam2.roiTrasholdFrame, view.ImageBox2Roi);
                 }
             }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

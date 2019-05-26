@@ -10,6 +10,9 @@
         Width="1478.2"
         ResizeMode="NoResize"
         Closing="OnClosing">
+    <Window.DataContext>
+        <local:MainWindowViewModel />
+    </Window.DataContext>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1195*"/>
@@ -46,9 +49,9 @@
         <Slider x:Name="Cam2SurfaceLeftSlider"  HorizontalAlignment="Left" Margin="810,672,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="627" Maximum="2000" Value="536"/>
         <Slider x:Name="Cam2SurfaceRightSlider"  HorizontalAlignment="Left" Margin="810,695,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="627" Maximum="2000" Value="536"/>
 
-        <Image x:Name="ImageBox1" x:FieldModifier="public" HorizontalAlignment="Left" Height="308" Margin="10,34,0,0" VerticalAlignment="Top" Width="550" />
+        <Image x:Name="ImageBox1" Source="{Binding Path=ImageBox1, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="308" Margin="10,34,0,0" VerticalAlignment="Top" Width="550" />
         <Image x:Name="ImageBox1Roi" x:FieldModifier="public" HorizontalAlignment="Left" Height="72" Margin="9,370,0,0" VerticalAlignment="Top" Width="551" />
-        <Image x:Name="ImageBox2" x:FieldModifier="public" HorizontalAlignment="Left" Height="308" Margin="895,34,0,0" VerticalAlignment="Top" Width="550" />
+        <Image x:Name="ImageBox2" Source="{Binding Path=ImageBox2, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="308" Margin="895,34,0,0" VerticalAlignment="Top" Width="550" />
         <Image x:Name="ImageBox2Roi" x:FieldModifier="public" HorizontalAlignment="Left" Height="72" Margin="895,370,0,0" VerticalAlignment="Top" Width="550" />
         <Image x:Name="ImageBox3" x:FieldModifier="public" HorizontalAlignment="Left" Height="308" Margin="571,34,0,0" VerticalAlignment="Top" Width="314" />
 
@@ -63,7 +66,7 @@
         <Label Content="Surface center" HorizontalAlignment="Left" Margin="692,644,0,0" VerticalAlignment="Top" Width="92" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" HorizontalContentAlignment="Center" RenderTransformOrigin="0.594,0.181"/>
         <Label Content="Surface left" HorizontalAlignment="Left" Margin="692,667,0,0" VerticalAlignment="Top" Width="92" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" HorizontalContentAlignment="Center" RenderTransformOrigin="0.594,0.181"/>
         <Label Content="Surface right" HorizontalAlignment="Left" Margin="692,690,0,0" VerticalAlignment="Top" Width="92" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" HorizontalContentAlignment="Center" RenderTransformOrigin="0.594,0.181"/>
-        
+
         <TextBox x:Name="PointsBox" HorizontalAlignment="Left" Height="84" Margin="583,729,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="302"/>
 
     </Grid>
