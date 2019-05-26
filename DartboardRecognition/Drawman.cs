@@ -16,13 +16,6 @@ namespace DartboardRecognition
 {
     public class Drawman
     {
-        private MainWindow view;
-
-        public Drawman(MainWindow view)
-        {
-            this.view = view;
-        }
-
         public void DrawLine(Image<Bgr, byte> image, Point point1, Point point2, MCvScalar color, int thickness)
         {
             CvInvoke.Line(image, point1, point2, color, thickness);

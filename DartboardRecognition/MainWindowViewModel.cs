@@ -16,23 +16,18 @@ namespace DartboardRecognition
 {
     public class MainWindowViewModel : IMainWindowViewModel
     {
+        private MainWindow view;
+        private Drawman drawman;
         private Cam cam1;
         private Cam cam2;
-        private MainWindow view;
         private Measureman measureman1;
         private Measureman measureman2;
-        private Drawman drawman1;
-        private Drawman drawman2;
         private CancellationToken cancelToken;
         private CancellationTokenSource cts;
         private BitmapImage cam1ImageBox;
         private BitmapImage cam2ImageBox;
         private BitmapImage cam1ImageBoxRoi;
         private BitmapImage cam2ImageBoxRoi;
-
-        public MainWindowViewModel()
-        {
-        }
 
         public BitmapImage Cam1ImageBox
         {
@@ -74,6 +69,10 @@ namespace DartboardRecognition
             }
         }
 
+        public MainWindowViewModel()
+        {
+        }
+
         public MainWindowViewModel(MainWindow view)
         {
             this.view = view;
@@ -84,10 +83,9 @@ namespace DartboardRecognition
         {
             cam1 = new Cam1(view);
             cam2 = new Cam2(view);
-            drawman1 = new Drawman(view);
-            drawman2 = new Drawman(view);
-            measureman1 = new Measureman(view, drawman1);
-            measureman2 = new Measureman(view, drawman2);
+            drawman = new Drawman();
+            measureman1 = new Measureman(view, drawman);
+            measureman2 = new Measureman(view, drawman);
             Cam1ImageBox = new BitmapImage();
             Cam2ImageBox = new BitmapImage();
             Cam1ImageBoxRoi = new BitmapImage();
@@ -181,15 +179,15 @@ namespace DartboardRecognition
                     measureman1.SetupWorkingCam(cam1);
                     measureman1.CalculateSetupLines();
                     measureman1.CalculateRoiRegion();
-                    drawman1.TresholdRoiRegion(cam1);
+                    drawman.TresholdRoiRegion(cam1);
 
                     if (measureman1.ThrowDetected())
                     {
                         measureman1.CalculateDartContour();
                     }
 
-                    Cam1ImageBox.Dispatcher.BeginInvoke(new Action(() => Cam1ImageBox = drawman1.ConvertToBitmap(cam1.linedFrame)));
-                    Cam1ImageBoxRoi.Dispatcher.BeginInvoke(new Action(() => Cam1ImageBoxRoi = drawman1.ConvertToBitmap(cam1.roiTrasholdFrame)));
+                    Cam1ImageBox.Dispatcher.BeginInvoke(new Action(() => Cam1ImageBox = drawman.ConvertToBitmap(cam1.linedFrame)));
+                    Cam1ImageBoxRoi.Dispatcher.BeginInvoke(new Action(() => Cam1ImageBoxRoi = drawman.ConvertToBitmap(cam1.roiTrasholdFrame)));
                 }
             }
 
@@ -213,15 +211,15 @@ namespace DartboardRecognition
                     measureman2.SetupWorkingCam(cam2);
                     measureman2.CalculateSetupLines();
                     measureman2.CalculateRoiRegion();
-                    drawman2.TresholdRoiRegion(cam2);
+                    drawman.TresholdRoiRegion(cam2);
 
                     if (measureman2.ThrowDetected())
                     {
                         measureman2.CalculateDartContour();
                     }
 
-                    Cam2ImageBox.Dispatcher.BeginInvoke(new Action(() => Cam2ImageBox = drawman2.ConvertToBitmap(cam2.linedFrame)));
-                    Cam2ImageBoxRoi.Dispatcher.BeginInvoke(new Action(() => Cam2ImageBoxRoi = drawman2.ConvertToBitmap(cam2.roiTrasholdFrame)));
+                    Cam2ImageBox.Dispatcher.BeginInvoke(new Action(() => Cam2ImageBox = drawman.ConvertToBitmap(cam2.linedFrame)));
+                    Cam2ImageBoxRoi.Dispatcher.BeginInvoke(new Action(() => Cam2ImageBoxRoi = drawman.ConvertToBitmap(cam2.roiTrasholdFrame)));
                 }
             }
 
