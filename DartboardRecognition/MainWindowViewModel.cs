@@ -97,8 +97,8 @@ namespace DartboardRecognition
 
             measureman1.CalculateDartboardProjection();
 
-            var t = new Task(CaptureImageCam1);
-            var t2 = new Task(CaptureImageCam2);
+            var t = new Task(() => CaptureImage(cam1, measureman1));
+            var t2 = new Task(() => CaptureImage(cam2, measureman2));
             t.Start();
             t2.Start();
         }
@@ -166,68 +166,52 @@ namespace DartboardRecognition
             configManager.Save(ConfigurationSaveMode.Modified);
         }
 
-        private void CaptureImageCam1()
+        private void CaptureImage(Cam cam, Measureman measureman)
         {
             while (!cancelToken.IsCancellationRequested)
             {
-                cam1.originFrame = cam1.videoCapture.QueryFrame().ToImage<Bgr, byte>();
-                using (cam1.originFrame)
+                cam.originFrame = cam.videoCapture.QueryFrame().ToImage<Bgr, byte>();
+                using (cam.originFrame)
                 {
-                    if (cam1.originFrame == null)
+                    if (cam.originFrame == null)
                     {
                         return;
                     }
 
-                    measureman1.SetupWorkingCam(cam1);
-                    measureman1.CalculateSetupLines();
-                    measureman1.CalculateRoiRegion();
-                    drawman.TresholdRoiRegion(cam1);
+                    measureman.SetupWorkingCam(cam);
+                    measureman.CalculateSetupLines();
+                    measureman.CalculateRoiRegion();
+                    drawman.TresholdRoiRegion(cam);
 
-                    if (measureman1.ThrowDetected())
+                    if (measureman.ThrowDetected())
                     {
-                        measureman1.CalculateDartContour();
+                        measureman.CalculateDartContour();
                     }
 
-                    Cam1ImageBox.Dispatcher.BeginInvoke(new Action(() => Cam1ImageBox = drawman.ConvertToBitmap(cam1.linedFrame)));
-                    Cam1ImageBoxRoi.Dispatcher.BeginInvoke(new Action(() => Cam1ImageBoxRoi = drawman.ConvertToBitmap(cam1.roiTrasholdFrame)));
+                    if (cam is Cam1)
+                    {
+                        Cam1ImageBox.Dispatcher.BeginInvoke(new Action(() => Cam1ImageBox = drawman.ConvertToBitmap(cam.linedFrame)));
+                        Cam1ImageBoxRoi.Dispatcher.BeginInvoke(new Action(() => Cam1ImageBoxRoi = drawman.ConvertToBitmap(cam.roiTrasholdFrame)));
+                    }
+                    else
+                    {
+                        Cam2ImageBox.Dispatcher.BeginInvoke(new Action(() => Cam2ImageBox = drawman.ConvertToBitmap(cam.linedFrame)));
+                        Cam2ImageBoxRoi.Dispatcher.BeginInvoke(new Action(() => Cam2ImageBoxRoi = drawman.ConvertToBitmap(cam.roiTrasholdFrame)));
+                    }
                 }
             }
 
-            cam1.videoCapture.Dispose();
-            Cam1ImageBox.Dispatcher.BeginInvoke(new Action(() => Cam1ImageBox = new BitmapImage()));
-            Cam1ImageBoxRoi.Dispatcher.BeginInvoke(new Action(() => Cam1ImageBoxRoi = new BitmapImage()));
-        }
-
-        private void CaptureImageCam2()
-        {
-            while (!cancelToken.IsCancellationRequested)
+            cam.videoCapture.Dispose();
+            if (cam is Cam1)
             {
-                cam2.originFrame = cam2.videoCapture.QueryFrame().ToImage<Bgr, byte>();
-                using (cam2.originFrame)
-                {
-                    if (cam2.originFrame == null)
-                    {
-                        return;
-                    }
-
-                    measureman2.SetupWorkingCam(cam2);
-                    measureman2.CalculateSetupLines();
-                    measureman2.CalculateRoiRegion();
-                    drawman.TresholdRoiRegion(cam2);
-
-                    if (measureman2.ThrowDetected())
-                    {
-                        measureman2.CalculateDartContour();
-                    }
-
-                    Cam2ImageBox.Dispatcher.BeginInvoke(new Action(() => Cam2ImageBox = drawman.ConvertToBitmap(cam2.linedFrame)));
-                    Cam2ImageBoxRoi.Dispatcher.BeginInvoke(new Action(() => Cam2ImageBoxRoi = drawman.ConvertToBitmap(cam2.roiTrasholdFrame)));
-                }
+                Cam1ImageBox.Dispatcher.BeginInvoke(new Action(() => Cam1ImageBox = new BitmapImage()));
+                Cam1ImageBoxRoi.Dispatcher.BeginInvoke(new Action(() => Cam1ImageBoxRoi = new BitmapImage()));
             }
-
-            cam2.videoCapture.Dispose();
-            Cam2ImageBox.Dispatcher.BeginInvoke(new Action(() => Cam2ImageBox = new BitmapImage()));
-            Cam2ImageBoxRoi.Dispatcher.BeginInvoke(new Action(() => Cam2ImageBoxRoi = new BitmapImage()));
+            else
+            {
+                Cam2ImageBox.Dispatcher.BeginInvoke(new Action(() => Cam2ImageBox = new BitmapImage()));
+                Cam2ImageBoxRoi.Dispatcher.BeginInvoke(new Action(() => Cam2ImageBoxRoi = new BitmapImage()));
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
