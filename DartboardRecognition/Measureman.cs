@@ -37,8 +37,6 @@ namespace DartboardRecognition
         private Image<Bgr, byte> dartboardWorkingProjectionFrame;
         private int projectionLineCam1Bias = 0;
         private int projectionLineCam2Bias = 0;
-        private Point cam1SetupPoint;
-        private Point cam2SetupPoint;
         private int minContourArcLength = 190;
         private int maxContourArcLength = 600;
         private Cam workingCam;
@@ -117,8 +115,6 @@ namespace DartboardRecognition
             // Draw dartboard projection
             dartboardProjectionFrame = new Image<Bgr, byte>(view.ProjectionFrameWidth, view.ProjectionFrameHeight);
             projectionCenterPoint = new Point(dartboardProjectionFrame.Width / 2, dartboardProjectionFrame.Height / 2);
-            cam1SetupPoint = new Point(30, 30);
-            cam2SetupPoint = new Point(dartboardProjectionFrame.Cols - 30, 30);
 
             drawman.DrawCircle(dartboardProjectionFrame, projectionCenterPoint, view.ProjectionCoefficent * 7, view.ProjectionGridColor, view.ProjectionGridThickness);
             drawman.DrawCircle(dartboardProjectionFrame, projectionCenterPoint, view.ProjectionCoefficent * 17, view.ProjectionGridColor, view.ProjectionGridThickness);
@@ -394,9 +390,7 @@ namespace DartboardRecognition
         private Point CalculateLineThroughPoi(Point projectionPoi)
         {
             // Draw line from cam through projection POI
-            var rayPoint1 = workingCam is Cam1
-                                ? cam1SetupPoint
-                                : cam2SetupPoint;
+            var rayPoint1 = workingCam.setupPoint;
 
             var rayPoint2 = projectionPoi;
             var angle = FindAngle(rayPoint1, rayPoint2);
@@ -416,8 +410,6 @@ namespace DartboardRecognition
             var camFovSemiAngle = camFovAngle / 2;
             var projectionPoi = new Point();
             var projectionToCenter = new Point();
-            Point camSetupPoint;
-            double toCenterAngle;
             var surfacePoiToCenterDistance = FindDistance(workingCam.surfaceCenterPoint1, camPoi.GetValueOrDefault());
             var surfaceLeftToPoiDistance = FindDistance(workingCam.surfaceLeftPoint1, camPoi.GetValueOrDefault());
             var surfaceRightToPoiDistance = FindDistance(workingCam.surfaceRightPoint1, camPoi.GetValueOrDefault());
@@ -426,27 +418,16 @@ namespace DartboardRecognition
             var projectionPoiToCenterDistance = Math.Sqrt(Math.Pow(projectionCamToPoiDistance, 2) - Math.Pow(projectionCamToCenterDistance, 2));
             var poiCamCenterAngle = Math.Asin(projectionPoiToCenterDistance / projectionCamToPoiDistance);
 
-            if (workingCam is Cam1)
-            {
-                toCenterAngle = 0.785398;
-                camSetupPoint = cam1SetupPoint;
-            }
-            else
-            {
-                toCenterAngle = 2.35619;
-                camSetupPoint = cam2SetupPoint;
-            }
-
-            projectionToCenter.X = (int) (camSetupPoint.X - Math.Cos(toCenterAngle) * projectionCamToCenterDistance);
-            projectionToCenter.Y = (int) (camSetupPoint.Y - Math.Sin(toCenterAngle) * projectionCamToCenterDistance);
+            projectionToCenter.X = (int) (workingCam.setupPoint.X - Math.Cos(workingCam.toBullAngle) * projectionCamToCenterDistance);
+            projectionToCenter.Y = (int) (workingCam.setupPoint.Y - Math.Sin(workingCam.toBullAngle) * projectionCamToCenterDistance);
 
             if (surfaceLeftToPoiDistance < surfaceRightToPoiDistance)
             {
                 poiCamCenterAngle *= -1;
             }
 
-            projectionPoi.X = (int) (camSetupPoint.X + Math.Cos(toCenterAngle + poiCamCenterAngle) * 2000);
-            projectionPoi.Y = (int) (camSetupPoint.Y + Math.Sin(toCenterAngle + poiCamCenterAngle) * 2000);
+            projectionPoi.X = (int) (workingCam.setupPoint.X + Math.Cos(workingCam.toBullAngle + poiCamCenterAngle) * 2000);
+            projectionPoi.Y = (int) (workingCam.setupPoint.Y + Math.Sin(workingCam.toBullAngle + poiCamCenterAngle) * 2000);
 
             //drawman.DrawCircle(dartboardProjectionFrame, projectionToCenter, view.ProjectionPoiRadius, view.ProjectionPoiColor, view.ProjectionPoiThickness);
             //drawman.DrawCircle(dartboardProjectionFrame, projectionPoi, view.ProjectionPoiRadius, view.ProjectionPoiColor, view.ProjectionPoiThickness);
@@ -464,9 +445,9 @@ namespace DartboardRecognition
             var counter = storage.Cam2RaysCollection.Count;
             for (var i = 0; i < counter; i++)
             {
-                var poi = FindLinesIntersection(cam1SetupPoint,
+                var poi = FindLinesIntersection(view.Cam1SetupPoint,
                                                 storage.Cam1RaysCollection.Dequeue(),
-                                                cam2SetupPoint,
+                                                view.Cam2SetupPoint,
                                                 storage.Cam2RaysCollection.Dequeue());
                 storage.SavePoi(poi);
                 var anotherThrow = PrepareThrowData(poi);

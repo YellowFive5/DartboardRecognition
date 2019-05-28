@@ -4,7 +4,6 @@ using Emgu.CV;
 using Emgu.CV.Structure;
 using Emgu.CV.Util;
 using System.Collections.Generic;
-using System.Windows.Controls;
 using Emgu.CV.CvEnum;
 using Point = System.Drawing.Point;
 
@@ -43,6 +42,8 @@ namespace DartboardRecognition
         public double surfaceCenterSlider;
         public double surfaceLeftSlider;
         public double surfaceRightSlider;
+        public Point setupPoint;
+        public double toBullAngle;
 
         protected Cam()
         {
@@ -71,6 +72,8 @@ namespace DartboardRecognition
             videoCapture = new VideoCapture(int.Parse(view.Cam1IndexBox.Text));
             videoCapture.SetCaptureProperty(CapProp.FrameWidth, 1920);
             videoCapture.SetCaptureProperty(CapProp.FrameHeight, 1080);
+            setupPoint = view.Cam1SetupPoint;
+            toBullAngle = 0.785398;
         }
     }
 
@@ -91,6 +94,8 @@ namespace DartboardRecognition
             videoCapture = new VideoCapture(int.Parse(view.Cam2IndexBox.Text));
             videoCapture.SetCaptureProperty(CapProp.FrameWidth, 1920);
             videoCapture.SetCaptureProperty(CapProp.FrameHeight, 1080);
+            setupPoint = view.Cam2SetupPoint;
+            toBullAngle = 2.35619;
         }
     }
 }

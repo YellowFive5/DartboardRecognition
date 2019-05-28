@@ -3,6 +3,7 @@
 using System.ComponentModel;
 using System.Windows;
 using Emgu.CV.Structure;
+using Point = System.Drawing.Point;
 
 #endregion
 
@@ -30,6 +31,8 @@ namespace DartboardRecognition
         public MCvScalar ProjectionGridColor { get; } = new Bgr(System.Drawing.Color.DarkGray).MCvScalar;
         public int ProjectionFrameHeight { get; } = 1200;
         public int ProjectionFrameWidth { get; } = 1200;
+        public Point Cam1SetupPoint { get; } = new Point(30, 30);
+        public Point Cam2SetupPoint { get; } = new Point(1200 - 30, 30);
         public int ProjectionCoefficent { get; } = 3;
         public int ProjectionGridThickness { get; } = 2;
         public MCvScalar ProjectionSurfaceLineColor { get; } = new Bgr(System.Drawing.Color.Red).MCvScalar;
@@ -42,7 +45,6 @@ namespace DartboardRecognition
         public Bgr ProjectionDigitsColor { get; } = new Bgr(System.Drawing.Color.White);
         public double ProjectionDigitsScale { get; } = 2;
         public int ProjectionDigitsThickness { get; } = 2;
-
 
         public MainWindow()
         {
