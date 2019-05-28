@@ -38,6 +38,8 @@ namespace DartboardRecognition
         private int projectionLineCam1Bias = 0;
         private int projectionLineCam2Bias = 0;
         private Cam workingCam;
+        private Point projectionPoi;
+        private Point rayPoint;
 
         public Measureman(MainWindow view, Drawman drawman, Storage storage)
         {
@@ -334,8 +336,30 @@ namespace DartboardRecognition
         private void Work()
         {
             dartboardWorkingProjectionFrame = dartboardProjectionFrame.Clone();
-            var contour = workingCam.workingContours.Pop();
 
+            PrepareContour();
+
+            CalculateSpikeLine();
+
+            CalculateCamPoi();
+
+            TranslateCamPoiToProjection();
+
+            CalculateCamThroughPoiRay();
+
+            CollectRay();
+
+            FindProjectionPois();
+
+            // drawman.SaveToImageBox(dartboardWorkingProjectionFrame, view.ImageBox3);
+
+            workingCam.allContours.Clear();
+            workingCam.workingContours.Clear();
+        }
+
+        private void PrepareContour()
+        {
+            var contour = workingCam.workingContours.Pop();
             contourMoments = CvInvoke.Moments(contour);
             contourCenterPoint = new Point((int) (contourMoments.M10 / contourMoments.M00), (int) workingCam.roiPosYSlider + (int) (contourMoments.M01 / contourMoments.M00));
             drawman.DrawCircle(workingCam.linedFrame, contourCenterPoint, 4, new Bgr(Color.Blue).MCvScalar, 3);
@@ -352,27 +376,22 @@ namespace DartboardRecognition
             drawman.DrawLine(workingCam.linedFrame, contourBoxPoint3, contourBoxPoint4, view.CamContourRectColor, view.CamContourRectThickness);
             drawman.DrawLine(workingCam.linedFrame, contourBoxPoint4, contourBoxPoint1, view.CamContourRectColor, view.CamContourRectThickness);
 
-            SetupMiddlePoints();
-
-            CalculateSpikeLine();
-
-            CalculateCamPoi();
-
-            var projectionPoi = TranslateCamPoiToProjection();
-
-            var rayPoint2 = CalculateLineThroughPoi(projectionPoi);
-
-            CollectRay(rayPoint2);
-
-            FindProjectionPois();
-
-            // drawman.SaveToImageBox(dartboardWorkingProjectionFrame, view.ImageBox3);
-
-            workingCam.allContours.Clear();
-            workingCam.workingContours.Clear();
+            // Setup vertical contour middlepoints
+            var contourWidth = FindDistance(contourBoxPoint1, contourBoxPoint2);
+            var contourHeight = FindDistance(contourBoxPoint4, contourBoxPoint1);
+            if (contourWidth < contourHeight)
+            {
+                contourBoxMiddlePoint1 = FindMiddle(contourBoxPoint1, contourBoxPoint2);
+                contourBoxMiddlePoint2 = FindMiddle(contourBoxPoint4, contourBoxPoint3);
+            }
+            else
+            {
+                contourBoxMiddlePoint1 = FindMiddle(contourBoxPoint4, contourBoxPoint1);
+                contourBoxMiddlePoint2 = FindMiddle(contourBoxPoint3, contourBoxPoint2);
+            }
         }
 
-        private void CollectRay(Point rayPoint)
+        private void CollectRay()
         {
             // Save rays to collection
             if (workingCam is Cam1)
@@ -385,28 +404,26 @@ namespace DartboardRecognition
             }
         }
 
-        private Point CalculateLineThroughPoi(Point projectionPoi)
+        private void CalculateCamThroughPoiRay()
         {
             // Draw line from cam through projection POI
             var rayPoint1 = workingCam.setupPoint;
 
-            var rayPoint2 = projectionPoi;
-            var angle = FindAngle(rayPoint1, rayPoint2);
-            rayPoint2.X = (int) (rayPoint1.X + Math.Cos(angle) * 2000);
-            rayPoint2.Y = (int) (rayPoint1.Y + Math.Sin(angle) * 2000);
+            rayPoint = projectionPoi;
+            var angle = FindAngle(rayPoint1, rayPoint);
+            rayPoint.X = (int) (rayPoint1.X + Math.Cos(angle) * 2000);
+            rayPoint.Y = (int) (rayPoint1.Y + Math.Sin(angle) * 2000);
 
             //drawman.DrawLine(dartboardProjectionFrame, rayPoint2, rayPoint1, view.ProjectionRayColor, view.ProjectionRayThickness);
-            return rayPoint2;
         }
 
-        private Point TranslateCamPoiToProjection()
+        private void TranslateCamPoiToProjection()
         {
             // Translate cam surface POI to dartboard projection
             var frameWidth = workingCam.originFrame.Cols;
             var frameSemiWidth = frameWidth / 2;
             var camFovAngle = 100;
             var camFovSemiAngle = camFovAngle / 2;
-            var projectionPoi = new Point();
             var projectionToCenter = new Point();
             var surfacePoiToCenterDistance = FindDistance(workingCam.surfaceCenterPoint1, camPoi.GetValueOrDefault());
             var surfaceLeftToPoiDistance = FindDistance(workingCam.surfaceLeftPoint1, camPoi.GetValueOrDefault());
@@ -429,7 +446,6 @@ namespace DartboardRecognition
 
             //drawman.DrawCircle(dartboardProjectionFrame, projectionToCenter, view.ProjectionPoiRadius, view.ProjectionPoiColor, view.ProjectionPoiThickness);
             //drawman.DrawCircle(dartboardProjectionFrame, projectionPoi, view.ProjectionPoiRadius, view.ProjectionPoiColor, view.ProjectionPoiThickness);
-            return projectionPoi;
         }
 
         private void FindProjectionPois()
@@ -577,23 +593,6 @@ namespace DartboardRecognition
             }
 
             return new Throw(poi, sector, multiplier, dartboardProjectionFrame);
-        }
-
-        private void SetupMiddlePoints()
-        {
-            // Setup vertical contour middlepoints
-            var contourWidth = FindDistance(contourBoxPoint1, contourBoxPoint2);
-            var contourHeight = FindDistance(contourBoxPoint4, contourBoxPoint1);
-            if (contourWidth < contourHeight)
-            {
-                contourBoxMiddlePoint1 = FindMiddle(contourBoxPoint1, contourBoxPoint2);
-                contourBoxMiddlePoint2 = FindMiddle(contourBoxPoint4, contourBoxPoint3);
-            }
-            else
-            {
-                contourBoxMiddlePoint1 = FindMiddle(contourBoxPoint4, contourBoxPoint1);
-                contourBoxMiddlePoint2 = FindMiddle(contourBoxPoint3, contourBoxPoint2);
-            }
         }
 
         private void CalculateCamPoi()
