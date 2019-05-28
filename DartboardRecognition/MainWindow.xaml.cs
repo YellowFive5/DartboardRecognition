@@ -45,6 +45,8 @@ namespace DartboardRecognition
         public Bgr ProjectionDigitsColor { get; } = new Bgr(System.Drawing.Color.White);
         public double ProjectionDigitsScale { get; } = 2;
         public int ProjectionDigitsThickness { get; } = 2;
+        public int minContourArcLength { get; } = 190;
+        public int maxContourArcLength { get; } = 600;
 
         public MainWindow()
         {

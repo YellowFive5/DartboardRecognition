@@ -37,8 +37,6 @@ namespace DartboardRecognition
         private Image<Bgr, byte> dartboardWorkingProjectionFrame;
         private int projectionLineCam1Bias = 0;
         private int projectionLineCam2Bias = 0;
-        private int minContourArcLength = 190;
-        private int maxContourArcLength = 600;
         private Cam workingCam;
 
         public Measureman(MainWindow view, Drawman drawman, Storage storage)
@@ -320,8 +318,8 @@ namespace DartboardRecognition
             {
                 var contour = workingCam.allContours[i];
                 var arclength = CvInvoke.ArcLength(contour, true);
-                if (arclength > minContourArcLength &&
-                    arclength < maxContourArcLength)
+                if (arclength > view.minContourArcLength &&
+                    arclength < view.maxContourArcLength)
                 {
                     workingCam.workingContours.Push(contour);
                 }
