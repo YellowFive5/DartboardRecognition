@@ -310,7 +310,7 @@ namespace DartboardRecognition
                                                          new Gray(workingCam.tresholdMaxSlider));
             secondImage.ROI = roiRectangle;
             var diffImage = secondImage.AbsDiff(firstImage);
-            workingCam.roiTrasholdFrame = diffImage;
+            // workingCam.roiTrasholdFrame = diffImage;
 
             CvInvoke.FindContours(diffImage, workingCam.allContours, workingCam.matHierarсhy, Emgu.CV.CvEnum.RetrType.External, Emgu.CV.CvEnum.ChainApproxMethod.ChainApproxNone);
             //CvInvoke.DrawContours(linedFrame, contours, -1, contourColor, contourThickness, offset: new System.Drawing.Point(0, (int)RoiPosYSlider.Value));
@@ -602,8 +602,10 @@ namespace DartboardRecognition
 
         private void SetupMiddlePoints()
         {
-            // Setup vertical contour middlepoints 
-            if (FindDistance(contourBoxPoint1, contourBoxPoint2) < FindDistance(contourBoxPoint4, contourBoxPoint1))
+            // Setup vertical contour middlepoints
+            var contourWidth = FindDistance(contourBoxPoint1, contourBoxPoint2);
+            var contourHeight = FindDistance(contourBoxPoint4, contourBoxPoint1);
+            if (contourWidth < contourHeight)
             {
                 contourBoxMiddlePoint1 = FindMiddle(contourBoxPoint1, contourBoxPoint2);
                 contourBoxMiddlePoint2 = FindMiddle(contourBoxPoint4, contourBoxPoint3);
