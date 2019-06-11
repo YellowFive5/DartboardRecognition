@@ -185,7 +185,7 @@ namespace DartboardRecognition
 
                     if (measureman.ThrowDetected())
                     {
-                        measureman.CalculateDartContour();
+                        // measureman.CalculateDartContour();
                     }
 
                     if (cam is Cam1)

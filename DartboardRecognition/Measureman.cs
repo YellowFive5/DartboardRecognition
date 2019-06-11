@@ -329,7 +329,7 @@ namespace DartboardRecognition
 
             if (workingCam.workingContours.Count != 0)
             {
-                Work();
+                // Work();
             }
         }
 
@@ -619,22 +619,25 @@ namespace DartboardRecognition
 
         public bool ThrowDetected()
         {
-            var firstImage = workingCam.originFrame.ToUMat().ToImage<Gray, byte>();
-            firstImage.ROI = roiRectangle;
-            var secondImage = workingCam.videoCapture.QueryFrame().ToImage<Gray, byte>();
-            secondImage.ROI = roiRectangle;
-            var diffImage = secondImage.AbsDiff(firstImage);
+            CvInvoke.FindContours(workingCam.roiTrasholdFrame, workingCam.allContours, workingCam.matHierarсhy, Emgu.CV.CvEnum.RetrType.External, Emgu.CV.CvEnum.ChainApproxMethod.ChainApproxNone);
+            //CvInvoke.DrawContours(linedFrame, contours, -1, contourColor, contourThickness, offset: new System.Drawing.Point(0, (int)RoiPosYSlider.Value));
 
-            var moves = diffImage.CountNonzero()[0];
-
-            // view.PointsBox.Text = $"{moves.ToString()}\n";
-
-            if (moves > 590000)
+            if (workingCam.allContours.Size <= 0)
             {
-                Thread.Sleep(50);
-                return true;
+                return false;
             }
 
+            for (var i = 0; i < workingCam.allContours.Size; i++)
+            {
+                var contour = workingCam.allContours[i];
+                var arclength = CvInvoke.ArcLength(contour, true);
+                if (arclength > view.minContourArcLength &&
+                    arclength < view.maxContourArcLength)
+                {
+                    workingCam.workingContours.Push(contour);
+                    return true;
+                }
+            }
             return false;
         }
     }
