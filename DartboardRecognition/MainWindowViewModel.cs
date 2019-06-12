@@ -29,6 +29,8 @@ namespace DartboardRecognition
         private BitmapImage cam2ImageBox;
         private BitmapImage cam1ImageBoxRoi;
         private BitmapImage cam2ImageBoxRoi;
+        private BitmapImage cam1ImageBoxRoiLastThrow;
+        private BitmapImage cam2ImageBoxRoiLastThrow;
 
         public BitmapImage Cam1ImageBox
         {
@@ -70,6 +72,26 @@ namespace DartboardRecognition
             }
         }
 
+        public BitmapImage Cam1ImageBoxRoiLastThrow
+        {
+            get => cam1ImageBoxRoiLastThrow;
+            set
+            {
+                cam1ImageBoxRoiLastThrow = value;
+                OnPropertyChanged($"{nameof(Cam1ImageBoxRoiLastThrow)}");
+            }
+        }
+
+        public BitmapImage Cam2ImageBoxRoiLastThrow
+        {
+            get => cam2ImageBoxRoiLastThrow;
+            set
+            {
+                cam2ImageBoxRoiLastThrow = value;
+                OnPropertyChanged($"{nameof(Cam2ImageBoxRoiLastThrow)}");
+            }
+        }
+
         public MainWindowViewModel()
         {
         }
@@ -92,6 +114,8 @@ namespace DartboardRecognition
             Cam2ImageBox = new BitmapImage();
             Cam1ImageBoxRoi = new BitmapImage();
             Cam2ImageBoxRoi = new BitmapImage();
+            Cam1ImageBoxRoiLastThrow = new BitmapImage();
+            Cam2ImageBoxRoiLastThrow = new BitmapImage();
             cts = new CancellationTokenSource();
             cancelToken = cts.Token;
 
@@ -195,11 +219,17 @@ namespace DartboardRecognition
                     {
                         Cam1ImageBox.Dispatcher.Invoke(new Action(() => Cam1ImageBox = drawman.ConvertToBitmap(cam.linedFrame)));
                         Cam1ImageBoxRoi.Dispatcher.Invoke(new Action(() => Cam1ImageBoxRoi = drawman.ConvertToBitmap(cam.roiTrasholdFrame)));
+                        Cam1ImageBoxRoiLastThrow.Dispatcher.Invoke(new Action(() => Cam1ImageBoxRoiLastThrow = cam.roiTrasholdFrameLastThrow != null
+                                                                                                                   ? drawman.ConvertToBitmap(cam.roiTrasholdFrameLastThrow)
+                                                                                                                   : new BitmapImage()));
                     }
                     else
                     {
                         Cam2ImageBox.Dispatcher.Invoke(new Action(() => Cam2ImageBox = drawman.ConvertToBitmap(cam.linedFrame)));
                         Cam2ImageBoxRoi.Dispatcher.Invoke(new Action(() => Cam2ImageBoxRoi = drawman.ConvertToBitmap(cam.roiTrasholdFrame)));
+                        Cam2ImageBoxRoiLastThrow.Dispatcher.Invoke(new Action(() => Cam2ImageBoxRoiLastThrow = cam.roiTrasholdFrameLastThrow != null
+                                                                                                                   ? drawman.ConvertToBitmap(cam.roiTrasholdFrameLastThrow)
+                                                                                                                   : new BitmapImage()));
                     }
                 }
             }
@@ -209,11 +239,13 @@ namespace DartboardRecognition
             {
                 Cam1ImageBox.Dispatcher.BeginInvoke(new Action(() => Cam1ImageBox = new BitmapImage()));
                 Cam1ImageBoxRoi.Dispatcher.BeginInvoke(new Action(() => Cam1ImageBoxRoi = new BitmapImage()));
+                Cam1ImageBoxRoiLastThrow.Dispatcher.Invoke(new Action(() => Cam1ImageBoxRoiLastThrow = new BitmapImage()));
             }
             else
             {
                 Cam2ImageBox.Dispatcher.BeginInvoke(new Action(() => Cam2ImageBox = new BitmapImage()));
                 Cam2ImageBoxRoi.Dispatcher.BeginInvoke(new Action(() => Cam2ImageBoxRoi = new BitmapImage()));
+                Cam2ImageBoxRoiLastThrow.Dispatcher.Invoke(new Action(() => Cam2ImageBoxRoiLastThrow = new BitmapImage()));
             }
         }
 

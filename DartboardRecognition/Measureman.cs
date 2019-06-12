@@ -593,11 +593,12 @@ namespace DartboardRecognition
             var diffImage = secondImage.AbsDiff(firstImage);
             var moves = diffImage.CountNonzero()[0];
 
-            // view.Dispatcher.Invoke(new Action(() => view.PointsBox.Text = $"\n{workingCam.videoCapture.GetCaptureProperty(CapProp.Fps)}"));
+            // view.Dispatcher.Invoke(new Action(() => view.PointsBox.Text = $"\n{workingCam} - {moves}"));
 
             if (moves > 1070)
             {
-                view.Dispatcher.Invoke(new Action(() => view.PointsBox.Text += $"\n{workingCam}ThROW!"));
+                workingCam.roiTrasholdFrameLastThrow = diffImage;
+                view.Dispatcher.Invoke(new Action(() => view.PointsBox.Text += $"\n{workingCam} - ThROW!"));
                 return true;
             }
 
@@ -606,7 +607,7 @@ namespace DartboardRecognition
 
         public void PrepareWorkContour()
         {
-            CvInvoke.FindContours(workingCam.roiTrasholdFrame, workingCam.allContours, workingCam.matHierarсhy, RetrType.External, ChainApproxMethod.ChainApproxNone);
+            CvInvoke.FindContours(workingCam.roiTrasholdFrameLastThrow, workingCam.allContours, workingCam.matHierarсhy, RetrType.External, ChainApproxMethod.ChainApproxNone);
             //CvInvoke.DrawContours(linedFrame, contours, -1, contourColor, contourThickness, offset: new System.Drawing.Point(0, (int)RoiPosYSlider.Value));
             view.Dispatcher.Invoke(new Action(() => view.PointsBox.Text = $"{workingCam}-{workingCam.allContours.Size}"));
 

@@ -20,6 +20,7 @@ namespace DartboardRecognition
         public Image<Bgr, byte> roiFrame;
         public Image<Gray, byte> roiTrasholdFrame;
         public Image<Bgr, byte> roiContourFrame;
+        public Image<Gray, byte> roiTrasholdFrameLastThrow;
         public Point surfacePoint1;
         public Point surfacePoint2;
         public Point surfaceCenterPoint1;
