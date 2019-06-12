@@ -4,6 +4,7 @@ using System;
 using System.Drawing;
 using System.Threading;
 using Emgu.CV;
+using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
 using Point = System.Drawing.Point;
 
@@ -297,43 +298,7 @@ namespace DartboardRecognition
             drawman.SaveToImageBox(dartboardProjectionFrame, view.DartboardProjectionImageBox);
         }
 
-        public void CalculateDartContour()
-        {
-            // workingCam.roiContourFrame = workingCam.roiFrame.Clone();
-            var firstImage = workingCam.roiTrasholdFrame;
-            var secondImage = workingCam.videoCapture.QueryFrame().ToImage<Gray, byte>().Not()
-                                        .ThresholdBinary(new Gray(workingCam.tresholdMinSlider),
-                                                         new Gray(workingCam.tresholdMaxSlider));
-            secondImage.ROI = roiRectangle;
-            var diffImage = secondImage.AbsDiff(firstImage);
-            // workingCam.roiTrasholdFrame = diffImage;
-
-            CvInvoke.FindContours(diffImage, workingCam.allContours, workingCam.matHierarсhy, Emgu.CV.CvEnum.RetrType.External, Emgu.CV.CvEnum.ChainApproxMethod.ChainApproxNone);
-            //CvInvoke.DrawContours(linedFrame, contours, -1, contourColor, contourThickness, offset: new System.Drawing.Point(0, (int)RoiPosYSlider.Value));
-
-            if (workingCam.allContours.Size <= 0)
-            {
-                return;
-            }
-
-            for (var i = 0; i < workingCam.allContours.Size; i++)
-            {
-                var contour = workingCam.allContours[i];
-                var arclength = CvInvoke.ArcLength(contour, true);
-                if (arclength > view.minContourArcLength &&
-                    arclength < view.maxContourArcLength)
-                {
-                    workingCam.workingContours.Push(contour);
-                }
-            }
-
-            if (workingCam.workingContours.Count != 0)
-            {
-                // Work();
-            }
-        }
-
-        private void Work()
+        public void Work()
         {
             dartboardWorkingProjectionFrame = dartboardProjectionFrame.Clone();
 
@@ -353,7 +318,6 @@ namespace DartboardRecognition
 
             // drawman.SaveToImageBox(dartboardWorkingProjectionFrame, view.ImageBox3);
 
-            workingCam.allContours.Clear();
             workingCam.workingContours.Clear();
         }
 
@@ -617,14 +581,38 @@ namespace DartboardRecognition
             drawman.DrawLine(workingCam.linedFrame, spikeLinePoint1, spikeLinePoint2, view.CamSpikeLineColor, view.CamSpikeLineThickness);
         }
 
-        public bool ThrowDetected()
+        public bool DetectThrow()
         {
-            CvInvoke.FindContours(workingCam.roiTrasholdFrame, workingCam.allContours, workingCam.matHierarсhy, Emgu.CV.CvEnum.RetrType.External, Emgu.CV.CvEnum.ChainApproxMethod.ChainApproxNone);
+            var firstImage = workingCam.roiTrasholdFrame;
+            Thread.Sleep(50);
+            var secondImage = workingCam.videoCapture.QueryFrame().ToImage<Gray, byte>().Not();
+            secondImage.ROI = roiRectangle;
+            secondImage._SmoothGaussian(5);
+            secondImage._ThresholdBinary(new Gray(workingCam.tresholdMinSlider),
+                                         new Gray(workingCam.tresholdMaxSlider));
+            var diffImage = secondImage.AbsDiff(firstImage);
+            var moves = diffImage.CountNonzero()[0];
+
+            // view.Dispatcher.Invoke(new Action(() => view.PointsBox.Text = $"\n{workingCam.videoCapture.GetCaptureProperty(CapProp.Fps)}"));
+
+            if (moves > 1070)
+            {
+                view.Dispatcher.Invoke(new Action(() => view.PointsBox.Text += $"\n{workingCam}ThROW!"));
+                return true;
+            }
+
+            return false;
+        }
+
+        public void PrepareWorkContour()
+        {
+            CvInvoke.FindContours(workingCam.roiTrasholdFrame, workingCam.allContours, workingCam.matHierarсhy, RetrType.External, ChainApproxMethod.ChainApproxNone);
             //CvInvoke.DrawContours(linedFrame, contours, -1, contourColor, contourThickness, offset: new System.Drawing.Point(0, (int)RoiPosYSlider.Value));
+            view.Dispatcher.Invoke(new Action(() => view.PointsBox.Text = $"{workingCam}-{workingCam.allContours.Size}"));
 
             if (workingCam.allContours.Size <= 0)
             {
-                return false;
+                return;
             }
 
             for (var i = 0; i < workingCam.allContours.Size; i++)
@@ -634,11 +622,11 @@ namespace DartboardRecognition
                 if (arclength > view.minContourArcLength &&
                     arclength < view.maxContourArcLength)
                 {
-                    workingCam.workingContours.Push(contour);
-                    return true;
+                    // workingCam.workingContours.Push(contour);
                 }
             }
-            return false;
+
+            workingCam.allContours.Clear();
         }
     }
 }

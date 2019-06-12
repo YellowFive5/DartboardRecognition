@@ -96,6 +96,7 @@ namespace DartboardRecognition
             cancelToken = cts.Token;
 
             measureman1.CalculateDartboardProjection();
+            measureman2.CalculateDartboardProjection();
 
             var t = new Task(() => CaptureImage(cam1, measureman1));
             var t2 = new Task(() => CaptureImage(cam2, measureman2));
@@ -183,20 +184,22 @@ namespace DartboardRecognition
                     measureman.CalculateRoiRegion();
                     drawman.TresholdRoiRegion(cam);
 
-                    if (measureman.ThrowDetected())
+                    var throwDetected = measureman.DetectThrow();
+                    if (throwDetected)
                     {
-                        // measureman.CalculateDartContour();
+                        // measureman.PrepareWorkContour();
+                        // measureman.Work();
                     }
 
                     if (cam is Cam1)
                     {
-                        Cam1ImageBox.Dispatcher.BeginInvoke(new Action(() => Cam1ImageBox = drawman.ConvertToBitmap(cam.linedFrame)));
-                        Cam1ImageBoxRoi.Dispatcher.BeginInvoke(new Action(() => Cam1ImageBoxRoi = drawman.ConvertToBitmap(cam.roiTrasholdFrame)));
+                        Cam1ImageBox.Dispatcher.Invoke(new Action(() => Cam1ImageBox = drawman.ConvertToBitmap(cam.linedFrame)));
+                        Cam1ImageBoxRoi.Dispatcher.Invoke(new Action(() => Cam1ImageBoxRoi = drawman.ConvertToBitmap(cam.roiTrasholdFrame)));
                     }
                     else
                     {
-                        Cam2ImageBox.Dispatcher.BeginInvoke(new Action(() => Cam2ImageBox = drawman.ConvertToBitmap(cam.linedFrame)));
-                        Cam2ImageBoxRoi.Dispatcher.BeginInvoke(new Action(() => Cam2ImageBoxRoi = drawman.ConvertToBitmap(cam.roiTrasholdFrame)));
+                        Cam2ImageBox.Dispatcher.Invoke(new Action(() => Cam2ImageBox = drawman.ConvertToBitmap(cam.linedFrame)));
+                        Cam2ImageBoxRoi.Dispatcher.Invoke(new Action(() => Cam2ImageBoxRoi = drawman.ConvertToBitmap(cam.roiTrasholdFrame)));
                     }
                 }
             }
