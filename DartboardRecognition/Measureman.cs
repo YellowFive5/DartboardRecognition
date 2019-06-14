@@ -584,7 +584,7 @@ namespace DartboardRecognition
         public bool DetectThrow()
         {
             var firstImage = workingCam.roiTrasholdFrame;
-            Thread.Sleep(50);
+            Thread.Sleep(200);
             var secondImage = workingCam.videoCapture.QueryFrame().ToImage<Gray, byte>().Not();
             secondImage.ROI = roiRectangle;
             secondImage._SmoothGaussian(5);
@@ -595,7 +595,7 @@ namespace DartboardRecognition
 
             // view.Dispatcher.Invoke(new Action(() => view.PointsBox.Text = $"\n{workingCam} - {moves}"));
 
-            if (moves > 1070)
+            if (moves > 700)
             {
                 workingCam.roiTrasholdFrameLastThrow = diffImage;
                 view.Dispatcher.Invoke(new Action(() => view.PointsBox.Text += $"\n{workingCam} - ThROW!"));
