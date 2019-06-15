@@ -193,11 +193,15 @@ namespace DartboardRecognition
             cam = camNumber == 1
                       ? (Cam) new Cam1(view)
                       : new Cam2(view);
+            cam.originFrame = cam.videoCapture.QueryFrame().ToImage<Bgr, byte>();
+            cam.RefreshLines(view);
+            measureman.SetupWorkingCam(cam);
+            measureman.CalculateSetupLines();
+            measureman.CalculateRoiRegion();
+            drawman.TresholdRoiRegion(cam);
 
             while (!cancelToken.IsCancellationRequested)
             {
-                cam.RefreshLines(view);
-                cam.originFrame = cam.videoCapture.QueryFrame().ToImage<Bgr, byte>();
                 using (cam.originFrame)
                 {
                     if (cam.originFrame == null)
@@ -205,34 +209,37 @@ namespace DartboardRecognition
                         return;
                     }
 
-                    measureman.SetupWorkingCam(cam);
-                    measureman.CalculateSetupLines();
-                    measureman.CalculateRoiRegion();
-                    drawman.TresholdRoiRegion(cam);
-
-                    var throwDetected = measureman.DetectThrow();
-                    if (throwDetected)
-                    {
-                        // measureman.PrepareWorkContour();
-                        // measureman.Work();
-                    }
-
                     if (cam is Cam1)
                     {
                         view.Dispatcher.Invoke(new Action(() => Cam1ImageBox = drawman.ConvertToBitmap(cam.linedFrame)));
                         view.Dispatcher.Invoke(new Action(() => Cam1ImageBoxRoi = drawman.ConvertToBitmap(cam.roiTrasholdFrame)));
                         view.Dispatcher.Invoke(new Action(() => Cam1ImageBoxRoiLastThrow = cam.roiTrasholdFrameLastThrow != null
-                                                                                                                   ? drawman.ConvertToBitmap(cam.roiTrasholdFrameLastThrow)
-                                                                                                                   : new BitmapImage()));
+                                                                                               ? drawman.ConvertToBitmap(cam.roiTrasholdFrameLastThrow)
+                                                                                               : new BitmapImage()));
                     }
                     else
                     {
                         view.Dispatcher.Invoke(new Action(() => Cam2ImageBox = drawman.ConvertToBitmap(cam.linedFrame)));
                         view.Dispatcher.Invoke(new Action(() => Cam2ImageBoxRoi = drawman.ConvertToBitmap(cam.roiTrasholdFrame)));
                         view.Dispatcher.Invoke(new Action(() => Cam2ImageBoxRoiLastThrow = cam.roiTrasholdFrameLastThrow != null
-                                                                                                                   ? drawman.ConvertToBitmap(cam.roiTrasholdFrameLastThrow)
-                                                                                                                   : new BitmapImage()));
+                                                                                               ? drawman.ConvertToBitmap(cam.roiTrasholdFrameLastThrow)
+                                                                                               : new BitmapImage()));
                     }
+
+                    var throwDetected = measureman.DetectThrow();
+                    if (throwDetected)
+                    {
+                        // Thread.Sleep(1000);
+                        // measureman.PrepareWorkContour();
+                        // measureman.Work();
+                    }
+
+                    cam.RefreshLines(view);
+                    measureman.SetupWorkingCam(cam);
+                    measureman.CalculateSetupLines();
+                    measureman.CalculateRoiRegion();
+                    drawman.TresholdRoiRegion(cam);
+                    cam.originFrame = cam.videoCapture.QueryFrame().ToImage<Bgr, byte>();
                 }
             }
 

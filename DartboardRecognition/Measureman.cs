@@ -583,26 +583,37 @@ namespace DartboardRecognition
 
         public bool DetectThrow()
         {
-            var firstImage = workingCam.roiTrasholdFrame;
-            Thread.Sleep(200);
-            var secondImage = workingCam.videoCapture.QueryFrame().ToImage<Gray, byte>().Not();
-            secondImage.ROI = roiRectangle;
-            secondImage._SmoothGaussian(5);
-            secondImage._ThresholdBinary(new Gray(workingCam.tresholdMinSlider),
+            var zeroImage = workingCam.roiTrasholdFrame;
+            bool preDetectedThrow;
+            bool detectedThrow = false;
+            // PreDetect
+            var firstImage = workingCam.videoCapture.QueryFrame().ToImage<Gray, byte>().Not();
+            firstImage.ROI = roiRectangle;
+            firstImage._SmoothGaussian(5);
+            firstImage._ThresholdBinary(new Gray(workingCam.tresholdMinSlider),
                                          new Gray(workingCam.tresholdMaxSlider));
-            var diffImage = secondImage.AbsDiff(firstImage);
+            var diffImage = firstImage.AbsDiff(zeroImage);
             var moves = diffImage.CountNonzero()[0];
-
-            // view.Dispatcher.Invoke(new Action(() => view.PointsBox.Text = $"\n{workingCam} - {moves}"));
-
-            if (moves > 700)
+            preDetectedThrow = moves > 100;
+            if (preDetectedThrow)
             {
-                workingCam.roiTrasholdFrameLastThrow = diffImage;
-                view.Dispatcher.Invoke(new Action(() => view.PointsBox.Text += $"\n{workingCam} - ThROW!"));
-                return true;
+                var secondImage = workingCam.videoCapture.QueryFrame().ToImage<Gray, byte>().Not();
+                secondImage.ROI = roiRectangle;
+                secondImage._SmoothGaussian(5);
+                secondImage._ThresholdBinary(new Gray(workingCam.tresholdMinSlider),
+                                            new Gray(workingCam.tresholdMaxSlider));
+                diffImage = secondImage.AbsDiff(zeroImage);
+                moves = diffImage.CountNonzero()[0];
+                if (moves > 700)
+                {
+                    workingCam.roiTrasholdFrameLastThrow = diffImage;
+                    view.Dispatcher.Invoke(new Action(() => view.PointsBox.Text += $"\n{workingCam} - ThROW!"));
+                    Thread.Sleep(1000);
+                    detectedThrow = true;
+                }
             }
 
-            return false;
+            return detectedThrow;
         }
 
         public void PrepareWorkContour()
