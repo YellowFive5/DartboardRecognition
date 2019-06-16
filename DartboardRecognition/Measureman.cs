@@ -356,30 +356,26 @@ namespace DartboardRecognition
             }
         }
 
-        private void CollectRay()
+        private void CalculateSpikeLine()
         {
-            // Save rays to collection
-            if (workingCam is Cam1)
-            {
-                storage.SaveCam1Ray(rayPoint);
-            }
-            else
-            {
-                storage.SaveCam2Ray(rayPoint);
-            }
+            // Find spikeLine to surface
+            spikeLinePoint1 = contourBoxMiddlePoint1;
+            spikeLinePoint2 = contourBoxMiddlePoint2;
+            workingCam.spikeLineLength = workingCam.surfacePoint2.Y - contourBoxMiddlePoint2.Y;
+            var angle = FindAngle(contourBoxMiddlePoint2, contourBoxMiddlePoint1);
+            spikeLinePoint1.X = (int) (contourBoxMiddlePoint2.X + Math.Cos(angle) * workingCam.spikeLineLength);
+            spikeLinePoint1.Y = (int) (contourBoxMiddlePoint2.Y + Math.Sin(angle) * workingCam.spikeLineLength);
+            drawman.DrawLine(workingCam.linedFrame, spikeLinePoint1, spikeLinePoint2, view.CamSpikeLineColor, view.CamSpikeLineThickness);
         }
 
-        private void CalculateCamThroughPoiRay()
+        private void CalculateCamPoi()
         {
-            // Draw line from cam through projection POI
-            var rayPoint1 = workingCam.setupPoint;
-
-            rayPoint = projectionPoi;
-            var angle = FindAngle(rayPoint1, rayPoint);
-            rayPoint.X = (int) (rayPoint1.X + Math.Cos(angle) * 2000);
-            rayPoint.Y = (int) (rayPoint1.Y + Math.Sin(angle) * 2000);
-
-            //drawman.DrawLine(dartboardProjectionFrame, rayPoint2, rayPoint1, view.ProjectionRayColor, view.ProjectionRayThickness);
+            // Find point of impact with surface
+            camPoi = FindLinesIntersection(spikeLinePoint1, spikeLinePoint2, workingCam.surfacePoint1, workingCam.surfacePoint2);
+            if (camPoi != null)
+            {
+                drawman.DrawCircle(workingCam.linedFrame, camPoi.Value, view.ProjectionPoiRadius, view.ProjectionPoiColor, view.ProjectionPoiThickness);
+            }
         }
 
         private void TranslateCamPoiToProjection()
@@ -411,6 +407,32 @@ namespace DartboardRecognition
 
             //drawman.DrawCircle(dartboardProjectionFrame, projectionToCenter, view.ProjectionPoiRadius, view.ProjectionPoiColor, view.ProjectionPoiThickness);
             //drawman.DrawCircle(dartboardProjectionFrame, projectionPoi, view.ProjectionPoiRadius, view.ProjectionPoiColor, view.ProjectionPoiThickness);
+        }
+
+        private void CalculateCamThroughPoiRay()
+        {
+            // Draw line from cam through projection POI
+            var rayPoint1 = workingCam.setupPoint;
+
+            rayPoint = projectionPoi;
+            var angle = FindAngle(rayPoint1, rayPoint);
+            rayPoint.X = (int) (rayPoint1.X + Math.Cos(angle) * 2000);
+            rayPoint.Y = (int) (rayPoint1.Y + Math.Sin(angle) * 2000);
+
+            //drawman.DrawLine(dartboardProjectionFrame, rayPoint2, rayPoint1, view.ProjectionRayColor, view.ProjectionRayThickness);
+        }
+
+        private void CollectRay()
+        {
+            // Save rays to collection
+            if (workingCam is Cam1)
+            {
+                storage.SaveCam1Ray(rayPoint);
+            }
+            else
+            {
+                storage.SaveCam2Ray(rayPoint);
+            }
         }
 
         private void FindProjectionPois()
@@ -558,28 +580,6 @@ namespace DartboardRecognition
             }
 
             return new Throw(poi, sector, multiplier, dartboardProjectionFrame);
-        }
-
-        private void CalculateCamPoi()
-        {
-            // Find point of impact with surface
-            camPoi = FindLinesIntersection(spikeLinePoint1, spikeLinePoint2, workingCam.surfacePoint1, workingCam.surfacePoint2);
-            if (camPoi != null)
-            {
-                drawman.DrawCircle(workingCam.linedFrame, camPoi.Value, view.ProjectionPoiRadius, view.ProjectionPoiColor, view.ProjectionPoiThickness);
-            }
-        }
-
-        private void CalculateSpikeLine()
-        {
-            // Find spikeLine to surface
-            spikeLinePoint1 = contourBoxMiddlePoint1;
-            spikeLinePoint2 = contourBoxMiddlePoint2;
-            workingCam.spikeLineLength = workingCam.surfacePoint2.Y - contourBoxMiddlePoint2.Y;
-            var angle = FindAngle(contourBoxMiddlePoint2, contourBoxMiddlePoint1);
-            spikeLinePoint1.X = (int) (contourBoxMiddlePoint2.X + Math.Cos(angle) * workingCam.spikeLineLength);
-            spikeLinePoint1.Y = (int) (contourBoxMiddlePoint2.Y + Math.Sin(angle) * workingCam.spikeLineLength);
-            drawman.DrawLine(workingCam.linedFrame, spikeLinePoint1, spikeLinePoint2, view.CamSpikeLineColor, view.CamSpikeLineThickness);
         }
 
         public bool DetectThrow()
