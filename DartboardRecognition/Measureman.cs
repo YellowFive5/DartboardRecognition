@@ -298,7 +298,7 @@ namespace DartboardRecognition
             drawman.SaveToImageBox(dartboardProjectionFrame, view.DartboardProjectionImageBox);
         }
 
-        public void Work()
+        public void ProcessDartContour()
         {
             dartboardWorkingProjectionFrame = dartboardProjectionFrame.Clone();
 
@@ -314,16 +314,17 @@ namespace DartboardRecognition
 
             CollectRay();
 
-            FindProjectionPois();
+            // FindProjectionPois();
 
             // drawman.SaveToImageBox(dartboardWorkingProjectionFrame, view.ImageBox3);
 
-            workingCam.workingContours.Clear();
+            workingCam.dartContours.Clear();
+            workingCam.allContours.Clear();
         }
 
         private void PrepareContour()
         {
-            var contour = workingCam.workingContours.Pop();
+            var contour = workingCam.dartContours.Pop();
             contourMoments = CvInvoke.Moments(contour);
             contourCenterPoint = new Point((int) (contourMoments.M10 / contourMoments.M00), (int) workingCam.roiPosYSlider + (int) (contourMoments.M01 / contourMoments.M00));
             drawman.DrawCircle(workingCam.linedFrame, contourCenterPoint, 4, new Bgr(Color.Blue).MCvScalar, 3);
@@ -583,44 +584,55 @@ namespace DartboardRecognition
 
         public bool DetectThrow()
         {
+            bool dartsExtraction;
+            bool moveDetected;
+            var throwDetected = false;
             var zeroImage = workingCam.roiTrasholdFrame;
-            bool preDetectedThrow;
-            var detectedThrow = false;
-            // PreDetect
             var firstImage = workingCam.videoCapture.QueryFrame().ToImage<Gray, byte>().Not();
-            firstImage.ROI = roiRectangle;
-            firstImage._SmoothGaussian(5);
-            firstImage._ThresholdBinary(new Gray(workingCam.tresholdMinSlider),
-                                        new Gray(workingCam.tresholdMaxSlider));
-            var diffImage = firstImage.AbsDiff(zeroImage);
+            var diffImage = DiffImage(firstImage, zeroImage);
             var moves = diffImage.CountNonzero()[0];
-            preDetectedThrow = moves > 100;
-            if (preDetectedThrow)
+            moveDetected = moves > 100;
+            if (moveDetected)
             {
                 Thread.Sleep(300);
                 var secondImage = workingCam.videoCapture.QueryFrame().ToImage<Gray, byte>().Not();
-                secondImage.ROI = roiRectangle;
-                secondImage._SmoothGaussian(5);
-                secondImage._ThresholdBinary(new Gray(workingCam.tresholdMinSlider),
-                                             new Gray(workingCam.tresholdMaxSlider));
-                diffImage = secondImage.AbsDiff(zeroImage);
+                diffImage = DiffImage(secondImage, zeroImage);
                 moves = diffImage.CountNonzero()[0];
-                if (moves > 700)
+
+                dartsExtraction = moves > 5000;
+                if (dartsExtraction)
+                {
+                    Thread.Sleep(4000);
+                    workingCam.originFrame = workingCam.videoCapture.QueryFrame().ToImage<Bgr, byte>();
+                    CalculateRoiRegion();
+                    drawman.TresholdRoiRegion(workingCam);
+                    return false;
+                }
+
+                throwDetected = moves > 700;
+                if (throwDetected)
                 {
                     workingCam.roiTrasholdFrameLastThrow = diffImage;
                     view.Dispatcher.Invoke(new Action(() => view.PointsBox.Text += $"\n{workingCam} - {moves}!"));
-                    detectedThrow = true;
                 }
             }
 
-            return detectedThrow;
+            return throwDetected;
         }
 
-        public void PrepareWorkContour()
+        private Image<Gray, byte> DiffImage(Image<Gray, byte> image, Image<Gray, byte> originImage)
+        {
+            image.ROI = roiRectangle;
+            image._SmoothGaussian(5);
+            image._ThresholdBinary(new Gray(workingCam.tresholdMinSlider),
+                                   new Gray(workingCam.tresholdMaxSlider));
+            var diffImage = image.AbsDiff(originImage);
+            return diffImage;
+        }
+
+        public void FindDartContour()
         {
             CvInvoke.FindContours(workingCam.roiTrasholdFrameLastThrow, workingCam.allContours, workingCam.matHierarсhy, RetrType.External, ChainApproxMethod.ChainApproxNone);
-            //CvInvoke.DrawContours(linedFrame, contours, -1, contourColor, contourThickness, offset: new System.Drawing.Point(0, (int)RoiPosYSlider.Value));
-            view.Dispatcher.Invoke(new Action(() => view.PointsBox.Text = $"{workingCam}-{workingCam.allContours.Size}"));
 
             if (workingCam.allContours.Size <= 0)
             {
@@ -634,11 +646,10 @@ namespace DartboardRecognition
                 if (arclength > view.minContourArcLength &&
                     arclength < view.maxContourArcLength)
                 {
-                    // workingCam.workingContours.Push(contour);
+                    workingCam.dartContours.Push(contour);
+                    // CvInvoke.DrawContours(workingCam.linedFrame, contour, -1, contourColor, contourThickness, offset: new System.Drawing.Point(0, (int)RoiPosYSlider.Value));
                 }
             }
-
-            workingCam.allContours.Clear();
         }
     }
 }

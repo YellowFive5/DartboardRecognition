@@ -236,8 +236,8 @@ namespace DartboardRecognition
                         measureman.CalculateRoiRegion();
                         drawman.TresholdRoiRegion(cam);
 
-                        // measureman.PrepareWorkContour();
-                        // measureman.Work();
+                        // measureman.FindDartContour();
+                        // measureman.ProcessDartContour();
 
                         continue;
                     }

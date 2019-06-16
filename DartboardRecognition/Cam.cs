@@ -31,7 +31,7 @@ namespace DartboardRecognition
         public Point surfaceRightPoint1;
         public Point surfaceRightPoint2;
         public int spikeLineLength;
-        public Stack<VectorOfPoint> workingContours;
+        public Stack<VectorOfPoint> dartContours;
         public readonly VectorOfVectorOfPoint allContours;
         public readonly Mat matHierarсhy;
         public double tresholdMinSlider;
@@ -52,7 +52,7 @@ namespace DartboardRecognition
             surfacePoint1 = new Point();
             surfacePoint2 = new Point();
             allContours = new VectorOfVectorOfPoint();
-            workingContours = new Stack<VectorOfPoint>();
+            dartContours = new Stack<VectorOfPoint>();
             matHierarсhy = new Mat();
         }
 
