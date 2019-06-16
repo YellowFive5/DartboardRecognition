@@ -229,13 +229,20 @@ namespace DartboardRecognition
                     var throwDetected = measureman.DetectThrow();
                     if (throwDetected)
                     {
-                        // Thread.Sleep(1000);
+                        Thread.Sleep(500);
+                        view.Dispatcher.Invoke(new Action(() => view.PointsBox.Text = ""));
+
+                        cam.originFrame = cam.videoCapture.QueryFrame().ToImage<Bgr, byte>();
+                        measureman.CalculateRoiRegion();
+                        drawman.TresholdRoiRegion(cam);
+
                         // measureman.PrepareWorkContour();
                         // measureman.Work();
+
+                        continue;
                     }
 
                     cam.RefreshLines(view);
-                    measureman.SetupWorkingCam(cam);
                     measureman.CalculateSetupLines();
                     measureman.CalculateRoiRegion();
                     drawman.TresholdRoiRegion(cam);
