@@ -9,8 +9,8 @@ namespace DartboardRecognition
 {
     public partial class Measureman
     {
-        private Point FindLinesIntersection(Point line1Point1, Point line1Point2, Point line2Point1,
-                                            Point line2Point2)
+        public static Point FindLinesIntersection(Point line1Point1, Point line1Point2, Point line2Point1,
+                                                  Point line2Point2)
         {
             var tolerance = 0.001;
             double x1 = line1Point1.X;
@@ -51,19 +51,19 @@ namespace DartboardRecognition
             return new Point {X = (int) x, Y = (int) y};
         }
 
-        private Point FindMiddle(Point point1, Point point2)
+        public static Point FindMiddle(Point point1, Point point2)
         {
             var mpX = (point1.X + point2.X) / 2;
             var mpY = (point1.Y + point2.Y) / 2;
             return new Point(mpX, mpY);
         }
 
-        private int FindDistance(Point point1, Point point2)
+        public static int FindDistance(Point point1, Point point2)
         {
             return (int) Math.Sqrt(Math.Pow(point1.X - point2.X, 2) + Math.Pow(point1.Y - point2.Y, 2));
         }
 
-        private double FindAngle(Point point1, Point point2)
+        public static double FindAngle(Point point1, Point point2)
         {
             return Math.Atan2(point2.Y - point1.Y, point2.X - point1.X);
         }

@@ -60,7 +60,7 @@ namespace DartboardRecognition
             cam.roiTrasholdFrame = cam.roiFrame.Clone().Convert<Gray, byte>().Not();
             cam.roiTrasholdFrame._SmoothGaussian(5);
             cam.roiTrasholdFrame._ThresholdBinary(new Gray(cam.tresholdMinSlider),
-            new Gray(cam.tresholdMaxSlider));
+                                                  new Gray(cam.tresholdMaxSlider));
         }
     }
 }

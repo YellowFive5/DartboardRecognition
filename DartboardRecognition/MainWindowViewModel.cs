@@ -18,7 +18,6 @@ namespace DartboardRecognition
     {
         private MainWindow view;
         private Drawman drawman;
-        private Storage storage;
         private Measureman measureman1;
         private Measureman measureman2;
         private CancellationToken cancelToken;
@@ -29,6 +28,7 @@ namespace DartboardRecognition
         private BitmapImage cam2ImageBoxRoi;
         private BitmapImage cam1ImageBoxRoiLastThrow;
         private BitmapImage cam2ImageBoxRoiLastThrow;
+        private ThrowService throwService;
 
         public BitmapImage Cam1ImageBox
         {
@@ -97,31 +97,34 @@ namespace DartboardRecognition
         public MainWindowViewModel(MainWindow view)
         {
             this.view = view;
-            storage = new Storage();
             LoadSettings();
         }
 
         public void StartCapture()
         {
             drawman = new Drawman();
-            measureman1 = new Measureman(view, drawman, storage);
-            measureman2 = new Measureman(view, drawman, storage);
+            cts = new CancellationTokenSource();
+            cancelToken = cts.Token;
+            throwService = new ThrowService(view, drawman, cancelToken);
+            measureman1 = new Measureman(view, drawman, throwService);
+            measureman2 = new Measureman(view, drawman, throwService);
             Cam1ImageBox = new BitmapImage();
             Cam2ImageBox = new BitmapImage();
             Cam1ImageBoxRoi = new BitmapImage();
             Cam2ImageBoxRoi = new BitmapImage();
             Cam1ImageBoxRoiLastThrow = new BitmapImage();
             Cam2ImageBoxRoiLastThrow = new BitmapImage();
-            cts = new CancellationTokenSource();
-            cancelToken = cts.Token;
 
             measureman1.CalculateDartboardProjection();
             measureman2.CalculateDartboardProjection();
 
-            var t = new Task(() => CaptureImage(1, measureman1));
-            var t2 = new Task(() => CaptureImage(2, measureman2));
-            t.Start();
-            t2.Start();
+            var cam1Task = new Task(() => CaptureImage(1, measureman1));
+            var cam2Task = new Task(() => CaptureImage(2, measureman2));
+            var tsTask = new Task(() => throwService.AwaitForThrows(cancelToken));
+
+            cam1Task.Start();
+            cam2Task.Start();
+            tsTask.Start();
         }
 
         public void StopCapture()
@@ -236,8 +239,8 @@ namespace DartboardRecognition
                         measureman.CalculateRoiRegion();
                         drawman.TresholdRoiRegion(cam);
 
-                        // measureman.FindDartContour();
-                        // measureman.ProcessDartContour();
+                        measureman.FindDartContour();
+                        measureman.ProcessDartContour();
 
                         continue;
                     }

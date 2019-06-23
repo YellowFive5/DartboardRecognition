@@ -63,8 +63,8 @@
       <DependentUpon>Measureman.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\Annotations.cs" />
-    <Compile Include="Storage.cs" />
     <Compile Include="Throw.cs" />
+    <Compile Include="ThrowService.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

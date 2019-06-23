@@ -16,7 +16,7 @@ namespace DartboardRecognition
     {
         private MainWindow view;
         private Drawman drawman;
-        private Storage storage;
+        private ThrowService throwService;
         private Rectangle roiRectangle;
         private Moments contourMoments;
         private Point contourCenterPoint;
@@ -42,11 +42,11 @@ namespace DartboardRecognition
         private Point projectionPoi;
         private Point rayPoint;
 
-        public Measureman(MainWindow view, Drawman drawman, Storage storage)
+        public Measureman(MainWindow view, Drawman drawman, ThrowService throwService)
         {
             this.view = view;
             this.drawman = drawman;
-            this.storage = storage;
+            this.throwService = throwService;
         }
 
         public void SetupWorkingCam(Cam cam)
@@ -312,10 +312,6 @@ namespace DartboardRecognition
 
             CalculateCamThroughPoiRay();
 
-            CollectRay();
-
-            // FindProjectionPois();
-
             // drawman.SaveToImageBox(dartboardWorkingProjectionFrame, view.ImageBox3);
 
             workingCam.dartContours.Clear();
@@ -412,174 +408,14 @@ namespace DartboardRecognition
         private void CalculateCamThroughPoiRay()
         {
             // Draw line from cam through projection POI
-            var rayPoint1 = workingCam.setupPoint;
-
             rayPoint = projectionPoi;
-            var angle = FindAngle(rayPoint1, rayPoint);
-            rayPoint.X = (int) (rayPoint1.X + Math.Cos(angle) * 2000);
-            rayPoint.Y = (int) (rayPoint1.Y + Math.Sin(angle) * 2000);
+            var angle = FindAngle(workingCam.setupPoint, rayPoint);
+            rayPoint.X = (int) (workingCam.setupPoint.X + Math.Cos(angle) * 2000);
+            rayPoint.Y = (int) (workingCam.setupPoint.Y + Math.Sin(angle) * 2000);
 
             //drawman.DrawLine(dartboardProjectionFrame, rayPoint2, rayPoint1, view.ProjectionRayColor, view.ProjectionRayThickness);
-        }
 
-        private void CollectRay()
-        {
-            // Save rays to collection
-            if (workingCam is Cam1)
-            {
-                storage.SaveCam1Ray(rayPoint);
-            }
-            else
-            {
-                storage.SaveCam2Ray(rayPoint);
-            }
-        }
-
-        private void FindProjectionPois()
-        {
-            // Find lines intersection to find projection POI and save to collection
-            if (storage.Cam1RaysCollection.Count != storage.Cam2RaysCollection.Count)
-            {
-                return;
-            }
-
-            var counter = storage.Cam2RaysCollection.Count;
-            for (var i = 0; i < counter; i++)
-            {
-                var poi = FindLinesIntersection(view.Cam1SetupPoint,
-                                                storage.Cam1RaysCollection.Dequeue(),
-                                                view.Cam2SetupPoint,
-                                                storage.Cam2RaysCollection.Dequeue());
-                storage.SavePoi(poi);
-                var anotherThrow = PrepareThrowData(poi);
-                storage.SaveThrow(anotherThrow);
-                drawman.DrawCircle(dartboardWorkingProjectionFrame, poi, view.PoiRadius, view.PoiColor, view.PoiThickness);
-                drawman.SaveToImageBox(dartboardWorkingProjectionFrame, view.DartboardProjectionImageBox);
-                view.PointsBox.Text += $"{anotherThrow.Sector} x {anotherThrow.Multiplier} = {anotherThrow.TotalPoints}\n";
-            }
-        }
-
-        private Throw PrepareThrowData(Point poi)
-        {
-            var startRadSector = -1.41372;
-            var radSectorStep = 0.314159;
-            var angle = FindAngle(projectionCenterPoint, poi);
-            var distance = FindDistance(projectionCenterPoint, poi);
-            var sector = 0;
-            var multiplier = 1;
-
-            if (distance <= view.ProjectionCoefficent * 7)
-            {
-                sector = 50;
-            }
-
-            if (distance > view.ProjectionCoefficent * 7 &&
-                distance <= view.ProjectionCoefficent * 17)
-            {
-                sector = 25;
-            }
-
-            if (distance > view.ProjectionCoefficent * 170)
-            {
-                sector = 0;
-            }
-
-            if (distance >= view.ProjectionCoefficent * 95 &&
-                distance <= view.ProjectionCoefficent * 105)
-            {
-                multiplier = 3;
-            }
-
-            if (distance >= view.ProjectionCoefficent * 160 &&
-                distance <= view.ProjectionCoefficent * 170)
-            {
-                multiplier = 2;
-            }
-
-            // Find sector
-            if (angle >= -1.41372 && angle < -1.099561)
-            {
-                sector = 1;
-            }
-            else if (angle >= -1.099561 && angle < -0.785402)
-            {
-                sector = 18;
-            }
-            else if (angle >= -0.785402 && angle < -0.471243)
-            {
-                sector = 4;
-            }
-            else if (angle >= -0.471243 && angle < -0.157084)
-            {
-                sector = 13;
-            }
-            else if (angle >= -0.157084 && angle < 0.157075)
-            {
-                sector = 6;
-            }
-            else if (angle >= 0.157075 && angle < 0.471234)
-            {
-                sector = 10;
-            }
-            else if (angle >= 0.471234 && angle < 0.785393)
-            {
-                sector = 15;
-            }
-            else if (angle >= 0.785393 && angle < 1.099552)
-            {
-                sector = 2;
-            }
-            else if (angle >= 1.099552 && angle < 1.413711)
-            {
-                sector = 17;
-            }
-            else if (angle >= 1.413711 && angle < 1.72787)
-            {
-                sector = 3;
-            }
-            else if (angle >= 1.72787 && angle < 2.042029)
-            {
-                sector = 19;
-            }
-            else if (angle >= 2.042029 && angle < 2.356188)
-            {
-                sector = 7;
-            }
-            else if (angle >= 2.356188 && angle < 2.670347)
-            {
-                sector = 16;
-            }
-            else if (angle >= 2.670347 && angle < 2.984506)
-            {
-                sector = 8;
-            }
-            else if (angle >= 2.984506 && angle < 3.14159 ||
-                     angle >= -3.14159 && angle < -3.29868)
-            {
-                sector = 11;
-            }
-            else if (angle >= -3.29868 && angle < -2.67036)
-            {
-                sector = 14;
-            }
-            else if (angle >= -2.67036 && angle < -2.3562)
-            {
-                sector = 9;
-            }
-            else if (angle >= -2.3562 && angle < -2.04204)
-            {
-                sector = 12;
-            }
-            else if (angle >= -2.04204 && angle < -1.72788)
-            {
-                sector = 5;
-            }
-            else if (angle >= -1.72788 && angle < -1.41372)
-            {
-                sector = 20;
-            }
-
-            return new Throw(poi, sector, multiplier, dartboardProjectionFrame);
+            throwService.SaveRay(rayPoint, workingCam);
         }
 
         public bool DetectThrow()
@@ -594,12 +430,12 @@ namespace DartboardRecognition
             moveDetected = moves > 100;
             if (moveDetected)
             {
-                Thread.Sleep(300);
+                Thread.Sleep(1000);
                 var secondImage = workingCam.videoCapture.QueryFrame().ToImage<Gray, byte>().Not();
                 diffImage = DiffImage(secondImage, zeroImage);
                 moves = diffImage.CountNonzero()[0];
 
-                dartsExtraction = moves > 5000;
+                dartsExtraction = moves > 7000;
                 if (dartsExtraction)
                 {
                     Thread.Sleep(4000);
@@ -609,7 +445,7 @@ namespace DartboardRecognition
                     return false;
                 }
 
-                throwDetected = moves > 700;
+                throwDetected = moves > 500;
                 if (throwDetected)
                 {
                     workingCam.roiTrasholdFrameLastThrow = diffImage;
@@ -623,7 +459,7 @@ namespace DartboardRecognition
         private Image<Gray, byte> DiffImage(Image<Gray, byte> image, Image<Gray, byte> originImage)
         {
             image.ROI = roiRectangle;
-            image._SmoothGaussian(5);
+            image._SmoothGaussian(3);
             image._ThresholdBinary(new Gray(workingCam.tresholdMinSlider),
                                    new Gray(workingCam.tresholdMaxSlider));
             var diffImage = image.AbsDiff(originImage);
