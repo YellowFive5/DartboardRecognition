@@ -39,12 +39,12 @@ namespace DartboardRecognition
                 var anotherThrowDetected = cam1RayPoint.Count == 1 && cam2RayPoint.Count == 1;
                 if (anotherThrowDetected)
                 {
-                    FindProjectionPoi();
+                    CalculateAndSaveThrow();
                 }
             }
         }
 
-        private void FindProjectionPoi()
+        private void CalculateAndSaveThrow()
         {
             var poi = Measureman.FindLinesIntersection(view.Cam1SetupPoint,
                                                        cam1RayPoint.Pop(),
