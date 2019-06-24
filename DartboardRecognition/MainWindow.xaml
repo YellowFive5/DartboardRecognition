@@ -50,12 +50,12 @@
         <Slider x:Name="Cam2SurfaceRightSlider"  HorizontalAlignment="Left" Margin="810,695,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="627" Maximum="2000" Value="536"/>
 
         <Image x:Name="Cam1ImageBox" Source="{Binding Path=Cam1ImageBox, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="308" Margin="10,34,0,0" VerticalAlignment="Top" Width="550" />
-        <Image x:Name="Cam1ImageBoxRoi" Source="{Binding Path=Cam1ImageBoxRoi, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="60" Margin="10,347,0,0" VerticalAlignment="Top" Width="551" />
-        <Image x:Name="Cam1ImageBoxRoiLastThrow" Source="{Binding Path=Cam1ImageBoxRoiLastThrow, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="60" Margin="10,412,0,0" VerticalAlignment="Top" Width="551" />
+        <Image x:Name="Cam1ImageBoxRoi" Source="{Binding Path=Cam1RoiImageBox, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="60" Margin="10,347,0,0" VerticalAlignment="Top" Width="551" />
+        <Image x:Name="Cam1ImageBoxRoiLastThrow" Source="{Binding Path=Cam1RoiLastThrowImageBox, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="60" Margin="10,412,0,0" VerticalAlignment="Top" Width="551" />
         <Image x:Name="Cam2ImageBox" Source="{Binding Path=Cam2ImageBox, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="308" Margin="895,34,0,0" VerticalAlignment="Top" Width="550" />
-        <Image x:Name="Cam2ImageBoxRoi" Source="{Binding Path=Cam2ImageBoxRoi, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="60" Margin="895,347,0,0" VerticalAlignment="Top" Width="550" />
-        <Image x:Name="Cam2ImageBoxRoiLastThrow" Source="{Binding Path=Cam2ImageBoxRoiLastThrow, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="60" Margin="895,412,0,0" VerticalAlignment="Top" Width="550" />
-        <Image x:Name="DartboardProjectionImageBox" x:FieldModifier="public" HorizontalAlignment="Left" Height="308" Margin="571,34,0,0" VerticalAlignment="Top" Width="314" />
+        <Image x:Name="Cam2ImageBoxRoi" Source="{Binding Path=Cam2RoiImageBox, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="60" Margin="895,347,0,0" VerticalAlignment="Top" Width="550" />
+        <Image x:Name="Cam2ImageBoxRoiLastThrow" Source="{Binding Path=Cam2RoiLastThrowImageBox, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="60" Margin="895,412,0,0" VerticalAlignment="Top" Width="550" />
+        <Image x:Name="DartboardProjectionImageBox" Source="{Binding Path=DartboardProjectionImageBox, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="308" Margin="571,34,0,0" VerticalAlignment="Top" Width="314" />
 
         <Label Content="Camera index" HorizontalAlignment="Left" Margin="692,454,0,0" VerticalAlignment="Top" Width="92" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" HorizontalContentAlignment="Center" RenderTransformOrigin="0.594,0.181"/>
         <Label Content="Treshold min" HorizontalAlignment="Left" Margin="692,479,0,0" VerticalAlignment="Top" Width="92" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" HorizontalContentAlignment="Center" RenderTransformOrigin="0.594,0.181"/>

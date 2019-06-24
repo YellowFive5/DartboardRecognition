@@ -28,16 +28,7 @@ namespace DartboardRecognition
         private Point contourBoxMiddlePoint2;
         private Point spikeLinePoint1;
         private Point spikeLinePoint2;
-        private Point projectionCenterPoint;
-        private Point projectionLineCam1Point1;
-        private Point projectionLineCam1Point2;
-        private Point projectionLineCam2Point1;
-        private Point projectionLineCam2Point2;
         private Point? camPoi;
-        private Image<Bgr, byte> dartboardProjectionFrame;
-        private Image<Bgr, byte> dartboardWorkingProjectionFrame;
-        private int projectionLineCam1Bias = 0;
-        private int projectionLineCam2Bias = 0;
         private Cam workingCam;
         private Point projectionPoi;
         private Point rayPoint;
@@ -111,197 +102,8 @@ namespace DartboardRecognition
             workingCam.roiFrame.ROI = roiRectangle;
         }
 
-        public void CalculateDartboardProjection()
-        {
-            // Draw dartboard projection
-            dartboardProjectionFrame = new Image<Bgr, byte>(view.ProjectionFrameWidth, view.ProjectionFrameHeight);
-            projectionCenterPoint = new Point(dartboardProjectionFrame.Width / 2, dartboardProjectionFrame.Height / 2);
-
-            drawman.DrawCircle(dartboardProjectionFrame, projectionCenterPoint, view.ProjectionCoefficent * 7, view.ProjectionGridColor, view.ProjectionGridThickness);
-            drawman.DrawCircle(dartboardProjectionFrame, projectionCenterPoint, view.ProjectionCoefficent * 17, view.ProjectionGridColor, view.ProjectionGridThickness);
-            drawman.DrawCircle(dartboardProjectionFrame, projectionCenterPoint, view.ProjectionCoefficent * 95, view.ProjectionGridColor, view.ProjectionGridThickness);
-            drawman.DrawCircle(dartboardProjectionFrame, projectionCenterPoint, view.ProjectionCoefficent * 105, view.ProjectionGridColor, view.ProjectionGridThickness);
-            drawman.DrawCircle(dartboardProjectionFrame, projectionCenterPoint, view.ProjectionCoefficent * 160, view.ProjectionGridColor, view.ProjectionGridThickness);
-            drawman.DrawCircle(dartboardProjectionFrame, projectionCenterPoint, view.ProjectionCoefficent * 170, view.ProjectionGridColor, view.ProjectionGridThickness);
-            for (var i = 0; i <= 360; i += 9)
-            {
-                var segmentPoint1 = new Point
-                                    {
-                                        X = (int) (projectionCenterPoint.X + Math.Cos(0.314159 * i - 0.15708) * view.ProjectionCoefficent * 170),
-                                        Y = (int) (projectionCenterPoint.Y + Math.Sin(0.314159 * i - 0.15708) * view.ProjectionCoefficent * 170)
-                                    };
-                var segmentPoint2 = new Point
-                                    {
-                                        X = (int) (projectionCenterPoint.X + Math.Cos(0.314159 * i - 0.15708) * view.ProjectionCoefficent * 17),
-                                        Y = (int) (projectionCenterPoint.Y + Math.Sin(0.314159 * i - 0.15708) * view.ProjectionCoefficent * 17)
-                                    };
-                drawman.DrawLine(dartboardProjectionFrame, segmentPoint1, segmentPoint2, view.ProjectionGridColor, view.ProjectionGridThickness);
-            }
-
-            // Draw surface projection lines
-            projectionLineCam1Point1.X = (int) (projectionCenterPoint.X + Math.Cos(-0.785398) * view.ProjectionCoefficent * 170) - view.ProjectionCoefficent * projectionLineCam1Bias;
-            projectionLineCam1Point1.Y = (int) (projectionCenterPoint.Y + Math.Sin(-0.785398) * view.ProjectionCoefficent * 170) - view.ProjectionCoefficent * projectionLineCam1Bias;
-            projectionLineCam1Point2.X = (int) (projectionCenterPoint.X + Math.Cos(2.35619) * view.ProjectionCoefficent * 170) - view.ProjectionCoefficent * projectionLineCam1Bias;
-            projectionLineCam1Point2.Y = (int) (projectionCenterPoint.Y + Math.Sin(2.35619) * view.ProjectionCoefficent * 170) - view.ProjectionCoefficent * projectionLineCam1Bias;
-            //drawman.DrawLine(dartboardProjectionFrame, projectionLineCam1Point1, projectionLineCam1Point2, view.ProjectionSurfaceLineColor, view.ProjectionSurfaceLineThickness);
-
-            projectionLineCam2Point1.X = (int) (projectionCenterPoint.X + Math.Cos(0.785398) * view.ProjectionCoefficent * 170) + view.ProjectionCoefficent * projectionLineCam2Bias;
-            projectionLineCam2Point1.Y = (int) (projectionCenterPoint.Y + Math.Sin(0.785398) * view.ProjectionCoefficent * 170) - view.ProjectionCoefficent * projectionLineCam2Bias;
-            projectionLineCam2Point2.X = (int) (projectionCenterPoint.X + Math.Cos(3.92699) * view.ProjectionCoefficent * 170) + view.ProjectionCoefficent * projectionLineCam2Bias;
-            projectionLineCam2Point2.Y = (int) (projectionCenterPoint.Y + Math.Sin(3.92699) * view.ProjectionCoefficent * 170) - view.ProjectionCoefficent * projectionLineCam2Bias;
-            //drawman.DrawLine(dartboardProjectionFrame, projectionLineCam2Point1, projectionLineCam2Point2, view.ProjectionSurfaceLineColor, view.ProjectionSurfaceLineThickness);
-
-            // Draw digits
-            var startAngle = 0;
-            var sectorAngle = 0.314159;
-            drawman.DrawString(dartboardProjectionFrame,
-                               "6",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 0) * view.ProjectionCoefficent * 180),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 0) * view.ProjectionCoefficent * 180),
-                               view.ProjectionDigitsScale,
-                               view.ProjectionDigitsColor,
-                               view.ProjectionDigitsThickness);
-            drawman.DrawString(dartboardProjectionFrame,
-                               "10",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 1 + 0.05) * view.ProjectionCoefficent * 180),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 1 + 0.05) * view.ProjectionCoefficent * 180),
-                               view.ProjectionDigitsScale,
-                               view.ProjectionDigitsColor,
-                               view.ProjectionDigitsThickness);
-            drawman.DrawString(dartboardProjectionFrame,
-                               "15",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 2 + 0.05) * view.ProjectionCoefficent * 180),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 2 + 0.05) * view.ProjectionCoefficent * 180),
-                               view.ProjectionDigitsScale,
-                               view.ProjectionDigitsColor,
-                               view.ProjectionDigitsThickness);
-            drawman.DrawString(dartboardProjectionFrame,
-                               "2",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 3 + 0.05) * view.ProjectionCoefficent * 190),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 3 + 0.05) * view.ProjectionCoefficent * 190),
-                               view.ProjectionDigitsScale,
-                               view.ProjectionDigitsColor,
-                               view.ProjectionDigitsThickness);
-            drawman.DrawString(dartboardProjectionFrame,
-                               "17",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 4 + 0.05) * view.ProjectionCoefficent * 190),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 4 + 0.05) * view.ProjectionCoefficent * 190),
-                               view.ProjectionDigitsScale,
-                               view.ProjectionDigitsColor,
-                               view.ProjectionDigitsThickness);
-            drawman.DrawString(dartboardProjectionFrame,
-                               "3",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 5 + 0.05) * view.ProjectionCoefficent * 190),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 5 + 0.05) * view.ProjectionCoefficent * 190),
-                               view.ProjectionDigitsScale,
-                               view.ProjectionDigitsColor,
-                               view.ProjectionDigitsThickness);
-            drawman.DrawString(dartboardProjectionFrame,
-                               "19",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 6 + 0.05) * view.ProjectionCoefficent * 200),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 6 + 0.05) * view.ProjectionCoefficent * 200),
-                               view.ProjectionDigitsScale,
-                               view.ProjectionDigitsColor,
-                               view.ProjectionDigitsThickness);
-            drawman.DrawString(dartboardProjectionFrame,
-                               "7",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 7) * view.ProjectionCoefficent * 200),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 7) * view.ProjectionCoefficent * 200),
-                               view.ProjectionDigitsScale,
-                               view.ProjectionDigitsColor,
-                               view.ProjectionDigitsThickness);
-            drawman.DrawString(dartboardProjectionFrame,
-                               "16",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 8) * view.ProjectionCoefficent * 210),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 8) * view.ProjectionCoefficent * 210),
-                               view.ProjectionDigitsScale,
-                               view.ProjectionDigitsColor,
-                               view.ProjectionDigitsThickness);
-            drawman.DrawString(dartboardProjectionFrame,
-                               "8",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 9) * view.ProjectionCoefficent * 200),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 9) * view.ProjectionCoefficent * 200),
-                               view.ProjectionDigitsScale,
-                               view.ProjectionDigitsColor,
-                               view.ProjectionDigitsThickness);
-            drawman.DrawString(dartboardProjectionFrame,
-                               "11",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 10) * view.ProjectionCoefficent * 200),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 10) * view.ProjectionCoefficent * 200),
-                               view.ProjectionDigitsScale,
-                               view.ProjectionDigitsColor,
-                               view.ProjectionDigitsThickness);
-            drawman.DrawString(dartboardProjectionFrame,
-                               "14",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 11 - 0.05) * view.ProjectionCoefficent * 200),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 11 - 0.05) * view.ProjectionCoefficent * 200),
-                               view.ProjectionDigitsScale,
-                               view.ProjectionDigitsColor,
-                               view.ProjectionDigitsThickness);
-            drawman.DrawString(dartboardProjectionFrame,
-                               "9",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 12 - 0.05) * view.ProjectionCoefficent * 200),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 12 - 0.05) * view.ProjectionCoefficent * 200),
-                               view.ProjectionDigitsScale,
-                               view.ProjectionDigitsColor,
-                               view.ProjectionDigitsThickness);
-            drawman.DrawString(dartboardProjectionFrame,
-                               "12",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 13 - 0.05) * view.ProjectionCoefficent * 200),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 13 - 0.05) * view.ProjectionCoefficent * 200),
-                               view.ProjectionDigitsScale,
-                               view.ProjectionDigitsColor,
-                               view.ProjectionDigitsThickness);
-            drawman.DrawString(dartboardProjectionFrame,
-                               "5",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 14 - 0.05) * view.ProjectionCoefficent * 190),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 14 - 0.05) * view.ProjectionCoefficent * 190),
-                               view.ProjectionDigitsScale,
-                               view.ProjectionDigitsColor,
-                               view.ProjectionDigitsThickness);
-            drawman.DrawString(dartboardProjectionFrame,
-                               "20",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 15 - 0.05) * view.ProjectionCoefficent * 180),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 15 - 0.05) * view.ProjectionCoefficent * 180),
-                               view.ProjectionDigitsScale,
-                               view.ProjectionDigitsColor,
-                               view.ProjectionDigitsThickness);
-            drawman.DrawString(dartboardProjectionFrame,
-                               "1",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 16 - 0.05) * view.ProjectionCoefficent * 180),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 16 - 0.05) * view.ProjectionCoefficent * 180),
-                               view.ProjectionDigitsScale,
-                               view.ProjectionDigitsColor,
-                               view.ProjectionDigitsThickness);
-            drawman.DrawString(dartboardProjectionFrame,
-                               "18",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 17 - 0.05) * view.ProjectionCoefficent * 180),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 17 - 0.05) * view.ProjectionCoefficent * 180),
-                               view.ProjectionDigitsScale,
-                               view.ProjectionDigitsColor,
-                               view.ProjectionDigitsThickness);
-            drawman.DrawString(dartboardProjectionFrame,
-                               "4",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 18 - 0.05) * view.ProjectionCoefficent * 180),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 18 - 0.05) * view.ProjectionCoefficent * 180),
-                               view.ProjectionDigitsScale,
-                               view.ProjectionDigitsColor,
-                               view.ProjectionDigitsThickness);
-            drawman.DrawString(dartboardProjectionFrame,
-                               "13",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 19) * view.ProjectionCoefficent * 180),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 19) * view.ProjectionCoefficent * 180),
-                               view.ProjectionDigitsScale,
-                               view.ProjectionDigitsColor,
-                               view.ProjectionDigitsThickness);
-
-            drawman.SaveToImageBox(dartboardProjectionFrame, view.DartboardProjectionImageBox);
-        }
-
         public void ProcessDartContour()
         {
-            dartboardWorkingProjectionFrame = dartboardProjectionFrame.Clone();
-
             PrepareContour();
 
             CalculateSpikeLine();
@@ -311,8 +113,6 @@ namespace DartboardRecognition
             TranslateCamPoiToProjection();
 
             CalculateCamThroughPoiRay();
-
-            // drawman.SaveToImageBox(dartboardWorkingProjectionFrame, view.ImageBox3);
 
             workingCam.dartContours.Clear();
             workingCam.allContours.Clear();

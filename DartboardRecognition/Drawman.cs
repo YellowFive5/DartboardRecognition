@@ -8,7 +8,6 @@ using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
 using Point = System.Drawing.Point;
-using Image = System.Windows.Controls.Image;
 
 #endregion
 
@@ -34,12 +33,6 @@ namespace DartboardRecognition
         public void DrawString(Image<Bgr, byte> image, string text, int pointX, int pointY, double scale, Bgr color, int thickness)
         {
             image.Draw(text, new Point(pointX, pointY), FontFace.HersheySimplex, scale, color, thickness);
-        }
-
-        public void SaveToImageBox(IImage image, Image imageBox)
-        {
-            var bitmap = ConvertToBitmap(image);
-            imageBox.Dispatcher.Invoke(() => { imageBox.Source = bitmap; });
         }
 
         public BitmapImage ConvertToBitmap(IImage image)
