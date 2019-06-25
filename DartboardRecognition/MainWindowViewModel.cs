@@ -253,6 +253,8 @@ namespace DartboardRecognition
                         measureman.FindDartContour();
                         measureman.ProcessDartContour();
 
+                        view.Dispatcher.Invoke(new Action(() => DartboardProjectionImageBox = drawman.ConvertToBitmap(throwService.DartboardProjectionFrame)));
+
                         continue;
                     }
 
