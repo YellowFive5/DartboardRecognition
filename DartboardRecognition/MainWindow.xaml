@@ -18,12 +18,8 @@
             <ColumnDefinition Width="1195*"/>
             <ColumnDefinition Width="7*"/>
         </Grid.ColumnDefinitions>
-        <Button x:Name="StartButton" Content="Start" HorizontalAlignment="Left" Margin="654,370,0,0" VerticalAlignment="Top" Width="75" Click="StartButtonClick" Height="19"/>
-        <Button x:Name="StopButton" Content="Stop" HorizontalAlignment="Left" Margin="734,370,0,0" VerticalAlignment="Top" Width="75" Click="StopButtonClick" Height="19" IsEnabled="False"/>
-        <RadioButton x:Name="Throw1RadioButton" Content="1" HorizontalAlignment="Left" Margin="692,400,0,0" VerticalAlignment="Top" />
-        <RadioButton x:Name="Throw2RadioButton" Content="2" HorizontalAlignment="Left" Margin="727,400,0,0" VerticalAlignment="Top"/>
-        <RadioButton x:Name="Throw3RadioButton" Content="3" HorizontalAlignment="Left" Margin="758,400,0,0" VerticalAlignment="Top"/>
-        <RadioButton x:Name="UseCamsRadioButton" Content="Use cams" HorizontalAlignment="Left" Margin="703,427,0,0" VerticalAlignment="Top" IsChecked="True"/>
+        <Button x:Name="StartButton" Content="Start" HorizontalAlignment="Left" Margin="659,412,0,0" VerticalAlignment="Top" Width="75" Click="StartButtonClick" Height="19"/>
+        <Button x:Name="StopButton" Content="Stop" HorizontalAlignment="Left" Margin="739,412,0,0" VerticalAlignment="Top" Width="75" Click="StopButtonClick" Height="19" IsEnabled="False"/>
 
         <Slider x:Name="Cam1TresholdMinSlider"  HorizontalAlignment="Left" Margin="21,484,0,0" VerticalAlignment="Top" Width="626" Maximum="255" Value="197"/>
         <Slider x:Name="Cam1TresholdMaxSlider" HorizontalAlignment="Left" Margin="21,507,0,0" VerticalAlignment="Top" Width="626" Maximum="255" Value="255"/>

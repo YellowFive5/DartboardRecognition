@@ -92,10 +92,6 @@ namespace DartboardRecognition
             StopButton.IsEnabled = !StopButton.IsEnabled;
             Cam1IndexBox.IsEnabled = !Cam1IndexBox.IsEnabled;
             Cam2IndexBox.IsEnabled = !Cam2IndexBox.IsEnabled;
-            Throw1RadioButton.IsEnabled = !Throw1RadioButton.IsEnabled;
-            Throw2RadioButton.IsEnabled = !Throw2RadioButton.IsEnabled;
-            Throw3RadioButton.IsEnabled = !Throw3RadioButton.IsEnabled;
-            UseCamsRadioButton.IsEnabled = !UseCamsRadioButton.IsEnabled;
         }
     }
 }
