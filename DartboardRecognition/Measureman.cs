@@ -266,13 +266,14 @@ namespace DartboardRecognition
             return diffImage;
         }
 
-        public void FindDartContour()
+        public bool FindDartContour()
         {
+            var dartContourFound = false;
             CvInvoke.FindContours(workingCam.roiTrasholdFrameLastThrow, workingCam.allContours, workingCam.matHierarсhy, RetrType.External, ChainApproxMethod.ChainApproxNone);
 
             if (workingCam.allContours.Size <= 0)
             {
-                return;
+                return false;
             }
 
             for (var i = 0; i < workingCam.allContours.Size; i++)
@@ -282,10 +283,13 @@ namespace DartboardRecognition
                 if (arclength > view.minContourArcLength &&
                     arclength < view.maxContourArcLength)
                 {
+                    dartContourFound = true;
                     workingCam.dartContours.Push(contour);
                     // CvInvoke.DrawContours(workingCam.linedFrame, contour, -1, contourColor, contourThickness, offset: new System.Drawing.Point(0, (int)RoiPosYSlider.Value));
                 }
             }
+
+            return dartContourFound;
         }
     }
 }

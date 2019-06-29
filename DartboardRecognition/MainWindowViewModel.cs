@@ -243,17 +243,19 @@ namespace DartboardRecognition
                     var throwDetected = measureman.DetectThrow();
                     if (throwDetected)
                     {
-                        Thread.Sleep(500);
-                        view.Dispatcher.Invoke(new Action(() => view.PointsBox.Text = ""));
-
                         cam.originFrame = cam.videoCapture.QueryFrame().ToImage<Bgr, byte>();
                         measureman.CalculateRoiRegion();
                         drawman.TresholdRoiRegion(cam);
 
-                        measureman.FindDartContour();
-                        measureman.ProcessDartContour();
+                        var dartContourFound = measureman.FindDartContour();
+                        if (dartContourFound)
+                        {
+                            measureman.ProcessDartContour();
+                        }
 
-                        view.Dispatcher.Invoke(new Action(() => DartboardProjectionImageBox = drawman.ConvertToBitmap(throwService.DartboardProjectionFrame)));
+                        Thread.Sleep(1000);
+                        view.Dispatcher.Invoke(new Action(() => view.PointsBox.Text = ""));
+                        view.Dispatcher.Invoke(new Action(() => DartboardProjectionImageBox = drawman.ConvertToBitmap(throwService.DartboardProjectionWorkingFrame)));
 
                         continue;
                     }
