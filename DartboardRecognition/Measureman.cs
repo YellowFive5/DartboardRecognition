@@ -244,11 +244,12 @@ namespace DartboardRecognition
                 if (dartsExtraction)
                 {
                     Thread.Sleep(4000);
+                    dispatcher.Invoke(new Action(() => view.PointsBox.Text = ""));
                 }
                 else if (throwDetected)
                 {
                     workingCam.roiTrasholdFrameLastThrow = diffImage;
-                    dispatcher.InvokeAsync(new Action(() => view.PointsBox.Text += $"\n{workingCam} - {moves}!"));
+                    dispatcher.Invoke(new Action(() => view.PointsBox.Text += $"\n{workingCam} - {moves}!"));
                 }
 
                 workingCam.originFrame = workingCam.videoCapture.QueryFrame().ToImage<Bgr, byte>();

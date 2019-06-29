@@ -22,8 +22,8 @@ namespace DartboardRecognition
         private Point projectionLineCam1Point2;
         private Point projectionLineCam2Point1;
         private Point projectionLineCam2Point2;
-        public Image<Bgr, byte> DartboardProjectionFrameBackground { get; }
-        public Image<Bgr, byte> DartboardProjectionWorkingFrame { get; private set; }
+        private Image<Bgr, byte> DartboardProjectionFrameBackground { get; }
+        private Image<Bgr, byte> DartboardProjectionWorkingFrame { get; set; }
 
         public ThrowService(MainWindow view, Drawman drawman, CancellationToken cancelToken, MainWindowViewModel viewModel)
         {
@@ -73,8 +73,8 @@ namespace DartboardRecognition
 
             drawman.DrawCircle(DartboardProjectionWorkingFrame, poi, view.PoiRadius, view.PoiColor, view.PoiThickness);
             dispatcher.Invoke(new Action(() => viewModel.DartboardProjectionImageBox = drawman.ConvertToBitmap(DartboardProjectionWorkingFrame)));
-            // view.PointsBox.Text += $"{anotherThrow.Sector} x {anotherThrow.Multiplier} = {anotherThrow.TotalPoints}\n";
             dispatcher.Invoke(new Action(() => view.PointsBox.Text = ""));
+            dispatcher.Invoke(new Action(() => view.PointsBox.Text += $"{anotherThrow.Sector} x {anotherThrow.Multiplier} = {anotherThrow.TotalPoints}\n"));
         }
 
         private Throw PrepareThrowData(Point poi)
@@ -85,22 +85,6 @@ namespace DartboardRecognition
             var distance = Measureman.FindDistance(projectionCenterPoint, poi);
             var sector = 0;
             var multiplier = 1;
-
-            if (distance <= view.ProjectionCoefficent * 7)
-            {
-                sector = 50;
-            }
-
-            if (distance > view.ProjectionCoefficent * 7 &&
-                distance <= view.ProjectionCoefficent * 17)
-            {
-                sector = 25;
-            }
-
-            if (distance > view.ProjectionCoefficent * 170)
-            {
-                sector = 0;
-            }
 
             if (distance >= view.ProjectionCoefficent * 95 &&
                 distance <= view.ProjectionCoefficent * 105)
@@ -195,6 +179,22 @@ namespace DartboardRecognition
             else if (angle >= -1.72788 && angle < -1.41372)
             {
                 sector = 20;
+            }
+
+            if (distance <= view.ProjectionCoefficent * 7)
+            {
+                sector = 50;
+            }
+
+            if (distance > view.ProjectionCoefficent * 7 &&
+                distance <= view.ProjectionCoefficent * 17)
+            {
+                sector = 25;
+            }
+
+            if (distance > view.ProjectionCoefficent * 170)
+            {
+                sector = 0;
             }
 
             return new Throw(poi, sector, multiplier, DartboardProjectionFrameBackground);
