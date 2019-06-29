@@ -116,7 +116,7 @@ namespace DartboardRecognition
             drawman = new Drawman();
             cts = new CancellationTokenSource();
             cancelToken = cts.Token;
-            throwService = new ThrowService(view, drawman, cancelToken);
+            throwService = new ThrowService(view, drawman, cancelToken, this);
             measureman1 = new Measureman(view, drawman, throwService);
             measureman2 = new Measureman(view, drawman, throwService);
             Cam1ImageBox = new BitmapImage();
@@ -223,8 +223,6 @@ namespace DartboardRecognition
                         return;
                     }
 
-                    RefreshImageBoxes(cam);
-
                     var throwDetected = measureman.DetectThrow();
                     if (throwDetected)
                     {
@@ -233,21 +231,24 @@ namespace DartboardRecognition
                         {
                             measureman.ProcessDartContour();
                             RefreshImageBoxes(cam);
-                            Thread.Sleep(1000);
-
-                            view.Dispatcher.Invoke(new Action(() => view.PointsBox.Text = ""));
-                            view.Dispatcher.Invoke(new Action(() => DartboardProjectionImageBox = drawman.ConvertToBitmap(throwService.DartboardProjectionWorkingFrame)));
                         }
                     }
 
-                    cam.originFrame = cam.videoCapture.QueryFrame().ToImage<Bgr, byte>();
-                    cam.RefreshLines(view);
-                    measureman.CalculateSetupLines();
-                    measureman.CalculateRoiRegion();
-                    drawman.TresholdRoiRegion(cam);
+                    // cam.originFrame = cam.videoCapture.QueryFrame().ToImage<Bgr, byte>();
+                    // cam.RefreshLines(view);
+                    // measureman.CalculateSetupLines();
+                    // measureman.CalculateRoiRegion();
+                    // drawman.TresholdRoiRegion(cam);
+                    //
+                    // RefreshImageBoxes(cam);
                 }
             }
 
+            ClearImageBoxes(cam);
+        }
+
+        private void ClearImageBoxes(Cam cam)
+        {
             cam.videoCapture.Dispose();
             if (cam is Cam1)
             {
@@ -272,16 +273,16 @@ namespace DartboardRecognition
                 view.Dispatcher.Invoke(new Action(() => Cam1ImageBox = drawman.ConvertToBitmap(cam.linedFrame)));
                 view.Dispatcher.Invoke(new Action(() => Cam1RoiImageBox = drawman.ConvertToBitmap(cam.roiTrasholdFrame)));
                 view.Dispatcher.Invoke(new Action(() => Cam1RoiLastThrowImageBox = cam.roiTrasholdFrameLastThrow != null
-                                                                                       ? drawman.ConvertToBitmap(cam.roiTrasholdFrameLastThrow)
-                                                                                       : new BitmapImage()));
+                                                                                            ? drawman.ConvertToBitmap(cam.roiTrasholdFrameLastThrow)
+                                                                                            : new BitmapImage()));
             }
             else
             {
                 view.Dispatcher.Invoke(new Action(() => Cam2ImageBox = drawman.ConvertToBitmap(cam.linedFrame)));
                 view.Dispatcher.Invoke(new Action(() => Cam2RoiImageBox = drawman.ConvertToBitmap(cam.roiTrasholdFrame)));
                 view.Dispatcher.Invoke(new Action(() => Cam2RoiLastThrowImageBox = cam.roiTrasholdFrameLastThrow != null
-                                                                                       ? drawman.ConvertToBitmap(cam.roiTrasholdFrameLastThrow)
-                                                                                       : new BitmapImage()));
+                                                                                            ? drawman.ConvertToBitmap(cam.roiTrasholdFrameLastThrow)
+                                                                                            : new BitmapImage()));
             }
         }
 

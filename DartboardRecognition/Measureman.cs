@@ -245,10 +245,11 @@ namespace DartboardRecognition
                 else if (throwDetected)
                 {
                     workingCam.roiTrasholdFrameLastThrow = diffImage;
-                    view.Dispatcher.Invoke(new Action(() => view.PointsBox.Text += $"\n{workingCam} - {moves}!"));
+                    view.Dispatcher.InvokeAsync(new Action(() => view.PointsBox.Text += $"\n{workingCam} - {moves}!"));
                 }
 
                 workingCam.originFrame = workingCam.videoCapture.QueryFrame().ToImage<Bgr, byte>();
+                CalculateSetupLines();
                 CalculateRoiRegion();
                 drawman.TresholdRoiRegion(workingCam);
             }

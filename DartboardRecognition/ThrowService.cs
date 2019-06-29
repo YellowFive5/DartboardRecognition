@@ -11,6 +11,7 @@ namespace DartboardRecognition
     {
         private MainWindow view;
         private Drawman drawman;
+        private readonly MainWindowViewModel viewModel;
         private Point projectionCenterPoint;
         private Stack<Point> cam1RayPoint;
         private Stack<Point> cam2RayPoint;
@@ -22,10 +23,11 @@ namespace DartboardRecognition
         public Image<Bgr, byte> DartboardProjectionFrameBackground { get; }
         public Image<Bgr, byte> DartboardProjectionWorkingFrame { get; private set; }
 
-        public ThrowService(MainWindow view, Drawman drawman, CancellationToken cancelToken)
+        public ThrowService(MainWindow view, Drawman drawman, CancellationToken cancelToken, MainWindowViewModel viewModel)
         {
             this.view = view;
             this.drawman = drawman;
+            this.viewModel = viewModel;
             DartboardProjectionFrameBackground = new Image<Bgr, byte>(view.ProjectionFrameWidth, view.ProjectionFrameHeight);
             DartboardProjectionWorkingFrame = DartboardProjectionFrameBackground.Clone();
             projectionCenterPoint = new Point(DartboardProjectionFrameBackground.Width / 2, DartboardProjectionFrameBackground.Height / 2);
@@ -41,7 +43,7 @@ namespace DartboardRecognition
                 var throwFromAnyCamDetected = cam1RayPoint.Count + cam2RayPoint.Count > 0;
                 if (throwFromAnyCamDetected)
                 {
-                    Thread.Sleep(500);
+                    Thread.Sleep(1500);
                     var anotherThrowDetectedCorrectly = cam1RayPoint.Count == 1 && cam2RayPoint.Count == 1;
                     if (anotherThrowDetectedCorrectly)
                     {
@@ -63,12 +65,13 @@ namespace DartboardRecognition
                                                        cam1RayPoint.Pop(),
                                                        view.Cam2SetupPoint,
                                                        cam2RayPoint.Pop());
-
             var anotherThrow = PrepareThrowData(poi);
             throwsCollection.Enqueue(anotherThrow);
 
             drawman.DrawCircle(DartboardProjectionWorkingFrame, poi, view.PoiRadius, view.PoiColor, view.PoiThickness);
+            view.Dispatcher.Invoke(new Action(() => viewModel.DartboardProjectionImageBox = drawman.ConvertToBitmap(DartboardProjectionWorkingFrame)));
             // view.PointsBox.Text += $"{anotherThrow.Sector} x {anotherThrow.Multiplier} = {anotherThrow.TotalPoints}\n";
+            view.Dispatcher.Invoke(new Action(() => view.PointsBox.Text = ""));
         }
 
         private Throw PrepareThrowData(Point poi)
