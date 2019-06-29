@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
+using System.Windows.Threading;
 using Emgu.CV;
 using Emgu.CV.Structure;
 
@@ -11,6 +12,7 @@ namespace DartboardRecognition
     {
         private MainWindow view;
         private Drawman drawman;
+        private Dispatcher dispatcher;
         private readonly MainWindowViewModel viewModel;
         private Point projectionCenterPoint;
         private Stack<Point> cam1RayPoint;
@@ -28,6 +30,7 @@ namespace DartboardRecognition
             this.view = view;
             this.drawman = drawman;
             this.viewModel = viewModel;
+            dispatcher = view.Dispatcher;
             DartboardProjectionFrameBackground = new Image<Bgr, byte>(view.ProjectionFrameWidth, view.ProjectionFrameHeight);
             DartboardProjectionWorkingFrame = DartboardProjectionFrameBackground.Clone();
             projectionCenterPoint = new Point(DartboardProjectionFrameBackground.Width / 2, DartboardProjectionFrameBackground.Height / 2);
@@ -69,9 +72,9 @@ namespace DartboardRecognition
             throwsCollection.Enqueue(anotherThrow);
 
             drawman.DrawCircle(DartboardProjectionWorkingFrame, poi, view.PoiRadius, view.PoiColor, view.PoiThickness);
-            view.Dispatcher.Invoke(new Action(() => viewModel.DartboardProjectionImageBox = drawman.ConvertToBitmap(DartboardProjectionWorkingFrame)));
+            dispatcher.Invoke(new Action(() => viewModel.DartboardProjectionImageBox = drawman.ConvertToBitmap(DartboardProjectionWorkingFrame)));
             // view.PointsBox.Text += $"{anotherThrow.Sector} x {anotherThrow.Multiplier} = {anotherThrow.TotalPoints}\n";
-            view.Dispatcher.Invoke(new Action(() => view.PointsBox.Text = ""));
+            dispatcher.Invoke(new Action(() => view.PointsBox.Text = ""));
         }
 
         private Throw PrepareThrowData(Point poi)

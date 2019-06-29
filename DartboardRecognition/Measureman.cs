@@ -3,6 +3,7 @@
 using System;
 using System.Drawing;
 using System.Threading;
+using System.Windows.Threading;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
@@ -16,6 +17,7 @@ namespace DartboardRecognition
     {
         private MainWindow view;
         private Drawman drawman;
+        private Dispatcher dispatcher;
         private ThrowService throwService;
         private Rectangle roiRectangle;
         private Moments contourMoments;
@@ -38,6 +40,7 @@ namespace DartboardRecognition
             this.view = view;
             this.drawman = drawman;
             this.throwService = throwService;
+            dispatcher = view.Dispatcher;
         }
 
         public void SetupWorkingCam(Cam cam)
@@ -245,7 +248,7 @@ namespace DartboardRecognition
                 else if (throwDetected)
                 {
                     workingCam.roiTrasholdFrameLastThrow = diffImage;
-                    view.Dispatcher.InvokeAsync(new Action(() => view.PointsBox.Text += $"\n{workingCam} - {moves}!"));
+                    dispatcher.InvokeAsync(new Action(() => view.PointsBox.Text += $"\n{workingCam} - {moves}!"));
                 }
 
                 workingCam.originFrame = workingCam.videoCapture.QueryFrame().ToImage<Bgr, byte>();

@@ -5,6 +5,7 @@ using Emgu.CV;
 using Emgu.CV.Structure;
 using Emgu.CV.Util;
 using System.Collections.Generic;
+using System.Windows.Threading;
 using Emgu.CV.CvEnum;
 using Point = System.Drawing.Point;
 
@@ -46,6 +47,7 @@ namespace DartboardRecognition
         public double surfaceRightSlider;
         public Point setupPoint;
         public double toBullAngle;
+        protected Dispatcher dispatcher;
 
         protected Cam()
         {
@@ -65,8 +67,9 @@ namespace DartboardRecognition
     {
         public Cam1(MainWindow view)
         {
+            dispatcher = view.Dispatcher;
             RefreshLines(view);
-            view.Dispatcher.Invoke(new Action(() => videoCapture = new VideoCapture(int.Parse(view.Cam1IndexBox.Text))));
+            dispatcher.Invoke(new Action(() => videoCapture = new VideoCapture(int.Parse(view.Cam1IndexBox.Text))));
             videoCapture.SetCaptureProperty(CapProp.FrameWidth, 1920);
             videoCapture.SetCaptureProperty(CapProp.FrameHeight, 1080);
             toBullAngle = 0.785398;
@@ -74,17 +77,17 @@ namespace DartboardRecognition
 
         public override void RefreshLines(MainWindow view)
         {
-            view.Dispatcher.Invoke(new Action(() => tresholdMinSlider = view.Cam1TresholdMinSlider.Value));
-            view.Dispatcher.Invoke(new Action(() => tresholdMaxSlider = view.Cam1TresholdMaxSlider.Value));
-            view.Dispatcher.Invoke(new Action(() => roiPosXSlider = view.Cam1RoiPosXSlider.Value));
-            view.Dispatcher.Invoke(new Action(() => roiPosYSlider = view.Cam1RoiPosYSlider.Value));
-            view.Dispatcher.Invoke(new Action(() => roiWidthSlider = view.Cam1RoiWidthSlider.Value));
-            view.Dispatcher.Invoke(new Action(() => roiHeightSlider = view.Cam1RoiHeightSlider.Value));
-            view.Dispatcher.Invoke(new Action(() => surfaceSlider = view.Cam1SurfaceSlider.Value));
-            view.Dispatcher.Invoke(new Action(() => surfaceCenterSlider = view.Cam1SurfaceCenterSlider.Value));
-            view.Dispatcher.Invoke(new Action(() => surfaceLeftSlider = view.Cam1SurfaceLeftSlider.Value));
-            view.Dispatcher.Invoke(new Action(() => surfaceRightSlider = view.Cam1SurfaceRightSlider.Value));
-            view.Dispatcher.Invoke(new Action(() => setupPoint = view.Cam1SetupPoint));
+            dispatcher.Invoke(new Action(() => tresholdMinSlider = view.Cam1TresholdMinSlider.Value));
+            dispatcher.Invoke(new Action(() => tresholdMaxSlider = view.Cam1TresholdMaxSlider.Value));
+            dispatcher.Invoke(new Action(() => roiPosXSlider = view.Cam1RoiPosXSlider.Value));
+            dispatcher.Invoke(new Action(() => roiPosYSlider = view.Cam1RoiPosYSlider.Value));
+            dispatcher.Invoke(new Action(() => roiWidthSlider = view.Cam1RoiWidthSlider.Value));
+            dispatcher.Invoke(new Action(() => roiHeightSlider = view.Cam1RoiHeightSlider.Value));
+            dispatcher.Invoke(new Action(() => surfaceSlider = view.Cam1SurfaceSlider.Value));
+            dispatcher.Invoke(new Action(() => surfaceCenterSlider = view.Cam1SurfaceCenterSlider.Value));
+            dispatcher.Invoke(new Action(() => surfaceLeftSlider = view.Cam1SurfaceLeftSlider.Value));
+            dispatcher.Invoke(new Action(() => surfaceRightSlider = view.Cam1SurfaceRightSlider.Value));
+            dispatcher.Invoke(new Action(() => setupPoint = view.Cam1SetupPoint));
         }
     }
 
@@ -92,8 +95,9 @@ namespace DartboardRecognition
     {
         public Cam2(MainWindow view)
         {
+            dispatcher = view.Dispatcher;
             RefreshLines(view);
-            view.Dispatcher.Invoke(new Action(() => videoCapture = new VideoCapture(int.Parse(view.Cam2IndexBox.Text))));
+            dispatcher.Invoke(new Action(() => videoCapture = new VideoCapture(int.Parse(view.Cam2IndexBox.Text))));
             videoCapture.SetCaptureProperty(CapProp.FrameWidth, 1920);
             videoCapture.SetCaptureProperty(CapProp.FrameHeight, 1080);
             toBullAngle = 2.35619;
@@ -101,17 +105,17 @@ namespace DartboardRecognition
 
         public override void RefreshLines(MainWindow view)
         {
-            view.Dispatcher.Invoke(new Action(() => tresholdMinSlider = view.Cam2TresholdMinSlider.Value));
-            view.Dispatcher.Invoke(new Action(() => tresholdMaxSlider = view.Cam2TresholdMaxSlider.Value));
-            view.Dispatcher.Invoke(new Action(() => roiPosXSlider = view.Cam2RoiPosXSlider.Value));
-            view.Dispatcher.Invoke(new Action(() => roiPosYSlider = view.Cam2RoiPosYSlider.Value));
-            view.Dispatcher.Invoke(new Action(() => roiWidthSlider = view.Cam2RoiWidthSlider.Value));
-            view.Dispatcher.Invoke(new Action(() => roiHeightSlider = view.Cam2RoiHeightSlider.Value));
-            view.Dispatcher.Invoke(new Action(() => surfaceSlider = view.Cam2SurfaceSlider.Value));
-            view.Dispatcher.Invoke(new Action(() => surfaceCenterSlider = view.Cam2SurfaceCenterSlider.Value));
-            view.Dispatcher.Invoke(new Action(() => surfaceLeftSlider = view.Cam2SurfaceLeftSlider.Value));
-            view.Dispatcher.Invoke(new Action(() => surfaceRightSlider = view.Cam2SurfaceRightSlider.Value));
-            view.Dispatcher.Invoke(new Action(() => setupPoint = view.Cam2SetupPoint));
+            dispatcher.Invoke(new Action(() => tresholdMinSlider = view.Cam2TresholdMinSlider.Value));
+            dispatcher.Invoke(new Action(() => tresholdMaxSlider = view.Cam2TresholdMaxSlider.Value));
+            dispatcher.Invoke(new Action(() => roiPosXSlider = view.Cam2RoiPosXSlider.Value));
+            dispatcher.Invoke(new Action(() => roiPosYSlider = view.Cam2RoiPosYSlider.Value));
+            dispatcher.Invoke(new Action(() => roiWidthSlider = view.Cam2RoiWidthSlider.Value));
+            dispatcher.Invoke(new Action(() => roiHeightSlider = view.Cam2RoiHeightSlider.Value));
+            dispatcher.Invoke(new Action(() => surfaceSlider = view.Cam2SurfaceSlider.Value));
+            dispatcher.Invoke(new Action(() => surfaceCenterSlider = view.Cam2SurfaceCenterSlider.Value));
+            dispatcher.Invoke(new Action(() => surfaceLeftSlider = view.Cam2SurfaceLeftSlider.Value));
+            dispatcher.Invoke(new Action(() => surfaceRightSlider = view.Cam2SurfaceRightSlider.Value));
+            dispatcher.Invoke(new Action(() => setupPoint = view.Cam2SetupPoint));
         }
     }
 }
