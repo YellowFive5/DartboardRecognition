@@ -236,21 +236,21 @@ namespace DartboardRecognition
                 moves = diffImage.CountNonzero()[0];
 
                 dartsExtraction = moves > 7000;
+                throwDetected = !dartsExtraction && moves > 500;
+
                 if (dartsExtraction)
                 {
                     Thread.Sleep(4000);
-                    workingCam.originFrame = workingCam.videoCapture.QueryFrame().ToImage<Bgr, byte>();
-                    CalculateRoiRegion();
-                    drawman.TresholdRoiRegion(workingCam);
-                    return false;
                 }
-
-                throwDetected = moves > 500;
-                if (throwDetected)
+                else if (throwDetected)
                 {
                     workingCam.roiTrasholdFrameLastThrow = diffImage;
                     view.Dispatcher.Invoke(new Action(() => view.PointsBox.Text += $"\n{workingCam} - {moves}!"));
                 }
+
+                workingCam.originFrame = workingCam.videoCapture.QueryFrame().ToImage<Bgr, byte>();
+                CalculateRoiRegion();
+                drawman.TresholdRoiRegion(workingCam);
             }
 
             return throwDetected;

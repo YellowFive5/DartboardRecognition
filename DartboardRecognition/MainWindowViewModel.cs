@@ -223,48 +223,28 @@ namespace DartboardRecognition
                         return;
                     }
 
-                    if (cam is Cam1)
-                    {
-                        view.Dispatcher.Invoke(new Action(() => Cam1ImageBox = drawman.ConvertToBitmap(cam.linedFrame)));
-                        view.Dispatcher.Invoke(new Action(() => Cam1RoiImageBox = drawman.ConvertToBitmap(cam.roiTrasholdFrame)));
-                        view.Dispatcher.Invoke(new Action(() => Cam1RoiLastThrowImageBox = cam.roiTrasholdFrameLastThrow != null
-                                                                                               ? drawman.ConvertToBitmap(cam.roiTrasholdFrameLastThrow)
-                                                                                               : new BitmapImage()));
-                    }
-                    else
-                    {
-                        view.Dispatcher.Invoke(new Action(() => Cam2ImageBox = drawman.ConvertToBitmap(cam.linedFrame)));
-                        view.Dispatcher.Invoke(new Action(() => Cam2RoiImageBox = drawman.ConvertToBitmap(cam.roiTrasholdFrame)));
-                        view.Dispatcher.Invoke(new Action(() => Cam2RoiLastThrowImageBox = cam.roiTrasholdFrameLastThrow != null
-                                                                                               ? drawman.ConvertToBitmap(cam.roiTrasholdFrameLastThrow)
-                                                                                               : new BitmapImage()));
-                    }
+                    RefreshImageBoxes(cam);
 
                     var throwDetected = measureman.DetectThrow();
                     if (throwDetected)
                     {
-                        cam.originFrame = cam.videoCapture.QueryFrame().ToImage<Bgr, byte>();
-                        measureman.CalculateRoiRegion();
-                        drawman.TresholdRoiRegion(cam);
-
                         var dartContourFound = measureman.FindDartContour();
                         if (dartContourFound)
                         {
                             measureman.ProcessDartContour();
+                            RefreshImageBoxes(cam);
+                            Thread.Sleep(1000);
+
+                            view.Dispatcher.Invoke(new Action(() => view.PointsBox.Text = ""));
+                            view.Dispatcher.Invoke(new Action(() => DartboardProjectionImageBox = drawman.ConvertToBitmap(throwService.DartboardProjectionWorkingFrame)));
                         }
-
-                        Thread.Sleep(1000);
-                        view.Dispatcher.Invoke(new Action(() => view.PointsBox.Text = ""));
-                        view.Dispatcher.Invoke(new Action(() => DartboardProjectionImageBox = drawman.ConvertToBitmap(throwService.DartboardProjectionWorkingFrame)));
-
-                        continue;
                     }
 
+                    cam.originFrame = cam.videoCapture.QueryFrame().ToImage<Bgr, byte>();
                     cam.RefreshLines(view);
                     measureman.CalculateSetupLines();
                     measureman.CalculateRoiRegion();
                     drawman.TresholdRoiRegion(cam);
-                    cam.originFrame = cam.videoCapture.QueryFrame().ToImage<Bgr, byte>();
                 }
             }
 
@@ -283,6 +263,26 @@ namespace DartboardRecognition
             }
 
             view.Dispatcher.Invoke(new Action(() => DartboardProjectionImageBox = new BitmapImage()));
+        }
+
+        private void RefreshImageBoxes(Cam cam)
+        {
+            if (cam is Cam1)
+            {
+                view.Dispatcher.Invoke(new Action(() => Cam1ImageBox = drawman.ConvertToBitmap(cam.linedFrame)));
+                view.Dispatcher.Invoke(new Action(() => Cam1RoiImageBox = drawman.ConvertToBitmap(cam.roiTrasholdFrame)));
+                view.Dispatcher.Invoke(new Action(() => Cam1RoiLastThrowImageBox = cam.roiTrasholdFrameLastThrow != null
+                                                                                       ? drawman.ConvertToBitmap(cam.roiTrasholdFrameLastThrow)
+                                                                                       : new BitmapImage()));
+            }
+            else
+            {
+                view.Dispatcher.Invoke(new Action(() => Cam2ImageBox = drawman.ConvertToBitmap(cam.linedFrame)));
+                view.Dispatcher.Invoke(new Action(() => Cam2RoiImageBox = drawman.ConvertToBitmap(cam.roiTrasholdFrame)));
+                view.Dispatcher.Invoke(new Action(() => Cam2RoiLastThrowImageBox = cam.roiTrasholdFrameLastThrow != null
+                                                                                       ? drawman.ConvertToBitmap(cam.roiTrasholdFrameLastThrow)
+                                                                                       : new BitmapImage()));
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
