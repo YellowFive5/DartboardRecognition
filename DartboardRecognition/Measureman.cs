@@ -228,35 +228,42 @@ namespace DartboardRecognition
             var throwDetected = false;
             var zeroImage = workingCam.roiTrasholdFrame;
             var firstImage = workingCam.videoCapture.QueryFrame().ToImage<Gray, byte>().Not();
-            var diffImage = DiffImage(firstImage, zeroImage);
-            var moves = diffImage.CountNonzero()[0];
-            moveDetected = moves > 100;
-            if (moveDetected)
+            using (firstImage)
             {
-                Thread.Sleep(1000);
-                var secondImage = workingCam.videoCapture.QueryFrame().ToImage<Gray, byte>().Not();
-                diffImage = DiffImage(secondImage, zeroImage);
-                moves = diffImage.CountNonzero()[0];
-
-                dartsExtraction = moves > 7000;
-                throwDetected = !dartsExtraction && moves > 500;
-
-                if (dartsExtraction)
+                var diffImage = DiffImage(firstImage, zeroImage);
+                var moves = diffImage.CountNonzero()[0];
+                moveDetected = moves > 100;
+                if (moveDetected)
                 {
-                    Thread.Sleep(4000);
-                    dispatcher.Invoke(new Action(() => view.PointsBox.Text = ""));
-                }
-                else if (throwDetected)
-                {
-                    workingCam.roiTrasholdFrameLastThrow = diffImage;
-                    dispatcher.Invoke(new Action(() => view.PointsBox.Text += $"\n{workingCam} - {moves}!"));
-                }
+                    Thread.Sleep(1500);
+                    var secondImage = workingCam.videoCapture.QueryFrame().ToImage<Gray, byte>().Not();
+                    using (secondImage)
+                    {
+                        diffImage = DiffImage(secondImage, zeroImage);
+                        moves = diffImage.CountNonzero()[0];
 
-                workingCam.originFrame = workingCam.videoCapture.QueryFrame().ToImage<Bgr, byte>();
-                CalculateSetupLines();
-                CalculateRoiRegion();
-                drawman.TresholdRoiRegion(workingCam);
+                        dartsExtraction = moves > 7000;
+                        throwDetected = !dartsExtraction && moves > 500;
+
+                        if (dartsExtraction)
+                        {
+                            Thread.Sleep(4000);
+                            dispatcher.Invoke(new Action(() => view.PointsBox.Text = ""));
+                        }
+                        else if (throwDetected)
+                        {
+                            workingCam.roiTrasholdFrameLastThrow = diffImage;
+                            dispatcher.Invoke(new Action(() => view.PointsBox.Text += $"\n{workingCam} - {moves}!"));
+                        }
+                    }
+
+                    workingCam.originFrame = workingCam.videoCapture.QueryFrame().ToImage<Bgr, byte>();
+                    CalculateSetupLines();
+                    CalculateRoiRegion();
+                    drawman.TresholdRoiRegion(workingCam);
+                }
             }
+
 
             return throwDetected;
         }
