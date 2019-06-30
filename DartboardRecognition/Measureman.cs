@@ -253,7 +253,7 @@ namespace DartboardRecognition
                         else if (throwDetected)
                         {
                             workingCam.roiTrasholdFrameLastThrow = diffImage;
-                            dispatcher.Invoke(new Action(() => view.PointsBox.Text += $"\n{workingCam} - {moves}!"));
+                            dispatcher.Invoke(new Action(() => view.PointsBox.Text += $"\n{workingCam} - {moves}"));
                         }
                     }
 
@@ -263,7 +263,6 @@ namespace DartboardRecognition
                     drawman.TresholdRoiRegion(workingCam);
                 }
             }
-
 
             return throwDetected;
         }

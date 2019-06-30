@@ -31,8 +31,8 @@ namespace DartboardRecognition
         public MCvScalar ProjectionGridColor { get; } = new Bgr(System.Drawing.Color.DarkGray).MCvScalar;
         public int ProjectionFrameHeight { get; } = 1200;
         public int ProjectionFrameWidth { get; } = 1200;
-        public Point Cam1SetupPoint { get; } = new Point(30, 30);
-        public Point Cam2SetupPoint { get; } = new Point(1200 - 30, 30);
+        public Point Cam1SetupPoint { get; } = new Point(13, 4);
+        public Point Cam2SetupPoint { get; } = new Point(1200 - 13, 4);
         public int ProjectionCoefficent { get; } = 3;
         public int ProjectionGridThickness { get; } = 2;
         public MCvScalar ProjectionSurfaceLineColor { get; } = new Bgr(System.Drawing.Color.Red).MCvScalar;
