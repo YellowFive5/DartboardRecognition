@@ -7,6 +7,7 @@ using System.Windows.Threading;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
+using Emgu.CV.Util;
 using Point = System.Drawing.Point;
 
 #endregion
@@ -287,17 +288,27 @@ namespace DartboardRecognition
                 return false;
             }
 
+            var dartContour = new VectorOfPoint();
+            var dartContourArcLength = 0.0;
+
             for (var i = 0; i < workingCam.allContours.Size; i++)
             {
-                var contour = workingCam.allContours[i];
-                var arclength = CvInvoke.ArcLength(contour, true);
-                if (arclength > view.minContourArcLength &&
-                    arclength < view.maxContourArcLength)
+                var tempContour = workingCam.allContours[i];
+                var tempContourArcLength = CvInvoke.ArcLength(tempContour, true);
+                if (tempContourArcLength > view.minContourArcLength &&
+                    tempContourArcLength < view.maxContourArcLength &&
+                    tempContourArcLength > dartContourArcLength)
                 {
                     dartContourFound = true;
-                    workingCam.dartContours.Push(contour);
+                    dartContourArcLength = tempContourArcLength;
+                    dartContour = tempContour;
                     // CvInvoke.DrawContours(workingCam.linedFrame, contour, -1, contourColor, contourThickness, offset: new System.Drawing.Point(0, (int)RoiPosYSlider.Value));
                 }
+            }
+
+            if (dartContourArcLength > 0)
+            {
+                workingCam.dartContours.Push(dartContour);
             }
 
             return dartContourFound;
