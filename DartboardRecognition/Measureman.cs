@@ -296,7 +296,6 @@ namespace DartboardRecognition
                 var tempContour = workingCam.allContours[i];
                 var tempContourArcLength = CvInvoke.ArcLength(tempContour, true);
                 if (tempContourArcLength > view.minContourArcLength &&
-                    tempContourArcLength < view.maxContourArcLength &&
                     tempContourArcLength > dartContourArcLength)
                 {
                     dartContourFound = true;

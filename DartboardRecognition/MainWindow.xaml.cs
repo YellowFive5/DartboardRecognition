@@ -46,7 +46,6 @@ namespace DartboardRecognition
         public double ProjectionDigitsScale { get; } = 2;
         public int ProjectionDigitsThickness { get; } = 2;
         public int minContourArcLength { get; } = 190;
-        public int maxContourArcLength { get; } = 600;
         public int projectionLineCam1Bias { get; } = 0;
         public int projectionLineCam2Bias { get; } = 0;
 
