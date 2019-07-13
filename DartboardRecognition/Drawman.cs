@@ -50,7 +50,7 @@ namespace DartboardRecognition
 
         public void TresholdRoiRegion(Cam cam)
         {
-            cam.roiTrasholdFrame = cam.roiFrame.Clone().Convert<Gray, byte>().Not();
+            cam.roiTrasholdFrame = cam.roiFrame.Clone().Convert<Gray, byte>();
             cam.roiTrasholdFrame._SmoothGaussian(5);
             cam.roiTrasholdFrame._ThresholdBinary(new Gray(cam.tresholdMinSlider),
                                                   new Gray(cam.tresholdMaxSlider));

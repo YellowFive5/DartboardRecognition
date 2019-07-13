@@ -228,7 +228,7 @@ namespace DartboardRecognition
             bool moveDetected;
             var throwDetected = false;
             var zeroImage = workingCam.roiTrasholdFrame;
-            var firstImage = workingCam.videoCapture.QueryFrame().ToImage<Gray, byte>().Not();
+            var firstImage = workingCam.videoCapture.QueryFrame().ToImage<Gray, byte>();
             using (firstImage)
             {
                 var diffImage = DiffImage(firstImage, zeroImage);
@@ -237,14 +237,14 @@ namespace DartboardRecognition
                 if (moveDetected)
                 {
                     Thread.Sleep(1500);
-                    var secondImage = workingCam.videoCapture.QueryFrame().ToImage<Gray, byte>().Not();
+                    var secondImage = workingCam.videoCapture.QueryFrame().ToImage<Gray, byte>();
                     using (secondImage)
                     {
                         diffImage = DiffImage(secondImage, zeroImage);
                         moves = diffImage.CountNonzero()[0];
 
                         dartsExtraction = moves > 7000;
-                        throwDetected = !dartsExtraction && moves > 500;
+                        throwDetected = !dartsExtraction && moves > 550;
 
                         if (dartsExtraction)
                         {
