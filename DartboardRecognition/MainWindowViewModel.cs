@@ -238,12 +238,12 @@ namespace DartboardRecognition
                     }
 
                     // Runtime image capturing
-                    // cam.originFrame = cam.videoCapture.QueryFrame().ToImage<Bgr, byte>();
-                    // cam.RefreshLines(view);
-                    // measureman.CalculateSetupLines();
-                    // measureman.CalculateRoiRegion();
-                    // drawman.TresholdRoiRegion(cam);
-                    // RefreshImageBoxes(cam);
+                    cam.originFrame = cam.videoCapture.QueryFrame().ToImage<Bgr, byte>();
+                    cam.RefreshLines(view);
+                    measureman.CalculateSetupLines();
+                    measureman.CalculateRoiRegion();
+                    drawman.TresholdRoiRegion(cam);
+                    RefreshImageBoxes(cam);
                 }
             }
 

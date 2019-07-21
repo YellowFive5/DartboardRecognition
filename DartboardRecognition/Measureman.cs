@@ -132,6 +132,14 @@ namespace DartboardRecognition
             // Find contour rectangle
             var rect = CvInvoke.MinAreaRect(contour);
             var box = CvInvoke.BoxPoints(rect);
+
+            // Maybe expected width processing
+            // var a1 = FindDistance(new Point((int)box[0].X, (int)box[0].Y), new Point((int)box[1].X, (int)box[1].Y));
+            // var a2 = FindDistance(new Point((int)box[1].X, (int)box[1].Y), new Point((int)box[2].X, (int)box[2].Y));
+            // var a3 = FindDistance(new Point((int)box[2].X, (int)box[2].Y), new Point((int)box[3].X, (int)box[3].Y));
+            // var a4 = FindDistance(new Point((int)box[3].X, (int)box[3].Y), new Point((int)box[0].X, (int)box[0].Y));
+            // ...
+
             contourBoxPoint1 = new Point((int) box[0].X, (int) workingCam.roiPosYSlider + (int) box[0].Y);
             contourBoxPoint2 = new Point((int) box[1].X, (int) workingCam.roiPosYSlider + (int) box[1].Y);
             contourBoxPoint3 = new Point((int) box[2].X, (int) workingCam.roiPosYSlider + (int) box[2].Y);
@@ -228,7 +236,7 @@ namespace DartboardRecognition
             bool moveDetected;
             var throwDetected = false;
             var zeroImage = workingCam.roiTrasholdFrame;
-            var firstImage = workingCam.videoCapture.QueryFrame().ToImage<Gray, byte>();
+            var firstImage = workingCam.videoCapture.QueryFrame().ToImage<Gray, byte>().Not();
             using (firstImage)
             {
                 var diffImage = DiffImage(firstImage, zeroImage);
@@ -237,7 +245,7 @@ namespace DartboardRecognition
                 if (moveDetected)
                 {
                     Thread.Sleep(1500);
-                    var secondImage = workingCam.videoCapture.QueryFrame().ToImage<Gray, byte>();
+                    var secondImage = workingCam.videoCapture.QueryFrame().ToImage<Gray, byte>().Not();
                     using (secondImage)
                     {
                         diffImage = DiffImage(secondImage, zeroImage);
