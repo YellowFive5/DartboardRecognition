@@ -132,13 +132,9 @@ namespace DartboardRecognition
             var dartboardProjectionImage = throwService.PrepareDartboardProjectionImage();
             dispatcher.Invoke(new Action(() => DartboardProjectionImageBox = drawman.ConvertToBitmap(dartboardProjectionImage)));
 
-            var cam1Task = new Task(() => CaptureImage(1, measureman1));
-            var cam2Task = new Task(() => CaptureImage(2, measureman2));
-            var tsTask = new Task(() => throwService.AwaitForThrow(cancelToken));
-
-            cam1Task.Start();
-            cam2Task.Start();
-            tsTask.Start();
+            Task.Factory.StartNew(() => CaptureImage(1, measureman1), cancelToken);
+            Task.Factory.StartNew(() => CaptureImage(2, measureman2), cancelToken);
+            Task.Factory.StartNew(() => throwService.AwaitForThrow(cancelToken), cancelToken);
         }
 
         public void StopCapture()
