@@ -1,6 +1,5 @@
 ﻿#region Usings
 
-using System.ComponentModel;
 using System.Windows;
 using Emgu.CV.Structure;
 using Point = System.Drawing.Point;
@@ -56,41 +55,14 @@ namespace DartboardRecognition
             DataContext = viewModel;
         }
 
-        private void OnClosing(object sender, CancelEventArgs e)
-        {
-            viewModel.SaveSettings();
-        }
-
         private void StartButtonClick(object sender, RoutedEventArgs e)
         {
-            ToggleControls();
-            viewModel.StartCapture();
+            viewModel.OnStartButtonClicked();
         }
 
         private void StopButtonClick(object sender, RoutedEventArgs e)
         {
-            ToggleControls();
-            viewModel.StopCapture();
-            ClearImageBoxes();
-        }
-
-        private void ClearImageBoxes()
-        {
-            // var emptyImage = new BitmapImage();
-            // Cam1ImageBox.Source = emptyImage;
-            // Cam1ImageBoxRoi.Source = emptyImage;
-            // Cam2ImageBox.Source = emptyImage;
-            // Cam2ImageBoxRoi.Source = emptyImage;
-            // DartboardProjectionImageBox.Source = emptyImage;
-            PointsBox.Text = "";
-        }
-
-        private void ToggleControls()
-        {
-            StartButton.IsEnabled = !StartButton.IsEnabled;
-            StopButton.IsEnabled = !StopButton.IsEnabled;
-            Cam1IndexBox.IsEnabled = !Cam1IndexBox.IsEnabled;
-            Cam2IndexBox.IsEnabled = !Cam2IndexBox.IsEnabled;
+            viewModel.OnStopButtonClicked();
         }
     }
 }

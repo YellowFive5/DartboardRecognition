@@ -6,66 +6,16 @@
         xmlns:local="clr-namespace:DartboardRecognition"
         mc:Ignorable="d"
         Title="MainWindow"
-        Height="861.4"
-        Width="1478.2"
-        ResizeMode="NoResize"
-        Closing="OnClosing">
+        Height="587.8"
+        Width="390.2"
+        ResizeMode="NoResize">
     <Window.DataContext>
         <local:MainWindowViewModel />
     </Window.DataContext>
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1195*"/>
-            <ColumnDefinition Width="7*"/>
-        </Grid.ColumnDefinitions>
-        <Button x:Name="StartButton" Content="Start" HorizontalAlignment="Left" Margin="659,412,0,0" VerticalAlignment="Top" Width="75" Click="StartButtonClick" Height="19"/>
-        <Button x:Name="StopButton" Content="Stop" HorizontalAlignment="Left" Margin="739,412,0,0" VerticalAlignment="Top" Width="75" Click="StopButtonClick" Height="19" IsEnabled="False"/>
-
-        <Slider x:Name="Cam1TresholdMinSlider"  HorizontalAlignment="Left" Margin="21,484,0,0" VerticalAlignment="Top" Width="626" Maximum="255" Value="197"/>
-        <Slider x:Name="Cam1TresholdMaxSlider" HorizontalAlignment="Left" Margin="21,507,0,0" VerticalAlignment="Top" Width="626" Maximum="255" Value="255"/>
-        <Slider x:Name="Cam1RoiPosXSlider" HorizontalAlignment="Left" Margin="21,533,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="627" Maximum="5000" Value="0"/>
-        <Slider x:Name="Cam1RoiPosYSlider" HorizontalAlignment="Left" Margin="21,556,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="627" Maximum="5000" Value="357"/>
-        <Slider x:Name="Cam1RoiWidthSlider"  HorizontalAlignment="Left" Margin="21,580,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="627" Maximum="5000" Value="3671"/>
-        <Slider x:Name="Cam1RoiHeightSlider"  HorizontalAlignment="Left" Margin="21,603,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="627" Maximum="5000" Value="133"/>
-        <Slider x:Name="Cam1SurfaceSlider"  HorizontalAlignment="Left" Margin="21,626,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="627" Maximum="5000" Value="536"/>
-        <TextBox x:Name="Cam1IndexBox"  HorizontalAlignment="Left" Height="23" Margin="616,456,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="31" RenderTransformOrigin="0.5,0.435"/>
-        <Slider x:Name="Cam1SurfaceCenterSlider"  HorizontalAlignment="Left" Margin="21,649,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="627" Maximum="2000" Value="536"/>
-        <Slider x:Name="Cam1SurfaceLeftSlider"  HorizontalAlignment="Left" Margin="21,672,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="627" Maximum="2000" Value="536"/>
-        <Slider x:Name="Cam1SurfaceRightSlider"  HorizontalAlignment="Left" Margin="21,695,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="627" Maximum="2000" Value="536"/>
-
-        <Slider x:Name="Cam2TresholdMinSlider" HorizontalAlignment="Left" Margin="810,484,0,0" VerticalAlignment="Top" Width="635" Maximum="255" Value="197"/>
-        <Slider x:Name="Cam2TresholdMaxSlider"  HorizontalAlignment="Left" Margin="811,507,0,0" VerticalAlignment="Top" Width="634" Maximum="255" Value="255"/>
-        <Slider x:Name="Cam2RoiPosXSlider" HorizontalAlignment="Left" Margin="809,533,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="636" Maximum="5000" Value="0"/>
-        <Slider x:Name="Cam2RoiPosYSlider" HorizontalAlignment="Left" Margin="809,556,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="636" Maximum="5000" Value="357"/>
-        <Slider x:Name="Cam2RoiWidthSlider" HorizontalAlignment="Left" Margin="810,580,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="635" Maximum="5000" Value="3671"/>
-        <Slider x:Name="Cam2RoiHeightSlider" HorizontalAlignment="Left" Margin="809,603,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="636" Maximum="5000" Value="133"/>
-        <Slider x:Name="Cam2SurfaceSlider" HorizontalAlignment="Left" Margin="809,626,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="636" Maximum="5000" Value="536"/>
-        <TextBox x:Name="Cam2IndexBox" HorizontalAlignment="Left" Height="23" Margin="809,456,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="31" RenderTransformOrigin="0.5,0.435"/>
-        <Slider x:Name="Cam2SurfaceCenterSlider"  HorizontalAlignment="Left" Margin="809,649,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="627" Maximum="2000" Value="536"/>
-        <Slider x:Name="Cam2SurfaceLeftSlider"  HorizontalAlignment="Left" Margin="810,672,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="627" Maximum="2000" Value="536"/>
-        <Slider x:Name="Cam2SurfaceRightSlider"  HorizontalAlignment="Left" Margin="810,695,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="627" Maximum="2000" Value="536"/>
-
-        <Image x:Name="Cam1ImageBox" Source="{Binding Path=Cam1ImageBox, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="308" Margin="10,34,0,0" VerticalAlignment="Top" Width="550" />
-        <Image x:Name="Cam1ImageBoxRoi" Source="{Binding Path=Cam1RoiImageBox, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="60" Margin="10,347,0,0" VerticalAlignment="Top" Width="551" />
-        <Image x:Name="Cam1ImageBoxRoiLastThrow" Source="{Binding Path=Cam1RoiLastThrowImageBox, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="60" Margin="10,412,0,0" VerticalAlignment="Top" Width="551" />
-        <Image x:Name="Cam2ImageBox" Source="{Binding Path=Cam2ImageBox, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="308" Margin="895,34,0,0" VerticalAlignment="Top" Width="550" />
-        <Image x:Name="Cam2ImageBoxRoi" Source="{Binding Path=Cam2RoiImageBox, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="60" Margin="895,347,0,0" VerticalAlignment="Top" Width="550" />
-        <Image x:Name="Cam2ImageBoxRoiLastThrow" Source="{Binding Path=Cam2RoiLastThrowImageBox, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="60" Margin="895,412,0,0" VerticalAlignment="Top" Width="550" />
-        <Image x:Name="DartboardProjectionImageBox" Source="{Binding Path=DartboardProjectionImageBox, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="308" Margin="571,34,0,0" VerticalAlignment="Top" Width="314" />
-
-        <Label Content="Camera index" HorizontalAlignment="Left" Margin="692,454,0,0" VerticalAlignment="Top" Width="92" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" HorizontalContentAlignment="Center" RenderTransformOrigin="0.594,0.181"/>
-        <Label Content="Treshold min" HorizontalAlignment="Left" Margin="692,479,0,0" VerticalAlignment="Top" Width="92" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" HorizontalContentAlignment="Center" RenderTransformOrigin="0.594,0.181"/>
-        <Label Content="Treshold min" HorizontalAlignment="Left" Margin="692,502,0,0" VerticalAlignment="Top" Width="92" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" HorizontalContentAlignment="Center" RenderTransformOrigin="0.594,0.181"/>
-        <Label Content="ROI X" HorizontalAlignment="Left" Margin="692,528,0,0" VerticalAlignment="Top" Width="92" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" HorizontalContentAlignment="Center" RenderTransformOrigin="0.594,0.181"/>
-        <Label Content="ROI Y" HorizontalAlignment="Left" Margin="692,551,0,0" VerticalAlignment="Top" Width="92" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" HorizontalContentAlignment="Center" RenderTransformOrigin="0.594,0.181"/>
-        <Label Content="ROI width" HorizontalAlignment="Left" Margin="692,575,0,0" VerticalAlignment="Top" Width="92" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" HorizontalContentAlignment="Center" RenderTransformOrigin="0.594,0.181"/>
-        <Label Content="ROI height" HorizontalAlignment="Left" Margin="692,598,0,0" VerticalAlignment="Top" Width="92" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" HorizontalContentAlignment="Center" RenderTransformOrigin="0.594,0.181"/>
-        <Label Content="Surface Y" HorizontalAlignment="Left" Margin="692,620,0,0" VerticalAlignment="Top" Width="92" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" HorizontalContentAlignment="Center" RenderTransformOrigin="0.594,0.181"/>
-        <Label Content="Surface center" HorizontalAlignment="Left" Margin="692,644,0,0" VerticalAlignment="Top" Width="92" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" HorizontalContentAlignment="Center" RenderTransformOrigin="0.594,0.181"/>
-        <Label Content="Surface left" HorizontalAlignment="Left" Margin="692,667,0,0" VerticalAlignment="Top" Width="92" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" HorizontalContentAlignment="Center" RenderTransformOrigin="0.594,0.181"/>
-        <Label Content="Surface right" HorizontalAlignment="Left" Margin="692,690,0,0" VerticalAlignment="Top" Width="92" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" HorizontalContentAlignment="Center" RenderTransformOrigin="0.594,0.181"/>
-
-        <TextBox x:Name="PointsBox" HorizontalAlignment="Left" Height="84" Margin="583,729,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="302"/>
-
+        <Image x:Name="DartboardProjectionImageBox" HorizontalAlignment="Left" Height="308" Margin="33,36,0,0" VerticalAlignment="Top" Width="314" />
+        <TextBox x:Name="PointsBox" HorizontalAlignment="Left" Height="118" Margin="34,362,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="314"/>
+        <Button x:Name="StartButton" Content="Start" HorizontalAlignment="Left" Margin="35,494,0,0" VerticalAlignment="Top" Width="153" Click="StartButtonClick" Height="39"/>
+        <Button x:Name="StopButton" Content="Stop" HorizontalAlignment="Left" Margin="193,494,0,0" VerticalAlignment="Top" Width="154" Click="StopButtonClick" Height="39" IsEnabled="False"/>
     </Grid>
 </Window>

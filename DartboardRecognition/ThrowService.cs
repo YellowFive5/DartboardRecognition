@@ -13,7 +13,6 @@ namespace DartboardRecognition
         private MainWindow view;
         private Drawman drawman;
         private Dispatcher dispatcher;
-        private readonly MainWindowViewModel viewModel;
         private Point projectionCenterPoint;
         private Stack<Point> cam1RayPoint;
         private Stack<Point> cam2RayPoint;
@@ -25,11 +24,10 @@ namespace DartboardRecognition
         private Image<Bgr, byte> DartboardProjectionFrameBackground { get; }
         private Image<Bgr, byte> DartboardProjectionWorkingFrame { get; set; }
 
-        public ThrowService(MainWindow view, Drawman drawman, CancellationToken cancelToken, MainWindowViewModel viewModel)
+        public ThrowService(MainWindow view, Drawman drawman)
         {
             this.view = view;
             this.drawman = drawman;
-            this.viewModel = viewModel;
             dispatcher = view.Dispatcher;
             DartboardProjectionFrameBackground = new Image<Bgr, byte>(view.ProjectionFrameWidth, view.ProjectionFrameHeight);
             DartboardProjectionWorkingFrame = DartboardProjectionFrameBackground.Clone();
@@ -72,7 +70,7 @@ namespace DartboardRecognition
             throwsCollection.Enqueue(anotherThrow);
 
             drawman.DrawCircle(DartboardProjectionWorkingFrame, poi, view.PoiRadius, view.PoiColor, view.PoiThickness);
-            dispatcher.Invoke(new Action(() => viewModel.DartboardProjectionImageBox = drawman.ConvertToBitmap(DartboardProjectionWorkingFrame)));
+            dispatcher.Invoke(new Action(() => view.DartboardProjectionImageBox.Source = drawman.ConvertToBitmap(DartboardProjectionWorkingFrame)));
             dispatcher.Invoke(new Action(() => view.PointsBox.Text = ""));
             dispatcher.Invoke(new Action(() => view.PointsBox.Text += $"{anotherThrow.Sector} x {anotherThrow.Multiplier} = {anotherThrow.TotalPoints}\n"));
         }

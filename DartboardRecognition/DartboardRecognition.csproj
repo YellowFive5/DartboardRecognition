@@ -54,9 +54,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="IMainWindowViewModel.cs">
-      <DependentUpon>MainWindowViewModel.cs</DependentUpon>
+    <Compile Include="CamWindow.xaml.cs">
+      <DependentUpon>CamWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="CamWindowViewModel.cs" />
     <Compile Include="MainWindowViewModel.cs" />
     <Compile Include="Measureman.cs" />
     <Compile Include="MeasuremanService.cs">
@@ -65,6 +66,10 @@
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Throw.cs" />
     <Compile Include="ThrowService.cs" />
+    <Page Include="CamWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

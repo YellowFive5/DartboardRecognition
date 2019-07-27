@@ -51,7 +51,7 @@ namespace DartboardRecognition
             return new Point {X = (int) x, Y = (int) y};
         }
 
-        public static Point FindMiddle(Point point1, Point point2)
+        private static Point FindMiddle(Point point1, Point point2)
         {
             var mpX = (point1.X + point2.X) / 2;
             var mpY = (point1.Y + point2.Y) / 2;
