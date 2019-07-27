@@ -8,25 +8,11 @@ using Point = System.Drawing.Point;
 
 namespace DartboardRecognition
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow
     {
         private MainWindowViewModel viewModel;
-        public Bgr CamSurfaceLineColor { get; } = new Bgr(System.Drawing.Color.Red);
-        public int CamSurfaceLineThickness { get; } = 5;
-        public Bgr CamRoiRectColor { get; } = new Bgr(System.Drawing.Color.LawnGreen);
-        public int CamRoiRectThickness { get; } = 5;
         public MCvScalar CamContourColor { get; } = new Bgr(System.Drawing.Color.Violet).MCvScalar;
         public int CamContourThickness { get; } = 2;
-        public MCvScalar CamContourRectColor { get; } = new Bgr(System.Drawing.Color.Blue).MCvScalar;
-        public int CamContourRectThickness { get; } = 5;
-        public MCvScalar CamSpikeLineColor { get; } = new Bgr(System.Drawing.Color.White).MCvScalar;
-        public int CamSpikeLineThickness { get; } = 4;
-        public MCvScalar ProjectionPoiColor { get; } = new Bgr(System.Drawing.Color.Yellow).MCvScalar;
-        public int ProjectionPoiRadius { get; } = 6;
-        public int ProjectionPoiThickness { get; } = 6;
         public MCvScalar ProjectionGridColor { get; } = new Bgr(System.Drawing.Color.DarkGray).MCvScalar;
         public int ProjectionFrameHeight { get; } = 1200;
         public int ProjectionFrameWidth { get; } = 1200;
@@ -44,9 +30,8 @@ namespace DartboardRecognition
         public Bgr ProjectionDigitsColor { get; } = new Bgr(System.Drawing.Color.White);
         public double ProjectionDigitsScale { get; } = 2;
         public int ProjectionDigitsThickness { get; } = 2;
-        public int minContourArcLength { get; } = 190;
-        public int projectionLineCam1Bias { get; } = 0;
-        public int projectionLineCam2Bias { get; } = 0;
+        public int ProjectionLineCam1Bias { get; } = 0;
+        public int ProjectionLineCam2Bias { get; } = 0;
 
         public MainWindow()
         {

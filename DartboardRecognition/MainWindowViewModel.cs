@@ -13,7 +13,7 @@ namespace DartboardRecognition
 {
     public class MainWindowViewModel
     {
-        private MainWindow view;
+        private MainWindow mainWindowView;
         private Dispatcher dispatcher;
         private Drawman drawman;
         private ThrowService throwService;
@@ -24,37 +24,35 @@ namespace DartboardRecognition
         {
         }
 
-        public MainWindowViewModel(MainWindow view)
+        public MainWindowViewModel(MainWindow mainWindowView)
         {
-            this.view = view;
-            dispatcher = view.Dispatcher;
-            // LoadSettings();
+            this.mainWindowView = mainWindowView;
+            dispatcher = mainWindowView.Dispatcher;
         }
 
-        private void StartCapture()
+        private void StartCapturing()
         {
             drawman = new Drawman();
             cts = new CancellationTokenSource();
             cancelToken = cts.Token;
-            throwService = new ThrowService(view, drawman);
+            throwService = new ThrowService(mainWindowView, drawman);
 
             var dartboardProjectionImage = throwService.PrepareDartboardProjectionImage();
-            view.DartboardProjectionImageBox.Source = drawman.ConvertToBitmap(dartboardProjectionImage);
+            mainWindowView.DartboardProjectionImageBox.Source = drawman.ConvertToBitmap(dartboardProjectionImage);
 
-            Task.Factory.StartNew(() => BeginCapturing(1));
-            Task.Factory.StartNew(() => BeginCapturing(2));
+            Task.Factory.StartNew(() => BeginCamWork(1));
+            Task.Factory.StartNew(() => BeginCamWork(2));
             Task.Factory.StartNew(() => throwService.AwaitForThrow(cancelToken));
         }
 
-        private void StopCapture()
+        private void StopCapturing()
         {
             cts.Cancel();
-            view.DartboardProjectionImageBox.Source = new BitmapImage();
+            mainWindowView.DartboardProjectionImageBox.Source = new BitmapImage();
         }
 
-        private void BeginCapturing(int camNumber)
+        private void BeginCamWork(int camNumber)
         {
-            var measureman = new Measureman(view, drawman, throwService);
             CamWindow camWindow = null;
             Cam cam;
 
@@ -64,9 +62,9 @@ namespace DartboardRecognition
                                   camWindow.Show();
                               });
 
-            cam = camNumber == 1
-                      ? (Cam) new Cam1(camWindow)
-                      : new Cam2(camWindow);
+            var measureman = new Measureman(camWindow, drawman, throwService);
+            cam = new Cam(camWindow);
+
             cam.originFrame = cam.videoCapture.QueryFrame().ToImage<Bgr, byte>();
             cam.RefreshLines(camWindow);
             measureman.SetupWorkingCam(cam);
@@ -120,20 +118,20 @@ namespace DartboardRecognition
         public void OnStartButtonClicked()
         {
             ToggleViewControls();
-            StartCapture();
+            StartCapturing();
         }
 
         public void OnStopButtonClicked()
         {
+            mainWindowView.PointsBox.Text = "";
             ToggleViewControls();
-            view.PointsBox.Text = "";
-            StopCapture();
+            StopCapturing();
         }
 
         private void ToggleViewControls()
         {
-            view.StartButton.IsEnabled = !view.StartButton.IsEnabled;
-            view.StopButton.IsEnabled = !view.StopButton.IsEnabled;
+            mainWindowView.StartButton.IsEnabled = !mainWindowView.StartButton.IsEnabled;
+            mainWindowView.StopButton.IsEnabled = !mainWindowView.StopButton.IsEnabled;
         }
     }
 }

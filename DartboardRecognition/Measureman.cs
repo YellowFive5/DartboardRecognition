@@ -16,7 +16,7 @@ namespace DartboardRecognition
 {
     public partial class Measureman
     {
-        private MainWindow view;
+        private CamWindow view;
         private Drawman drawman;
         private Dispatcher dispatcher;
         private ThrowService throwService;
@@ -36,7 +36,7 @@ namespace DartboardRecognition
         private Point projectionPoi;
         private Point rayPoint;
 
-        public Measureman(MainWindow view, Drawman drawman, ThrowService throwService)
+        public Measureman(CamWindow view, Drawman drawman, ThrowService throwService)
         {
             this.view = view;
             this.drawman = drawman;
@@ -257,12 +257,12 @@ namespace DartboardRecognition
                         if (dartsExtraction)
                         {
                             Thread.Sleep(4000);
-                            dispatcher.Invoke(new Action(() => view.PointsBox.Text = ""));
+                            // dispatcher.Invoke(new Action(() => view.PointsBox.Text = ""));
                         }
                         else if (throwDetected)
                         {
                             workingCam.roiTrasholdFrameLastThrow = diffImage;
-                            dispatcher.Invoke(new Action(() => view.PointsBox.Text += $"\n{workingCam} - {moves}"));
+                            // dispatcher.Invoke(new Action(() => view.PointsBox.Text += $"\n{workingCam} - {moves}"));
                         }
                     }
 

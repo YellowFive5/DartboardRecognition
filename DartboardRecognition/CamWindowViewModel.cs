@@ -10,53 +10,53 @@ namespace DartboardRecognition
 {
     public class CamWindowViewModel
     {
-        private CamWindow view;
+        private CamWindow camWindowView;
         private int camNumber;
 
-        public CamWindowViewModel(CamWindow view, int camNumber)
+        public CamWindowViewModel(CamWindow camWindowView, int camNumber)
         {
             this.camNumber = camNumber;
-            this.view = view;
+            this.camWindowView = camWindowView;
             SetWindowTitle();
             LoadSettings();
         }
 
         private void SetWindowTitle()
         {
-            view.Title = $"Cam {camNumber.ToString()}";
+            camWindowView.Title = $"Cam {camNumber.ToString()}";
         }
 
         private void LoadSettings()
         {
             var camNumberStr = camNumber.ToString();
-            view.TresholdMinSlider.Value = double.Parse(ConfigurationManager.AppSettings[$"Cam{camNumberStr}TresholdMinSlider"]);
-            view.TresholdMaxSlider.Value = double.Parse(ConfigurationManager.AppSettings[$"Cam{camNumberStr}TresholdMaxSlider"]);
-            view.RoiPosXSlider.Value = double.Parse(ConfigurationManager.AppSettings[$"Cam{camNumberStr}RoiPosXSlider"]);
-            view.RoiPosYSlider.Value = double.Parse(ConfigurationManager.AppSettings[$"Cam{camNumberStr}RoiPosYSlider"]);
-            view.RoiWidthSlider.Value = double.Parse(ConfigurationManager.AppSettings[$"Cam{camNumberStr}RoiWidthSlider"]);
-            view.RoiHeightSlider.Value = double.Parse(ConfigurationManager.AppSettings[$"Cam{camNumberStr}RoiHeightSlider"]);
-            view.SurfaceSlider.Value = double.Parse(ConfigurationManager.AppSettings[$"Cam{camNumberStr}SurfaceSlider"]);
-            view.IndexBox.Text = ConfigurationManager.AppSettings[$"Cam{camNumberStr}IndexBox"];
-            view.SurfaceCenterSlider.Value = double.Parse(ConfigurationManager.AppSettings[$"Cam{camNumberStr}SurfaceCenterSlider"]);
-            view.SurfaceLeftSlider.Value = double.Parse(ConfigurationManager.AppSettings[$"Cam{camNumberStr}SurfaceLeftSlider"]);
-            view.SurfaceRightSlider.Value = double.Parse(ConfigurationManager.AppSettings[$"Cam{camNumberStr}SurfaceRightSlider"]);
+            camWindowView.TresholdMinSlider.Value = double.Parse(ConfigurationManager.AppSettings[$"Cam{camNumberStr}TresholdMinSlider"]);
+            camWindowView.TresholdMaxSlider.Value = double.Parse(ConfigurationManager.AppSettings[$"Cam{camNumberStr}TresholdMaxSlider"]);
+            camWindowView.RoiPosXSlider.Value = double.Parse(ConfigurationManager.AppSettings[$"Cam{camNumberStr}RoiPosXSlider"]);
+            camWindowView.RoiPosYSlider.Value = double.Parse(ConfigurationManager.AppSettings[$"Cam{camNumberStr}RoiPosYSlider"]);
+            camWindowView.RoiWidthSlider.Value = double.Parse(ConfigurationManager.AppSettings[$"Cam{camNumberStr}RoiWidthSlider"]);
+            camWindowView.RoiHeightSlider.Value = double.Parse(ConfigurationManager.AppSettings[$"Cam{camNumberStr}RoiHeightSlider"]);
+            camWindowView.SurfaceSlider.Value = double.Parse(ConfigurationManager.AppSettings[$"Cam{camNumberStr}SurfaceSlider"]);
+            camWindowView.IndexBox.Text = ConfigurationManager.AppSettings[$"Cam{camNumberStr}IndexBox"];
+            camWindowView.SurfaceCenterSlider.Value = double.Parse(ConfigurationManager.AppSettings[$"Cam{camNumberStr}SurfaceCenterSlider"]);
+            camWindowView.SurfaceLeftSlider.Value = double.Parse(ConfigurationManager.AppSettings[$"Cam{camNumberStr}SurfaceLeftSlider"]);
+            camWindowView.SurfaceRightSlider.Value = double.Parse(ConfigurationManager.AppSettings[$"Cam{camNumberStr}SurfaceRightSlider"]);
         }
 
         public void SaveSettings()
         {
             var doc = new XmlDocument();
             var camNumberStr = camNumber.ToString();
-            Rewrite($"Cam{camNumberStr}TresholdMinSlider", view.TresholdMinSlider.Value.ToString());
-            Rewrite($"Cam{camNumberStr}TresholdMaxSlider", view.TresholdMaxSlider.Value.ToString());
-            Rewrite($"Cam{camNumberStr}RoiPosXSlider", view.RoiPosXSlider.Value.ToString());
-            Rewrite($"Cam{camNumberStr}RoiPosYSlider", view.RoiPosYSlider.Value.ToString());
-            Rewrite($"Cam{camNumberStr}RoiWidthSlider", view.RoiWidthSlider.Value.ToString());
-            Rewrite($"Cam{camNumberStr}RoiHeightSlider", view.RoiHeightSlider.Value.ToString());
-            Rewrite($"Cam{camNumberStr}SurfaceSlider", view.SurfaceSlider.Value.ToString());
-            Rewrite($"Cam{camNumberStr}IndexBox", view.IndexBox.Text);
-            Rewrite($"Cam{camNumberStr}SurfaceCenterSlider", view.SurfaceCenterSlider.Value.ToString());
-            Rewrite($"Cam{camNumberStr}SurfaceLeftSlider", view.SurfaceLeftSlider.Value.ToString());
-            Rewrite($"Cam{camNumberStr}SurfaceRightSlider", view.SurfaceRightSlider.Value.ToString());
+            Rewrite($"Cam{camNumberStr}TresholdMinSlider", camWindowView.TresholdMinSlider.Value.ToString());
+            Rewrite($"Cam{camNumberStr}TresholdMaxSlider", camWindowView.TresholdMaxSlider.Value.ToString());
+            Rewrite($"Cam{camNumberStr}RoiPosXSlider", camWindowView.RoiPosXSlider.Value.ToString());
+            Rewrite($"Cam{camNumberStr}RoiPosYSlider", camWindowView.RoiPosYSlider.Value.ToString());
+            Rewrite($"Cam{camNumberStr}RoiWidthSlider", camWindowView.RoiWidthSlider.Value.ToString());
+            Rewrite($"Cam{camNumberStr}RoiHeightSlider", camWindowView.RoiHeightSlider.Value.ToString());
+            Rewrite($"Cam{camNumberStr}SurfaceSlider", camWindowView.SurfaceSlider.Value.ToString());
+            Rewrite($"Cam{camNumberStr}IndexBox", camWindowView.IndexBox.Text);
+            Rewrite($"Cam{camNumberStr}SurfaceCenterSlider", camWindowView.SurfaceCenterSlider.Value.ToString());
+            Rewrite($"Cam{camNumberStr}SurfaceLeftSlider", camWindowView.SurfaceLeftSlider.Value.ToString());
+            Rewrite($"Cam{camNumberStr}SurfaceRightSlider", camWindowView.SurfaceRightSlider.Value.ToString());
 
             void Rewrite(string key, string value)
             {

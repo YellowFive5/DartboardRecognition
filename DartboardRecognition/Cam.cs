@@ -15,6 +15,7 @@ namespace DartboardRecognition
 {
     public class Cam
     {
+        private Dispatcher dispatcher;
         public Image<Bgr, byte> processingCapture;
         public VideoCapture videoCapture;
         public Image<Bgr, byte> originFrame;
@@ -47,63 +48,36 @@ namespace DartboardRecognition
         public double surfaceRightSlider;
         public Point setupPoint;
         public double toBullAngle;
-        protected Dispatcher dispatcher;
+        public int camNumber;
 
-        protected Cam()
+        public Cam(CamWindow view)
         {
             surfacePoint1 = new Point();
             surfacePoint2 = new Point();
             allContours = new VectorOfVectorOfPoint();
             dartContours = new Stack<VectorOfPoint>();
             matHierarсhy = new Mat();
-        }
-
-        public virtual void RefreshLines(CamWindow view)
-        {
-        }
-    }
-
-    public class Cam1 : Cam
-    {
-        public Cam1(CamWindow view)
-        {
             dispatcher = view.Dispatcher;
-            RefreshLines(view);
             dispatcher.Invoke(new Action(() => videoCapture = new VideoCapture(int.Parse(view.IndexBox.Text))));
             videoCapture.SetCaptureProperty(CapProp.FrameWidth, 1920);
             videoCapture.SetCaptureProperty(CapProp.FrameHeight, 1080);
-            toBullAngle = 0.785398;
-        }
-
-        public override void RefreshLines(CamWindow view)
-        {
-            dispatcher.Invoke(new Action(() => tresholdMinSlider = view.TresholdMinSlider.Value));
-            dispatcher.Invoke(new Action(() => tresholdMaxSlider = view.TresholdMaxSlider.Value));
-            dispatcher.Invoke(new Action(() => roiPosXSlider = view.RoiPosXSlider.Value));
-            dispatcher.Invoke(new Action(() => roiPosYSlider = view.RoiPosYSlider.Value));
-            dispatcher.Invoke(new Action(() => roiWidthSlider = view.RoiWidthSlider.Value));
-            dispatcher.Invoke(new Action(() => roiHeightSlider = view.RoiHeightSlider.Value));
-            dispatcher.Invoke(new Action(() => surfaceSlider = view.SurfaceSlider.Value));
-            dispatcher.Invoke(new Action(() => surfaceCenterSlider = view.SurfaceCenterSlider.Value));
-            dispatcher.Invoke(new Action(() => surfaceLeftSlider = view.SurfaceLeftSlider.Value));
-            dispatcher.Invoke(new Action(() => surfaceRightSlider = view.SurfaceRightSlider.Value));
-            dispatcher.Invoke(new Action(() => setupPoint = view.SetupPoint));
-        }
-    }
-
-    public class Cam2 : Cam
-    {
-        public Cam2(CamWindow view)
-        {
-            dispatcher = view.Dispatcher;
             RefreshLines(view);
-            dispatcher.Invoke(new Action(() => videoCapture = new VideoCapture(int.Parse(view.IndexBox.Text))));
-            videoCapture.SetCaptureProperty(CapProp.FrameWidth, 1920);
-            videoCapture.SetCaptureProperty(CapProp.FrameHeight, 1080);
-            toBullAngle = 2.35619;
+            switch (view.camNumber)
+            {
+                case 1:
+                    toBullAngle = 0.785398;
+                    camNumber = 1;
+                    break;
+                case 2:
+                    toBullAngle = 2.35619;
+                    camNumber = 2;
+                    break;
+                default:
+                    throw new Exception("Out of cameras range");
+            }
         }
 
-        public override void RefreshLines(CamWindow view)
+        public void RefreshLines(CamWindow view)
         {
             dispatcher.Invoke(new Action(() => tresholdMinSlider = view.TresholdMinSlider.Value));
             dispatcher.Invoke(new Action(() => tresholdMaxSlider = view.TresholdMaxSlider.Value));
