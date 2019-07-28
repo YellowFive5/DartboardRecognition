@@ -15,7 +15,7 @@ namespace DartboardRecognition
 {
     public class Cam
     {
-        private Dispatcher dispatcher;
+        private Dispatcher viewDispatcher;
         public Image<Bgr, byte> processingCapture;
         public VideoCapture videoCapture;
         public Image<Bgr, byte> originFrame;
@@ -52,44 +52,46 @@ namespace DartboardRecognition
 
         public Cam(CamWindow view)
         {
+            viewDispatcher = view.Dispatcher;
             surfacePoint1 = new Point();
             surfacePoint2 = new Point();
             allContours = new VectorOfVectorOfPoint();
             dartContours = new Stack<VectorOfPoint>();
             matHierarсhy = new Mat();
-            dispatcher = view.Dispatcher;
-            dispatcher.Invoke(new Action(() => videoCapture = new VideoCapture(int.Parse(view.IndexBox.Text))));
-            videoCapture.SetCaptureProperty(CapProp.FrameWidth, 1920);
-            videoCapture.SetCaptureProperty(CapProp.FrameHeight, 1080);
-            RefreshLines(view);
             switch (view.camNumber)
             {
                 case 1:
                     toBullAngle = 0.785398;
                     camNumber = 1;
+                    videoCapture = new VideoCapture(1);
                     break;
                 case 2:
                     toBullAngle = 2.35619;
                     camNumber = 2;
+                    videoCapture = new VideoCapture(0);
                     break;
                 default:
                     throw new Exception("Out of cameras range");
             }
+
+            videoCapture.SetCaptureProperty(CapProp.FrameWidth, 1920);
+            videoCapture.SetCaptureProperty(CapProp.FrameHeight, 1080);
+            RefreshLines(view);
         }
 
         public void RefreshLines(CamWindow view)
         {
-            dispatcher.Invoke(new Action(() => tresholdMinSlider = view.TresholdMinSlider.Value));
-            dispatcher.Invoke(new Action(() => tresholdMaxSlider = view.TresholdMaxSlider.Value));
-            dispatcher.Invoke(new Action(() => roiPosXSlider = view.RoiPosXSlider.Value));
-            dispatcher.Invoke(new Action(() => roiPosYSlider = view.RoiPosYSlider.Value));
-            dispatcher.Invoke(new Action(() => roiWidthSlider = view.RoiWidthSlider.Value));
-            dispatcher.Invoke(new Action(() => roiHeightSlider = view.RoiHeightSlider.Value));
-            dispatcher.Invoke(new Action(() => surfaceSlider = view.SurfaceSlider.Value));
-            dispatcher.Invoke(new Action(() => surfaceCenterSlider = view.SurfaceCenterSlider.Value));
-            dispatcher.Invoke(new Action(() => surfaceLeftSlider = view.SurfaceLeftSlider.Value));
-            dispatcher.Invoke(new Action(() => surfaceRightSlider = view.SurfaceRightSlider.Value));
-            dispatcher.Invoke(new Action(() => setupPoint = view.SetupPoint));
+            viewDispatcher.Invoke(new Action(() => tresholdMinSlider = view.TresholdMinSlider.Value));
+            viewDispatcher.Invoke(new Action(() => tresholdMaxSlider = view.TresholdMaxSlider.Value));
+            viewDispatcher.Invoke(new Action(() => roiPosXSlider = view.RoiPosXSlider.Value));
+            viewDispatcher.Invoke(new Action(() => roiPosYSlider = view.RoiPosYSlider.Value));
+            viewDispatcher.Invoke(new Action(() => roiWidthSlider = view.RoiWidthSlider.Value));
+            viewDispatcher.Invoke(new Action(() => roiHeightSlider = view.RoiHeightSlider.Value));
+            viewDispatcher.Invoke(new Action(() => surfaceSlider = view.SurfaceSlider.Value));
+            viewDispatcher.Invoke(new Action(() => surfaceCenterSlider = view.SurfaceCenterSlider.Value));
+            viewDispatcher.Invoke(new Action(() => surfaceLeftSlider = view.SurfaceLeftSlider.Value));
+            viewDispatcher.Invoke(new Action(() => surfaceRightSlider = view.SurfaceRightSlider.Value));
+            viewDispatcher.Invoke(new Action(() => setupPoint = view.SetupPoint));
         }
     }
 }

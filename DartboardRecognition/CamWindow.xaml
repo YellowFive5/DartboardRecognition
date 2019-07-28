@@ -10,6 +10,9 @@
         Width="592.4"
         ResizeMode="NoResize"
         Closing="OnClosing">
+    <Window.DataContext>
+        <local:CamWindowViewModel />
+    </Window.DataContext>
     <Grid>
         <Slider x:Name="TresholdMinSlider"  HorizontalAlignment="Left" Margin="6,469,0,0" VerticalAlignment="Top" Width="487" Maximum="255" Value="197"/>
         <Slider x:Name="TresholdMaxSlider" HorizontalAlignment="Left" Margin="6,492,0,0" VerticalAlignment="Top" Width="487" Maximum="255" Value="255"/>

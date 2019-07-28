@@ -1,11 +1,8 @@
 ﻿#region Usings
 
-using System;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-using Emgu.CV.Structure;
 
 #endregion
 
@@ -14,7 +11,7 @@ namespace DartboardRecognition
     public class MainWindowViewModel
     {
         private MainWindow mainWindowView;
-        private Dispatcher dispatcher;
+        private Dispatcher mainWindowDispatcher;
         private Drawman drawman;
         private ThrowService throwService;
         private CancellationToken cancelToken;
@@ -27,7 +24,7 @@ namespace DartboardRecognition
         public MainWindowViewModel(MainWindow mainWindowView)
         {
             this.mainWindowView = mainWindowView;
-            dispatcher = mainWindowView.Dispatcher;
+            mainWindowDispatcher = mainWindowView.Dispatcher;
         }
 
         private void StartCapturing()
@@ -40,9 +37,11 @@ namespace DartboardRecognition
             var dartboardProjectionImage = throwService.PrepareDartboardProjectionImage();
             mainWindowView.DartboardProjectionImageBox.Source = drawman.ConvertToBitmap(dartboardProjectionImage);
 
-            Task.Factory.StartNew(() => BeginCamWork(1));
-            Task.Factory.StartNew(() => BeginCamWork(2));
-            Task.Factory.StartNew(() => throwService.AwaitForThrow(cancelToken));
+            var runtimeCapturing = mainWindowView.RuntimeCapturingCheckBox.IsChecked.Value;
+
+            StartCam(1, runtimeCapturing);
+            StartCam(2, runtimeCapturing);
+            StartThrowService();
         }
 
         private void StopCapturing()
@@ -51,68 +50,35 @@ namespace DartboardRecognition
             mainWindowView.DartboardProjectionImageBox.Source = new BitmapImage();
         }
 
-        private void BeginCamWork(int camNumber)
+        private void StartThrowService()
         {
-            CamWindow camWindow = null;
-            Cam cam;
+            var thread = new Thread(() =>
+                                    {
+                                        SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext(Dispatcher.CurrentDispatcher));
 
-            dispatcher.Invoke(() =>
-                              {
-                                  camWindow = new CamWindow(camNumber);
-                                  camWindow.Show();
-                              });
+                                        throwService.AwaitForThrow(cancelToken);
 
-            var measureman = new Measureman(camWindow, drawman, throwService);
-            cam = new Cam(camWindow);
-
-            cam.originFrame = cam.videoCapture.QueryFrame().ToImage<Bgr, byte>();
-            cam.RefreshLines(camWindow);
-            measureman.SetupWorkingCam(cam);
-            measureman.CalculateSetupLines();
-            measureman.CalculateRoiRegion();
-            drawman.TresholdRoiRegion(cam);
-
-            while (!cancelToken.IsCancellationRequested)
-            {
-                using (cam.originFrame)
-                {
-                    if (cam.originFrame == null)
-                    {
-                        return;
-                    }
-
-                    var throwDetected = measureman.DetectThrow();
-                    if (throwDetected)
-                    {
-                        var dartContourFound = measureman.FindDartContour();
-                        if (dartContourFound)
-                        {
-                            measureman.ProcessDartContour();
-                            RefreshImageBoxes(cam, camWindow);
-                        }
-                    }
-
-                    // Runtime image capturing
-                    cam.originFrame = cam.videoCapture.QueryFrame().ToImage<Bgr, byte>();
-                    cam.RefreshLines(camWindow);
-                    measureman.CalculateSetupLines();
-                    measureman.CalculateRoiRegion();
-                    drawman.TresholdRoiRegion(cam);
-                    RefreshImageBoxes(cam, camWindow);
-                }
-            }
-
-            dispatcher.Invoke(() => camWindow.Close());
-            cam.videoCapture.Dispose();
+                                        Dispatcher.Run();
+                                    });
+            thread.SetApartmentState(ApartmentState.STA);
+            thread.Start();
         }
 
-        private void RefreshImageBoxes(Cam cam, CamWindow camWindow)
+        private void StartCam(int camNumber, bool runtimeCapturing)
         {
-            dispatcher.Invoke(new Action(() => camWindow.ImageBox.Source = drawman.ConvertToBitmap(cam.linedFrame)));
-            dispatcher.Invoke(new Action(() => camWindow.ImageBoxRoi.Source = drawman.ConvertToBitmap(cam.roiTrasholdFrame)));
-            dispatcher.Invoke(new Action(() => camWindow.ImageBoxRoiLastThrow.Source = cam.roiTrasholdFrameLastThrow != null
-                                                                                           ? drawman.ConvertToBitmap(cam.roiTrasholdFrameLastThrow)
-                                                                                           : new BitmapImage()));
+            var thread = new Thread(() =>
+                                    {
+                                        SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext(Dispatcher.CurrentDispatcher));
+
+                                        var camWindow = new CamWindow(camNumber, drawman, throwService, cancelToken);
+                                        camWindow.Closed += (s, args) =>
+                                                                Dispatcher.CurrentDispatcher.BeginInvokeShutdown(DispatcherPriority.Background);
+                                        camWindow.Run(runtimeCapturing);
+
+                                        Dispatcher.Run();
+                                    });
+            thread.SetApartmentState(ApartmentState.STA);
+            thread.Start();
         }
 
         public void OnStartButtonClicked()

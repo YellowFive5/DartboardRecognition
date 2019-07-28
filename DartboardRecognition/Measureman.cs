@@ -16,9 +16,9 @@ namespace DartboardRecognition
 {
     public partial class Measureman
     {
-        private CamWindow view;
+        private CamWindow camWindowView;
         private Drawman drawman;
-        private Dispatcher dispatcher;
+        private Dispatcher camWindowDispatcher;
         private ThrowService throwService;
         private Rectangle roiRectangle;
         private Moments contourMoments;
@@ -36,12 +36,12 @@ namespace DartboardRecognition
         private Point projectionPoi;
         private Point rayPoint;
 
-        public Measureman(CamWindow view, Drawman drawman, ThrowService throwService)
+        public Measureman(CamWindow camWindowView, Drawman drawman, ThrowService throwService)
         {
-            this.view = view;
+            this.camWindowView = camWindowView;
             this.drawman = drawman;
             this.throwService = throwService;
-            dispatcher = view.Dispatcher;
+            camWindowDispatcher = camWindowView.Dispatcher;
         }
 
         public void SetupWorkingCam(Cam cam)
@@ -57,11 +57,11 @@ namespace DartboardRecognition
                                          (int) workingCam.roiPosYSlider,
                                          (int) workingCam.roiWidthSlider,
                                          (int) workingCam.roiHeightSlider);
-            drawman.DrawRectangle(workingCam.linedFrame, roiRectangle, view.CamRoiRectColor.MCvScalar, view.CamRoiRectThickness);
+            drawman.DrawRectangle(workingCam.linedFrame, roiRectangle, camWindowView.CamRoiRectColor.MCvScalar, camWindowView.CamRoiRectThickness);
 
             workingCam.surfacePoint1 = new Point(0, (int) workingCam.surfaceSlider);
             workingCam.surfacePoint2 = new Point(workingCam.originFrame.Cols, (int) workingCam.surfaceSlider);
-            drawman.DrawLine(workingCam.linedFrame, workingCam.surfacePoint1, workingCam.surfacePoint2, view.CamSurfaceLineColor.MCvScalar, view.CamSurfaceLineThickness);
+            drawman.DrawLine(workingCam.linedFrame, workingCam.surfacePoint1, workingCam.surfacePoint2, camWindowView.CamSurfaceLineColor.MCvScalar, camWindowView.CamSurfaceLineThickness);
 
             workingCam.surfaceCenterPoint1 = new Point
                                              {
@@ -73,7 +73,7 @@ namespace DartboardRecognition
                                                  X = workingCam.surfaceCenterPoint1.X,
                                                  Y = workingCam.surfaceCenterPoint1.Y - 50
                                              };
-            drawman.DrawLine(workingCam.linedFrame, workingCam.surfaceCenterPoint1, workingCam.surfaceCenterPoint2, view.CamSurfaceLineColor.MCvScalar, view.CamSurfaceLineThickness);
+            drawman.DrawLine(workingCam.linedFrame, workingCam.surfaceCenterPoint1, workingCam.surfaceCenterPoint2, camWindowView.CamSurfaceLineColor.MCvScalar, camWindowView.CamSurfaceLineThickness);
 
             workingCam.surfaceLeftPoint1 = new Point
                                            {
@@ -85,7 +85,7 @@ namespace DartboardRecognition
                                                X = workingCam.surfaceLeftPoint1.X,
                                                Y = workingCam.surfaceLeftPoint1.Y - 50
                                            };
-            drawman.DrawLine(workingCam.linedFrame, workingCam.surfaceLeftPoint1, workingCam.surfaceLeftPoint2, view.CamSurfaceLineColor.MCvScalar, view.CamSurfaceLineThickness);
+            drawman.DrawLine(workingCam.linedFrame, workingCam.surfaceLeftPoint1, workingCam.surfaceLeftPoint2, camWindowView.CamSurfaceLineColor.MCvScalar, camWindowView.CamSurfaceLineThickness);
 
             workingCam.surfaceRightPoint1 = new Point
                                             {
@@ -97,7 +97,7 @@ namespace DartboardRecognition
                                                 X = workingCam.surfaceRightPoint1.X,
                                                 Y = workingCam.surfaceRightPoint1.Y - 50
                                             };
-            drawman.DrawLine(workingCam.linedFrame, workingCam.surfaceRightPoint1, workingCam.surfaceRightPoint2, view.CamSurfaceLineColor.MCvScalar, view.CamSurfaceLineThickness);
+            drawman.DrawLine(workingCam.linedFrame, workingCam.surfaceRightPoint1, workingCam.surfaceRightPoint2, camWindowView.CamSurfaceLineColor.MCvScalar, camWindowView.CamSurfaceLineThickness);
         }
 
         public void CalculateRoiRegion()
@@ -144,10 +144,10 @@ namespace DartboardRecognition
             contourBoxPoint2 = new Point((int) box[1].X, (int) workingCam.roiPosYSlider + (int) box[1].Y);
             contourBoxPoint3 = new Point((int) box[2].X, (int) workingCam.roiPosYSlider + (int) box[2].Y);
             contourBoxPoint4 = new Point((int) box[3].X, (int) workingCam.roiPosYSlider + (int) box[3].Y);
-            drawman.DrawLine(workingCam.linedFrame, contourBoxPoint1, contourBoxPoint2, view.CamContourRectColor, view.CamContourRectThickness);
-            drawman.DrawLine(workingCam.linedFrame, contourBoxPoint2, contourBoxPoint3, view.CamContourRectColor, view.CamContourRectThickness);
-            drawman.DrawLine(workingCam.linedFrame, contourBoxPoint3, contourBoxPoint4, view.CamContourRectColor, view.CamContourRectThickness);
-            drawman.DrawLine(workingCam.linedFrame, contourBoxPoint4, contourBoxPoint1, view.CamContourRectColor, view.CamContourRectThickness);
+            drawman.DrawLine(workingCam.linedFrame, contourBoxPoint1, contourBoxPoint2, camWindowView.CamContourRectColor, camWindowView.CamContourRectThickness);
+            drawman.DrawLine(workingCam.linedFrame, contourBoxPoint2, contourBoxPoint3, camWindowView.CamContourRectColor, camWindowView.CamContourRectThickness);
+            drawman.DrawLine(workingCam.linedFrame, contourBoxPoint3, contourBoxPoint4, camWindowView.CamContourRectColor, camWindowView.CamContourRectThickness);
+            drawman.DrawLine(workingCam.linedFrame, contourBoxPoint4, contourBoxPoint1, camWindowView.CamContourRectColor, camWindowView.CamContourRectThickness);
 
             // Setup vertical contour middlepoints
             var contourWidth = FindDistance(contourBoxPoint1, contourBoxPoint2);
@@ -173,7 +173,7 @@ namespace DartboardRecognition
             var angle = FindAngle(contourBoxMiddlePoint2, contourBoxMiddlePoint1);
             spikeLinePoint1.X = (int) (contourBoxMiddlePoint2.X + Math.Cos(angle) * workingCam.spikeLineLength);
             spikeLinePoint1.Y = (int) (contourBoxMiddlePoint2.Y + Math.Sin(angle) * workingCam.spikeLineLength);
-            drawman.DrawLine(workingCam.linedFrame, spikeLinePoint1, spikeLinePoint2, view.CamSpikeLineColor, view.CamSpikeLineThickness);
+            drawman.DrawLine(workingCam.linedFrame, spikeLinePoint1, spikeLinePoint2, camWindowView.CamSpikeLineColor, camWindowView.CamSpikeLineThickness);
         }
 
         private void CalculateCamPoi()
@@ -182,7 +182,7 @@ namespace DartboardRecognition
             camPoi = FindLinesIntersection(spikeLinePoint1, spikeLinePoint2, workingCam.surfacePoint1, workingCam.surfacePoint2);
             if (camPoi != null)
             {
-                drawman.DrawCircle(workingCam.linedFrame, camPoi.Value, view.ProjectionPoiRadius, view.ProjectionPoiColor, view.ProjectionPoiThickness);
+                drawman.DrawCircle(workingCam.linedFrame, camPoi.Value, camWindowView.ProjectionPoiRadius, camWindowView.ProjectionPoiColor, camWindowView.ProjectionPoiThickness);
             }
         }
 
@@ -241,7 +241,7 @@ namespace DartboardRecognition
             {
                 var diffImage = DiffImage(firstImage, zeroImage);
                 var moves = diffImage.CountNonzero()[0];
-                moveDetected = moves > 100;
+                moveDetected = moves > 400;
                 if (moveDetected)
                 {
                     Thread.Sleep(1500);
@@ -303,7 +303,7 @@ namespace DartboardRecognition
             {
                 var tempContour = workingCam.allContours[i];
                 var tempContourArcLength = CvInvoke.ArcLength(tempContour, true);
-                if (tempContourArcLength > view.minContourArcLength &&
+                if (tempContourArcLength > camWindowView.minContourArcLength &&
                     tempContourArcLength > dartContourArcLength)
                 {
                     dartContourFound = true;

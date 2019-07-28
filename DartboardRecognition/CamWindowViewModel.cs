@@ -2,7 +2,11 @@
 
 using System;
 using System.Configuration;
+using System.Threading;
+using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 using System.Xml;
+using Emgu.CV.Structure;
 
 #endregion
 
@@ -10,23 +14,37 @@ namespace DartboardRecognition
 {
     public class CamWindowViewModel
     {
+        private Dispatcher viewDispatcher;
         private CamWindow camWindowView;
         private int camNumber;
+        private Measureman measureman;
+        private Drawman drawman;
+        private ThrowService throwService;
+        private Cam cam;
+        private CancellationToken cancelToken;
 
-        public CamWindowViewModel(CamWindow camWindowView, int camNumber)
+        public CamWindowViewModel()
         {
-            this.camNumber = camNumber;
-            this.camWindowView = camWindowView;
-            SetWindowTitle();
-            LoadSettings();
         }
 
-        private void SetWindowTitle()
+        public CamWindowViewModel(CamWindow camWindowView, int camNumber, Drawman drawman, ThrowService throwService, CancellationToken cancelToken)
+        {
+            this.camWindowView = camWindowView;
+            viewDispatcher = camWindowView.Dispatcher;
+            this.camNumber = camNumber;
+            this.drawman = drawman;
+            this.throwService = throwService;
+            this.cancelToken = cancelToken;
+            measureman = new Measureman(camWindowView, drawman, throwService);
+            cam = new Cam(camWindowView);
+        }
+
+        public void SetWindowTitle()
         {
             camWindowView.Title = $"Cam {camNumber.ToString()}";
         }
 
-        private void LoadSettings()
+        public void LoadSettings()
         {
             var camNumberStr = camNumber.ToString();
             camWindowView.TresholdMinSlider.Value = double.Parse(ConfigurationManager.AppSettings[$"Cam{camNumberStr}TresholdMinSlider"]);
@@ -62,15 +80,18 @@ namespace DartboardRecognition
             {
                 doc.Load(AppDomain.CurrentDomain.SetupInformation.ConfigurationFile);
 
-                foreach (XmlElement element in doc.DocumentElement)
+                if (doc.DocumentElement != null)
                 {
-                    if (element.Name.Equals("appSettings"))
+                    foreach (XmlElement element in doc.DocumentElement)
                     {
-                        foreach (XmlNode node in element.ChildNodes)
+                        if (element.Name.Equals("appSettings"))
                         {
-                            if (node.Attributes[0].Value.Equals(key))
+                            foreach (XmlNode node in element.ChildNodes)
                             {
-                                node.Attributes[1].Value = value;
+                                if (node.Attributes != null && node.Attributes[0].Value.Equals(key))
+                                {
+                                    node.Attributes[1].Value = value;
+                                }
                             }
                         }
                     }
@@ -79,6 +100,61 @@ namespace DartboardRecognition
                 doc.Save(AppDomain.CurrentDomain.SetupInformation.ConfigurationFile);
                 ConfigurationManager.RefreshSection("appSettings");
             }
+        }
+
+        public void RunWork(bool runtimeCapturing)
+        {
+            cam.originFrame = cam.videoCapture.QueryFrame().ToImage<Bgr, byte>();
+            cam.RefreshLines(camWindowView);
+            measureman.SetupWorkingCam(cam);
+            measureman.CalculateSetupLines();
+            measureman.CalculateRoiRegion();
+            drawman.TresholdRoiRegion(cam);
+
+            while (!cancelToken.IsCancellationRequested)
+            {
+                using (cam.originFrame)
+                {
+                    if (cam.originFrame == null)
+                    {
+                        return;
+                    }
+
+                    var throwDetected = measureman.DetectThrow();
+                    if (throwDetected)
+                    {
+                        var dartContourFound = measureman.FindDartContour();
+                        if (dartContourFound)
+                        {
+                            measureman.ProcessDartContour();
+                            RefreshImageBoxes();
+                        }
+                    }
+
+                    // Runtime image capturing
+                    if (runtimeCapturing)
+                    {
+                        cam.originFrame = cam.videoCapture.QueryFrame().ToImage<Bgr, byte>();
+                        cam.RefreshLines(camWindowView);
+                        measureman.CalculateSetupLines();
+                        measureman.CalculateRoiRegion();
+                        drawman.TresholdRoiRegion(cam);
+                        RefreshImageBoxes();
+                    }
+                }
+            }
+
+            camWindowView.Close();
+            cam.videoCapture.Dispose();
+        }
+
+        private void RefreshImageBoxes()
+        {
+            viewDispatcher.Invoke(new Action(() => camWindowView.ImageBox.Source = drawman.ConvertToBitmap(cam.linedFrame)));
+            viewDispatcher.Invoke(new Action(() => camWindowView.ImageBoxRoi.Source = drawman.ConvertToBitmap(cam.roiTrasholdFrame)));
+            viewDispatcher.Invoke(new Action(() => camWindowView.ImageBoxRoiLastThrow.Source = cam.roiTrasholdFrameLastThrow != null
+                                                                                                   ? drawman.ConvertToBitmap(cam.roiTrasholdFrameLastThrow)
+                                                                                                   : new BitmapImage()));
         }
     }
 }

@@ -12,7 +12,7 @@ namespace DartboardRecognition
     {
         private MainWindow mainWindowView;
         private Drawman drawman;
-        private Dispatcher dispatcher;
+        private Dispatcher mainWindowDispatcher;
         private Point projectionCenterPoint;
         private Stack<Point> cam1RayPoint;
         private Stack<Point> cam2RayPoint;
@@ -28,7 +28,7 @@ namespace DartboardRecognition
         {
             this.mainWindowView = mainWindowView;
             this.drawman = drawman;
-            dispatcher = mainWindowView.Dispatcher;
+            mainWindowDispatcher = mainWindowView.Dispatcher;
             DartboardProjectionFrameBackground = new Image<Bgr, byte>(mainWindowView.ProjectionFrameWidth, mainWindowView.ProjectionFrameHeight);
             DartboardProjectionWorkingFrame = DartboardProjectionFrameBackground.Clone();
             projectionCenterPoint = new Point(DartboardProjectionFrameBackground.Width / 2, DartboardProjectionFrameBackground.Height / 2);
@@ -44,7 +44,7 @@ namespace DartboardRecognition
                 var throwFromAnyCamDetected = cam1RayPoint.Count + cam2RayPoint.Count > 0;
                 if (throwFromAnyCamDetected)
                 {
-                    Thread.Sleep(1500);
+                    Thread.Sleep(2000);
                     var anotherThrowDetectedCorrectly = cam1RayPoint.Count == 1 && cam2RayPoint.Count == 1;
                     if (anotherThrowDetectedCorrectly)
                     {
@@ -70,9 +70,9 @@ namespace DartboardRecognition
             throwsCollection.Enqueue(anotherThrow);
 
             drawman.DrawCircle(DartboardProjectionWorkingFrame, poi, mainWindowView.PoiRadius, mainWindowView.PoiColor, mainWindowView.PoiThickness);
-            dispatcher.Invoke(new Action(() => mainWindowView.DartboardProjectionImageBox.Source = drawman.ConvertToBitmap(DartboardProjectionWorkingFrame)));
-            dispatcher.Invoke(new Action(() => mainWindowView.PointsBox.Text = ""));
-            dispatcher.Invoke(new Action(() => mainWindowView.PointsBox.Text += $"{anotherThrow.Sector} x {anotherThrow.Multiplier} = {anotherThrow.TotalPoints}\n"));
+            mainWindowDispatcher.Invoke(new Action(() => mainWindowView.DartboardProjectionImageBox.Source = drawman.ConvertToBitmap(DartboardProjectionWorkingFrame)));
+            mainWindowDispatcher.Invoke(new Action(() => mainWindowView.PointsBox.Text = ""));
+            mainWindowDispatcher.Invoke(new Action(() => mainWindowView.PointsBox.Text += $"{anotherThrow.Sector} x {anotherThrow.Multiplier} = {anotherThrow.TotalPoints}\n"));
         }
 
         private Throw PrepareThrowData(Point poi)
