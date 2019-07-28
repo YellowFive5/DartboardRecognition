@@ -64,11 +64,13 @@ namespace DartboardRecognition
                     toBullAngle = 0.785398;
                     camNumber = 1;
                     videoCapture = new VideoCapture(1);
+                    setupPoint = new Point(10, 10);
                     break;
                 case 2:
                     toBullAngle = 2.35619;
                     camNumber = 2;
                     videoCapture = new VideoCapture(0);
+                    setupPoint = new Point(1200 - 10, 10);
                     break;
                 default:
                     throw new Exception("Out of cameras range");
@@ -91,7 +93,6 @@ namespace DartboardRecognition
             viewDispatcher.Invoke(new Action(() => surfaceCenterSlider = view.SurfaceCenterSlider.Value));
             viewDispatcher.Invoke(new Action(() => surfaceLeftSlider = view.SurfaceLeftSlider.Value));
             viewDispatcher.Invoke(new Action(() => surfaceRightSlider = view.SurfaceRightSlider.Value));
-            viewDispatcher.Invoke(new Action(() => setupPoint = view.SetupPoint));
         }
     }
 }

@@ -47,7 +47,7 @@ namespace DartboardRecognition
 
         private void StopCapturing()
         {
-            cts.Cancel();
+            cts?.Cancel();
             mainWindowView.DartboardProjectionImageBox.Source = new BitmapImage();
         }
 
@@ -56,6 +56,8 @@ namespace DartboardRecognition
             var thread = new Thread(() =>
                                     {
                                         SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext(Dispatcher.CurrentDispatcher));
+                                        mainWindowView.Closed += (s, args) =>
+                                                                     Dispatcher.CurrentDispatcher.BeginInvokeShutdown(DispatcherPriority.Background);
 
                                         throwService.AwaitForThrow(cancelToken);
 
@@ -97,6 +99,7 @@ namespace DartboardRecognition
 
         private void ToggleViewControls()
         {
+            mainWindowView.RuntimeCapturingCheckBox.IsEnabled = !mainWindowView.RuntimeCapturingCheckBox.IsEnabled;
             mainWindowView.StartButton.IsEnabled = !mainWindowView.StartButton.IsEnabled;
             mainWindowView.StopButton.IsEnabled = !mainWindowView.StopButton.IsEnabled;
         }

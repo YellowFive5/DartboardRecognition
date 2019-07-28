@@ -1,5 +1,6 @@
 ﻿#region Usings
 
+using System.ComponentModel;
 using System.Windows;
 using Emgu.CV.Structure;
 using Point = System.Drawing.Point;
@@ -46,6 +47,11 @@ namespace DartboardRecognition
         }
 
         private void StopButtonClick(object sender, RoutedEventArgs e)
+        {
+            viewModel.OnStopButtonClicked();
+        }
+
+        private void OnClosing(object sender, CancelEventArgs e)
         {
             viewModel.OnStopButtonClicked();
         }

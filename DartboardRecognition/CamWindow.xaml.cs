@@ -28,7 +28,6 @@ namespace DartboardRecognition
         public int ProjectionPoiRadius { get; } = 6;
         public MCvScalar ProjectionPoiColor { get; } = new Bgr(Color.Yellow).MCvScalar;
         public int ProjectionPoiThickness { get; } = 6;
-        public Point SetupPoint { get; }
 
         public CamWindow(int camNumber, Drawman drawman, ThrowService throwService, CancellationToken cancelToken, object settingsLock)
         {
@@ -38,9 +37,6 @@ namespace DartboardRecognition
             viewModel = new CamWindowViewModel(this, camNumber, drawman, throwService, cancelToken);
             DataContext = viewModel;
 
-            SetupPoint = camNumber == 1
-                             ? new Point(13, 4)
-                             : new Point(1200 - 13, 4);
             Show();
             viewModel.SetWindowTitle();
             viewModel.LoadSettings();
@@ -56,6 +52,8 @@ namespace DartboardRecognition
             var thread = new Thread(() =>
                                     {
                                         SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext(Dispatcher.CurrentDispatcher));
+                                        Closed += (s, args) =>
+                                                      Dispatcher.CurrentDispatcher.BeginInvokeShutdown(DispatcherPriority.Background);
 
                                         viewModel.RunWork(runtimeCapturing);
 

@@ -8,7 +8,8 @@
         Title="MainWindow"
         Height="623"
         Width="390.2"
-        ResizeMode="NoResize">
+        ResizeMode="NoResize"
+        Closing="OnClosing">
     <Window.DataContext>
         <local:MainWindowViewModel />
     </Window.DataContext>
