@@ -61,6 +61,8 @@ namespace DartboardRecognition
                     }
                 }
             }
+
+            Dispatcher.CurrentDispatcher.Thread.Abort();
         }
 
         private void CalculateAndSaveThrow()

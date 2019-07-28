@@ -135,7 +135,6 @@ namespace DartboardRecognition
                         }
                     }
 
-                    // Runtime image capturing
                     if (runtimeCapturing)
                     {
                         cam.originFrame = cam.videoCapture.QueryFrame().ToImage<Bgr, byte>();
@@ -150,6 +149,7 @@ namespace DartboardRecognition
 
             camWindowDispatcher.Invoke(() => camWindowView.Close());
             cam.videoCapture.Dispose();
+            Dispatcher.CurrentDispatcher.Thread.Abort();
         }
 
         private void RefreshImageBoxes()
@@ -157,8 +157,8 @@ namespace DartboardRecognition
             camWindowDispatcher.Invoke(new Action(() => camWindowView.ImageBox.Source = drawman.ConvertToBitmap(cam.linedFrame)));
             camWindowDispatcher.Invoke(new Action(() => camWindowView.ImageBoxRoi.Source = drawman.ConvertToBitmap(cam.roiTrasholdFrame)));
             camWindowDispatcher.Invoke(new Action(() => camWindowView.ImageBoxRoiLastThrow.Source = cam.roiTrasholdFrameLastThrow != null
-                                                                                                   ? drawman.ConvertToBitmap(cam.roiTrasholdFrameLastThrow)
-                                                                                                   : new BitmapImage()));
+                                                                                                        ? drawman.ConvertToBitmap(cam.roiTrasholdFrameLastThrow)
+                                                                                                        : new BitmapImage()));
         }
     }
 }
