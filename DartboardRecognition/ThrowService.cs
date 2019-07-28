@@ -1,10 +1,14 @@
-﻿using System;
+﻿#region Usings
+
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
 using System.Windows.Threading;
 using Emgu.CV;
 using Emgu.CV.Structure;
+
+#endregion
 
 namespace DartboardRecognition
 {

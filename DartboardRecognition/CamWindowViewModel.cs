@@ -14,7 +14,7 @@ namespace DartboardRecognition
 {
     public class CamWindowViewModel
     {
-        private Dispatcher viewDispatcher;
+        private Dispatcher camWindowDispatcher;
         private CamWindow camWindowView;
         private int camNumber;
         private Measureman measureman;
@@ -30,7 +30,7 @@ namespace DartboardRecognition
         public CamWindowViewModel(CamWindow camWindowView, int camNumber, Drawman drawman, ThrowService throwService, CancellationToken cancelToken)
         {
             this.camWindowView = camWindowView;
-            viewDispatcher = camWindowView.Dispatcher;
+            camWindowDispatcher = camWindowView.Dispatcher;
             this.camNumber = camNumber;
             this.drawman = drawman;
             this.throwService = throwService;
@@ -60,21 +60,25 @@ namespace DartboardRecognition
             camWindowView.SurfaceRightSlider.Value = double.Parse(ConfigurationManager.AppSettings[$"Cam{camNumberStr}SurfaceRightSlider"]);
         }
 
-        public void SaveSettings()
+        public void SaveSettings(object settingsLock)
         {
             var doc = new XmlDocument();
             var camNumberStr = camNumber.ToString();
-            Rewrite($"Cam{camNumberStr}TresholdMinSlider", camWindowView.TresholdMinSlider.Value.ToString());
-            Rewrite($"Cam{camNumberStr}TresholdMaxSlider", camWindowView.TresholdMaxSlider.Value.ToString());
-            Rewrite($"Cam{camNumberStr}RoiPosXSlider", camWindowView.RoiPosXSlider.Value.ToString());
-            Rewrite($"Cam{camNumberStr}RoiPosYSlider", camWindowView.RoiPosYSlider.Value.ToString());
-            Rewrite($"Cam{camNumberStr}RoiWidthSlider", camWindowView.RoiWidthSlider.Value.ToString());
-            Rewrite($"Cam{camNumberStr}RoiHeightSlider", camWindowView.RoiHeightSlider.Value.ToString());
-            Rewrite($"Cam{camNumberStr}SurfaceSlider", camWindowView.SurfaceSlider.Value.ToString());
-            Rewrite($"Cam{camNumberStr}IndexBox", camWindowView.IndexBox.Text);
-            Rewrite($"Cam{camNumberStr}SurfaceCenterSlider", camWindowView.SurfaceCenterSlider.Value.ToString());
-            Rewrite($"Cam{camNumberStr}SurfaceLeftSlider", camWindowView.SurfaceLeftSlider.Value.ToString());
-            Rewrite($"Cam{camNumberStr}SurfaceRightSlider", camWindowView.SurfaceRightSlider.Value.ToString());
+
+            lock (settingsLock)
+            {
+                Rewrite($"Cam{camNumberStr}TresholdMinSlider", camWindowView.TresholdMinSlider.Value.ToString());
+                Rewrite($"Cam{camNumberStr}TresholdMaxSlider", camWindowView.TresholdMaxSlider.Value.ToString());
+                Rewrite($"Cam{camNumberStr}RoiPosXSlider", camWindowView.RoiPosXSlider.Value.ToString());
+                Rewrite($"Cam{camNumberStr}RoiPosYSlider", camWindowView.RoiPosYSlider.Value.ToString());
+                Rewrite($"Cam{camNumberStr}RoiWidthSlider", camWindowView.RoiWidthSlider.Value.ToString());
+                Rewrite($"Cam{camNumberStr}RoiHeightSlider", camWindowView.RoiHeightSlider.Value.ToString());
+                Rewrite($"Cam{camNumberStr}SurfaceSlider", camWindowView.SurfaceSlider.Value.ToString());
+                Rewrite($"Cam{camNumberStr}IndexBox", camWindowView.IndexBox.Text);
+                Rewrite($"Cam{camNumberStr}SurfaceCenterSlider", camWindowView.SurfaceCenterSlider.Value.ToString());
+                Rewrite($"Cam{camNumberStr}SurfaceLeftSlider", camWindowView.SurfaceLeftSlider.Value.ToString());
+                Rewrite($"Cam{camNumberStr}SurfaceRightSlider", camWindowView.SurfaceRightSlider.Value.ToString());
+            }
 
             void Rewrite(string key, string value)
             {
@@ -144,15 +148,15 @@ namespace DartboardRecognition
                 }
             }
 
-            camWindowView.Close();
+            camWindowDispatcher.Invoke(() => camWindowView.Close());
             cam.videoCapture.Dispose();
         }
 
         private void RefreshImageBoxes()
         {
-            viewDispatcher.Invoke(new Action(() => camWindowView.ImageBox.Source = drawman.ConvertToBitmap(cam.linedFrame)));
-            viewDispatcher.Invoke(new Action(() => camWindowView.ImageBoxRoi.Source = drawman.ConvertToBitmap(cam.roiTrasholdFrame)));
-            viewDispatcher.Invoke(new Action(() => camWindowView.ImageBoxRoiLastThrow.Source = cam.roiTrasholdFrameLastThrow != null
+            camWindowDispatcher.Invoke(new Action(() => camWindowView.ImageBox.Source = drawman.ConvertToBitmap(cam.linedFrame)));
+            camWindowDispatcher.Invoke(new Action(() => camWindowView.ImageBoxRoi.Source = drawman.ConvertToBitmap(cam.roiTrasholdFrame)));
+            camWindowDispatcher.Invoke(new Action(() => camWindowView.ImageBoxRoiLastThrow.Source = cam.roiTrasholdFrameLastThrow != null
                                                                                                    ? drawman.ConvertToBitmap(cam.roiTrasholdFrameLastThrow)
                                                                                                    : new BitmapImage()));
         }

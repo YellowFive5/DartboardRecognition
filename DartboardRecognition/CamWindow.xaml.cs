@@ -14,6 +14,8 @@ namespace DartboardRecognition
     {
         public int camNumber;
         private CamWindowViewModel viewModel;
+        private object settingsLock;
+
         public Bgr CamRoiRectColor { get; } = new Bgr(Color.LawnGreen);
         public int CamRoiRectThickness { get; } = 5;
         public Bgr CamSurfaceLineColor { get; } = new Bgr(Color.Red);
@@ -28,10 +30,11 @@ namespace DartboardRecognition
         public int ProjectionPoiThickness { get; } = 6;
         public Point SetupPoint { get; }
 
-        public CamWindow(int camNumber, Drawman drawman, ThrowService throwService, CancellationToken cancelToken)
+        public CamWindow(int camNumber, Drawman drawman, ThrowService throwService, CancellationToken cancelToken, object settingsLock)
         {
             InitializeComponent();
             this.camNumber = camNumber;
+            this.settingsLock = settingsLock;
             viewModel = new CamWindowViewModel(this, camNumber, drawman, throwService, cancelToken);
             DataContext = viewModel;
 
@@ -45,7 +48,7 @@ namespace DartboardRecognition
 
         private void OnClosing(object sender, CancelEventArgs e)
         {
-            viewModel.SaveSettings();
+            viewModel.SaveSettings(settingsLock);
         }
 
         public void Run(bool runtimeCapturing)

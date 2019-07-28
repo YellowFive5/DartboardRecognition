@@ -33,14 +33,15 @@ namespace DartboardRecognition
             cts = new CancellationTokenSource();
             cancelToken = cts.Token;
             throwService = new ThrowService(mainWindowView, drawman);
+            var settingsLock = new object();
 
             var dartboardProjectionImage = throwService.PrepareDartboardProjectionImage();
             mainWindowView.DartboardProjectionImageBox.Source = drawman.ConvertToBitmap(dartboardProjectionImage);
 
             var runtimeCapturing = mainWindowView.RuntimeCapturingCheckBox.IsChecked.Value;
 
-            StartCam(1, runtimeCapturing);
-            StartCam(2, runtimeCapturing);
+            StartCam(1, runtimeCapturing, settingsLock);
+            StartCam(2, runtimeCapturing, settingsLock);
             StartThrowService();
         }
 
@@ -64,13 +65,13 @@ namespace DartboardRecognition
             thread.Start();
         }
 
-        private void StartCam(int camNumber, bool runtimeCapturing)
+        private void StartCam(int camNumber, bool runtimeCapturing, object settingsLock)
         {
             var thread = new Thread(() =>
                                     {
                                         SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext(Dispatcher.CurrentDispatcher));
 
-                                        var camWindow = new CamWindow(camNumber, drawman, throwService, cancelToken);
+                                        var camWindow = new CamWindow(camNumber, drawman, throwService, cancelToken, settingsLock);
                                         camWindow.Closed += (s, args) =>
                                                                 Dispatcher.CurrentDispatcher.BeginInvokeShutdown(DispatcherPriority.Background);
                                         camWindow.Run(runtimeCapturing);
