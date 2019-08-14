@@ -214,6 +214,12 @@ namespace DartboardRecognition
                 case 2:
                     cam2RayPoint.Push(rayPoint);
                     break;
+                case 3:
+                    //todo cam1RayPoint.Push(rayPoint);
+                    break;
+                case 4:
+                    //todo cam2RayPoint.Push(rayPoint);
+                    break;
                 default:
                     throw new Exception("Out of cameras range");
             }

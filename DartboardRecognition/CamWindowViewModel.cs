@@ -124,16 +124,16 @@ namespace DartboardRecognition
                         return;
                     }
 
-                    var throwDetected = measureman.DetectThrow();
-                    if (throwDetected)
-                    {
-                        var dartContourFound = measureman.FindDartContour();
-                        if (dartContourFound)
-                        {
-                            measureman.ProcessDartContour();
-                            RefreshImageBoxes();
-                        }
-                    }
+                    // var throwDetected = measureman.DetectThrow();
+                    // if (throwDetected)
+                    // {
+                    //     var dartContourFound = measureman.FindDartContour();
+                    //     if (dartContourFound)
+                    //     {
+                    //         measureman.ProcessDartContour();
+                    //         RefreshImageBoxes();
+                    //     }
+                    // }
 
                     if (runtimeCapturing)
                     {

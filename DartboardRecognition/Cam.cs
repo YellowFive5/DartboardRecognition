@@ -63,14 +63,26 @@ namespace DartboardRecognition
                 case 1:
                     toBullAngle = 0.785398;
                     camNumber = 1;
-                    videoCapture = new VideoCapture(1);
-                    setupPoint = new Point(10, 10);
+                    videoCapture = new VideoCapture(0);
+                    setupPoint = new Point(10, 10); //todo
                     break;
                 case 2:
                     toBullAngle = 2.35619;
                     camNumber = 2;
-                    videoCapture = new VideoCapture(0);
-                    setupPoint = new Point(1200 - 10, 10);
+                    videoCapture = new VideoCapture(1);
+                    setupPoint = new Point(1200 - 10, 10); //todo
+                    break;
+                case 3:
+                    toBullAngle = 2.35619; //todo
+                    camNumber = 3;
+                    videoCapture = new VideoCapture(2);
+                    setupPoint = new Point(1200 - 10, 10); //todo
+                    break;
+                case 4:
+                    toBullAngle = 2.35619; //todo
+                    camNumber = 4;
+                    videoCapture = new VideoCapture(3);
+                    setupPoint = new Point(1200 - 10, 10); //todo
                     break;
                 default:
                     throw new Exception("Out of cameras range");
