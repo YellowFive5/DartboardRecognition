@@ -9,20 +9,22 @@ namespace DartboardRecognition
 {
     public partial class Measureman
     {
-        public static Point FindLinesIntersection(Point line1Point1, Point line1Point2, Point line2Point1,
-                                                  Point line2Point2)
+        public static PointF FindLinesIntersection(PointF line1Point1,
+                                                   PointF line1Point2,
+                                                   PointF line2Point1,
+                                                   PointF line2Point2)
         {
             var tolerance = 0.001;
-            double x1 = line1Point1.X;
-            double y1 = line1Point1.Y;
-            double x2 = line1Point2.X;
-            double y2 = line1Point2.Y;
-            double x3 = line2Point1.X;
-            double y3 = line2Point1.Y;
-            double x4 = line2Point2.X;
-            double y4 = line2Point2.Y;
-            double x;
-            double y;
+            var x1 = line1Point1.X;
+            var y1 = line1Point1.Y;
+            var x2 = line1Point2.X;
+            var y2 = line1Point2.Y;
+            var x3 = line2Point1.X;
+            var y3 = line2Point1.Y;
+            var x4 = line2Point2.X;
+            var y4 = line2Point2.Y;
+            float x;
+            float y;
 
             if (Math.Abs(x1 - x2) < tolerance)
             {
@@ -48,24 +50,27 @@ namespace DartboardRecognition
                 y = c2 + m2 * x;
             }
 
-            return new Point {X = (int) x, Y = (int) y};
+            return new PointF(x, y);
         }
 
-        private static Point FindMiddle(Point point1, Point point2)
+        private static PointF FindMiddle(PointF point1,
+                                         PointF point2)
         {
             var mpX = (point1.X + point2.X) / 2;
             var mpY = (point1.Y + point2.Y) / 2;
-            return new Point(mpX, mpY);
+            return new PointF(mpX, mpY);
         }
 
-        public static int FindDistance(Point point1, Point point2)
+        public static float FindDistance(PointF point1,
+                                         PointF point2)
         {
-            return (int) Math.Sqrt(Math.Pow(point1.X - point2.X, 2) + Math.Pow(point1.Y - point2.Y, 2));
+            return (float) Math.Sqrt(Math.Pow(point1.X - point2.X, 2) + Math.Pow(point1.Y - point2.Y, 2));
         }
 
-        public static double FindAngle(Point point1, Point point2)
+        public static float FindAngle(PointF point1,
+                                      PointF point2)
         {
-            return Math.Atan2(point2.Y - point1.Y, point2.X - point1.X);
+            return (float) Math.Atan2(point2.Y - point1.Y, point2.X - point1.X);
         }
     }
 }

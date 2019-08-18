@@ -15,24 +15,54 @@ namespace DartboardRecognition
 {
     public class Drawman
     {
-        public void DrawLine(Image<Bgr, byte> image, Point point1, Point point2, MCvScalar color, int thickness)
+        public void DrawLine(Image<Bgr, byte> image,
+                             PointF point1,
+                             PointF point2,
+                             MCvScalar color,
+                             int thickness)
         {
-            CvInvoke.Line(image, point1, point2, color, thickness);
+            CvInvoke.Line(image,
+                          new Point((int) point1.X, (int) point1.Y),
+                          new Point((int) point2.X, (int) point2.Y),
+                          color,
+                          thickness);
         }
 
-        public void DrawRectangle(Image<Bgr, byte> image, Rectangle rectangle, MCvScalar color, int thickness)
+        public void DrawRectangle(Image<Bgr, byte> image,
+                                  Rectangle rectangle,
+                                  MCvScalar color,
+                                  int thickness)
         {
             CvInvoke.Rectangle(image, rectangle, color, thickness);
         }
 
-        public void DrawCircle(Image<Bgr, byte> image, Point centerpoint, int radius, MCvScalar color, int thickness)
+        public void DrawCircle(Image<Bgr, byte> image,
+                               PointF centerpoint,
+                               int radius,
+                               MCvScalar color,
+                               int thickness)
         {
-            CvInvoke.Circle(image, centerpoint, radius, color, thickness);
+            CvInvoke.Circle(image,
+                            new Point((int) centerpoint.X, (int) centerpoint.Y),
+                            radius,
+                            color,
+                            thickness);
         }
 
-        public void DrawString(Image<Bgr, byte> image, string text, int pointX, int pointY, double scale, Bgr color, int thickness)
+        public void DrawString(Image<Bgr, byte> image,
+                               string text,
+                               int pointX,
+                               int pointY,
+                               double scale,
+                               Bgr color,
+                               int thickness)
         {
-            image.Draw(text, new Point(pointX, pointY), FontFace.HersheySimplex, scale, color, thickness);
+            image.Draw(text,
+                       new Point(pointX, pointY),
+                       FontFace.HersheySimplex,
+                       scale,
+                       color,
+                       thickness);
         }
 
         public BitmapImage ConvertToBitmap(IImage image)

@@ -5,9 +5,9 @@ using Emgu.CV;
 using Emgu.CV.Structure;
 using Emgu.CV.Util;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Threading;
 using Emgu.CV.CvEnum;
-using Point = System.Drawing.Point;
 
 #endregion
 
@@ -24,15 +24,15 @@ namespace DartboardRecognition
         public Image<Gray, byte> roiTrasholdFrame;
         public Image<Bgr, byte> roiContourFrame;
         public Image<Gray, byte> roiTrasholdFrameLastThrow;
-        public Point surfacePoint1;
-        public Point surfacePoint2;
-        public Point surfaceCenterPoint1;
-        public Point surfaceCenterPoint2;
-        public Point surfaceLeftPoint1;
-        public Point surfaceLeftPoint2;
-        public Point surfaceRightPoint1;
-        public Point surfaceRightPoint2;
-        public int spikeLineLength;
+        public PointF surfacePoint1;
+        public PointF surfacePoint2;
+        public PointF surfaceCenterPoint1;
+        public PointF surfaceCenterPoint2;
+        public PointF surfaceLeftPoint1;
+        public PointF surfaceLeftPoint2;
+        public PointF surfaceRightPoint1;
+        public PointF surfaceRightPoint2;
+        public float spikeLineLength;
         public Stack<VectorOfPoint> dartContours;
         public readonly VectorOfVectorOfPoint allContours;
         public readonly Mat matHierarсhy;
@@ -46,15 +46,15 @@ namespace DartboardRecognition
         public double surfaceCenterSlider;
         public double surfaceLeftSlider;
         public double surfaceRightSlider;
-        public Point setupPoint;
+        public PointF setupPoint;
         public double toBullAngle;
         public int camNumber;
 
         public Cam(CamWindow view)
         {
             viewDispatcher = view.Dispatcher;
-            surfacePoint1 = new Point();
-            surfacePoint2 = new Point();
+            surfacePoint1 = new PointF();
+            surfacePoint2 = new PointF();
             allContours = new VectorOfVectorOfPoint();
             dartContours = new Stack<VectorOfPoint>();
             matHierarсhy = new Mat();
@@ -64,25 +64,25 @@ namespace DartboardRecognition
                     toBullAngle = 0.785398;
                     camNumber = 1;
                     videoCapture = new VideoCapture(0);
-                    setupPoint = new Point(10, 10); //todo
+                    setupPoint = new PointF(10, 10); //todo
                     break;
                 case 2:
                     toBullAngle = 2.35619;
                     camNumber = 2;
                     videoCapture = new VideoCapture(1);
-                    setupPoint = new Point(1200 - 10, 10); //todo
+                    setupPoint = new PointF(1200 - 10, 10); //todo
                     break;
                 case 3:
                     toBullAngle = 2.35619; //todo
                     camNumber = 3;
                     videoCapture = new VideoCapture(2);
-                    setupPoint = new Point(1200 - 10, 10); //todo
+                    setupPoint = new PointF(1200 - 10, 10); //todo
                     break;
                 case 4:
                     toBullAngle = 2.35619; //todo
                     camNumber = 4;
                     videoCapture = new VideoCapture(3);
-                    setupPoint = new Point(1200 - 10, 10); //todo
+                    setupPoint = new PointF(1200 - 10, 10); //todo
                     break;
                 default:
                     throw new Exception("Out of cameras range");

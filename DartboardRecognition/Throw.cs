@@ -10,7 +10,7 @@ namespace DartboardRecognition
 {
     public class Throw
     {
-        public Point Poi { get; }
+        public PointF Poi { get; }
         public int ProjectionResolutionX { get; }
         public int ProjectionResolutionY { get; }
         public int Sector { get; }
@@ -23,7 +23,7 @@ namespace DartboardRecognition
         public bool IsDouble { get; }
         public bool IsTremble { get; }
 
-        public Throw(Point poi, int sector, int multiplier, Image<Bgr, byte> dartboardProjectionFrame)
+        public Throw(PointF poi, int sector, int multiplier, Image<Bgr, byte> dartboardProjectionFrame)
         {
             Poi = poi;
             Sector = sector;

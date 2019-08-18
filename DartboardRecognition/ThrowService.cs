@@ -17,14 +17,14 @@ namespace DartboardRecognition
         private MainWindow mainWindowView;
         private Drawman drawman;
         private Dispatcher mainWindowDispatcher;
-        private Point projectionCenterPoint;
-        private Stack<Point> cam1RayPoint;
-        private Stack<Point> cam2RayPoint;
+        private PointF projectionCenterPoint;
+        private Stack<PointF> cam1RayPoint;
+        private Stack<PointF> cam2RayPoint;
         private Queue<Throw> throwsCollection;
-        private Point projectionLineCam1Point1;
-        private Point projectionLineCam1Point2;
-        private Point projectionLineCam2Point1;
-        private Point projectionLineCam2Point2;
+        private PointF projectionLineCam1Point1;
+        private PointF projectionLineCam1Point2;
+        private PointF projectionLineCam2Point1;
+        private PointF projectionLineCam2Point2;
         private Image<Bgr, byte> DartboardProjectionFrameBackground { get; }
         private Image<Bgr, byte> DartboardProjectionWorkingFrame { get; set; }
 
@@ -35,9 +35,9 @@ namespace DartboardRecognition
             mainWindowDispatcher = mainWindowView.Dispatcher;
             DartboardProjectionFrameBackground = new Image<Bgr, byte>(mainWindowView.ProjectionFrameWidth, mainWindowView.ProjectionFrameHeight);
             DartboardProjectionWorkingFrame = DartboardProjectionFrameBackground.Clone();
-            projectionCenterPoint = new Point(DartboardProjectionFrameBackground.Width / 2, DartboardProjectionFrameBackground.Height / 2);
-            cam1RayPoint = new Stack<Point>();
-            cam2RayPoint = new Stack<Point>();
+            projectionCenterPoint = new PointF((float) DartboardProjectionFrameBackground.Width / 2, (float) DartboardProjectionFrameBackground.Height / 2);
+            cam1RayPoint = new Stack<PointF>();
+            cam2RayPoint = new Stack<PointF>();
             throwsCollection = new Queue<Throw>();
         }
 
@@ -81,7 +81,7 @@ namespace DartboardRecognition
             mainWindowDispatcher.Invoke(new Action(() => mainWindowView.PointsBox.Text += $"{anotherThrow.Sector} x {anotherThrow.Multiplier} = {anotherThrow.TotalPoints}\n"));
         }
 
-        private Throw PrepareThrowData(Point poi)
+        private Throw PrepareThrowData(PointF poi)
         {
             var startRadSector = -1.41372;
             var radSectorStep = 0.314159;
@@ -204,7 +204,7 @@ namespace DartboardRecognition
             return new Throw(poi, sector, multiplier, DartboardProjectionFrameBackground);
         }
 
-        public void SaveRay(Point rayPoint, Cam cam)
+        public void SaveRay(PointF rayPoint, Cam cam)
         {
             switch (cam.camNumber)
             {
@@ -236,30 +236,24 @@ namespace DartboardRecognition
             drawman.DrawCircle(DartboardProjectionFrameBackground, projectionCenterPoint, mainWindowView.ProjectionCoefficent * 170, mainWindowView.ProjectionGridColor, mainWindowView.ProjectionGridThickness);
             for (var i = 0; i <= 360; i += 9)
             {
-                var segmentPoint1 = new Point
-                                    {
-                                        X = (int) (projectionCenterPoint.X + Math.Cos(0.314159 * i - 0.15708) * mainWindowView.ProjectionCoefficent * 170),
-                                        Y = (int) (projectionCenterPoint.Y + Math.Sin(0.314159 * i - 0.15708) * mainWindowView.ProjectionCoefficent * 170)
-                                    };
-                var segmentPoint2 = new Point
-                                    {
-                                        X = (int) (projectionCenterPoint.X + Math.Cos(0.314159 * i - 0.15708) * mainWindowView.ProjectionCoefficent * 17),
-                                        Y = (int) (projectionCenterPoint.Y + Math.Sin(0.314159 * i - 0.15708) * mainWindowView.ProjectionCoefficent * 17)
-                                    };
+                var segmentPoint1 = new PointF((float) (projectionCenterPoint.X + Math.Cos(0.314159 * i - 0.15708) * mainWindowView.ProjectionCoefficent * 170),
+                                               (float) (projectionCenterPoint.Y + Math.Sin(0.314159 * i - 0.15708) * mainWindowView.ProjectionCoefficent * 170));
+                var segmentPoint2 = new PointF((float) (projectionCenterPoint.X + Math.Cos(0.314159 * i - 0.15708) * mainWindowView.ProjectionCoefficent * 17),
+                                               (float) (projectionCenterPoint.Y + Math.Sin(0.314159 * i - 0.15708) * mainWindowView.ProjectionCoefficent * 17));
                 drawman.DrawLine(DartboardProjectionFrameBackground, segmentPoint1, segmentPoint2, mainWindowView.ProjectionGridColor, mainWindowView.ProjectionGridThickness);
             }
 
             // Draw surface projection lines
-            projectionLineCam1Point1.X = (int) (projectionCenterPoint.X + Math.Cos(-0.785398) * mainWindowView.ProjectionCoefficent * 170) - mainWindowView.ProjectionCoefficent * mainWindowView.ProjectionLineCam1Bias;
-            projectionLineCam1Point1.Y = (int) (projectionCenterPoint.Y + Math.Sin(-0.785398) * mainWindowView.ProjectionCoefficent * 170) - mainWindowView.ProjectionCoefficent * mainWindowView.ProjectionLineCam1Bias;
-            projectionLineCam1Point2.X = (int) (projectionCenterPoint.X + Math.Cos(2.35619) * mainWindowView.ProjectionCoefficent * 170) - mainWindowView.ProjectionCoefficent * mainWindowView.ProjectionLineCam1Bias;
-            projectionLineCam1Point2.Y = (int) (projectionCenterPoint.Y + Math.Sin(2.35619) * mainWindowView.ProjectionCoefficent * 170) - mainWindowView.ProjectionCoefficent * mainWindowView.ProjectionLineCam1Bias;
+            projectionLineCam1Point1.X = (float) (projectionCenterPoint.X + Math.Cos(-0.785398) * mainWindowView.ProjectionCoefficent * 170) - mainWindowView.ProjectionCoefficent * mainWindowView.ProjectionLineCam1Bias;
+            projectionLineCam1Point1.Y = (float) (projectionCenterPoint.Y + Math.Sin(-0.785398) * mainWindowView.ProjectionCoefficent * 170) - mainWindowView.ProjectionCoefficent * mainWindowView.ProjectionLineCam1Bias;
+            projectionLineCam1Point2.X = (float) (projectionCenterPoint.X + Math.Cos(2.35619) * mainWindowView.ProjectionCoefficent * 170) - mainWindowView.ProjectionCoefficent * mainWindowView.ProjectionLineCam1Bias;
+            projectionLineCam1Point2.Y = (float) (projectionCenterPoint.Y + Math.Sin(2.35619) * mainWindowView.ProjectionCoefficent * 170) - mainWindowView.ProjectionCoefficent * mainWindowView.ProjectionLineCam1Bias;
             //drawman.DrawLine(dartboardProjectionFrame, projectionLineCam1Point1, projectionLineCam1Point2, view.ProjectionSurfaceLineColor, view.ProjectionSurfaceLineThickness);
 
-            projectionLineCam2Point1.X = (int) (projectionCenterPoint.X + Math.Cos(0.785398) * mainWindowView.ProjectionCoefficent * 170) + mainWindowView.ProjectionCoefficent * mainWindowView.ProjectionLineCam2Bias;
-            projectionLineCam2Point1.Y = (int) (projectionCenterPoint.Y + Math.Sin(0.785398) * mainWindowView.ProjectionCoefficent * 170) - mainWindowView.ProjectionCoefficent * mainWindowView.ProjectionLineCam2Bias;
-            projectionLineCam2Point2.X = (int) (projectionCenterPoint.X + Math.Cos(3.92699) * mainWindowView.ProjectionCoefficent * 170) + mainWindowView.ProjectionCoefficent * mainWindowView.ProjectionLineCam2Bias;
-            projectionLineCam2Point2.Y = (int) (projectionCenterPoint.Y + Math.Sin(3.92699) * mainWindowView.ProjectionCoefficent * 170) - mainWindowView.ProjectionCoefficent * mainWindowView.ProjectionLineCam2Bias;
+            projectionLineCam2Point1.X = (float) (projectionCenterPoint.X + Math.Cos(0.785398) * mainWindowView.ProjectionCoefficent * 170) + mainWindowView.ProjectionCoefficent * mainWindowView.ProjectionLineCam2Bias;
+            projectionLineCam2Point1.Y = (float) (projectionCenterPoint.Y + Math.Sin(0.785398) * mainWindowView.ProjectionCoefficent * 170) - mainWindowView.ProjectionCoefficent * mainWindowView.ProjectionLineCam2Bias;
+            projectionLineCam2Point2.X = (float) (projectionCenterPoint.X + Math.Cos(3.92699) * mainWindowView.ProjectionCoefficent * 170) + mainWindowView.ProjectionCoefficent * mainWindowView.ProjectionLineCam2Bias;
+            projectionLineCam2Point2.Y = (float) (projectionCenterPoint.Y + Math.Sin(3.92699) * mainWindowView.ProjectionCoefficent * 170) - mainWindowView.ProjectionCoefficent * mainWindowView.ProjectionLineCam2Bias;
             //drawman.DrawLine(dartboardProjectionFrame, projectionLineCam2Point1, projectionLineCam2Point2, view.ProjectionSurfaceLineColor, view.ProjectionSurfaceLineThickness);
 
             // Draw digits

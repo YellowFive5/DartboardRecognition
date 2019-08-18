@@ -1,6 +1,7 @@
 ﻿#region Usings
 
 using System;
+using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Threading.Tasks;
@@ -9,7 +10,6 @@ using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
 using Color = System.Drawing.Color;
-using Point = System.Drawing.Point;
 
 #endregion
 
@@ -60,13 +60,13 @@ namespace CamCalibrator
             var frame = videoCapture.QueryFrame().ToImage<Bgr, byte>();
             BitmapImage imageToSave;
 
-            var horPoint1 = new Point(0, frame.Height / 2);
-            var horPoint2 = new Point(frame.Width, frame.Height / 2);
+            var horPoint1 = new PointF(0, (float) frame.Height / 2);
+            var horPoint2 = new PointF(frame.Width, (float) frame.Height / 2);
             var horLineColor = new Bgr(Color.Red).MCvScalar;
             var horLineThickness = 5;
 
-            var verPoint1 = new Point(frame.Width / 2, 0);
-            var verPoint2 = new Point(frame.Width / 2, frame.Height);
+            var verPoint1 = new PointF((float) frame.Width / 2, 0);
+            var verPoint2 = new PointF((float) frame.Width / 2, frame.Height);
             var verLineColor = new Bgr(Color.Blue).MCvScalar;
             var verLineThickness = 5;
 
@@ -75,8 +75,16 @@ namespace CamCalibrator
                 frame = videoCapture.QueryFrame().ToImage<Bgr, byte>();
                 using (frame)
                 {
-                    CvInvoke.Line(frame, horPoint1, horPoint2, horLineColor, horLineThickness);
-                    CvInvoke.Line(frame, verPoint1, verPoint2, verLineColor, verLineThickness);
+                    CvInvoke.Line(frame,
+                                  new Point((int) horPoint1.X, (int) horPoint1.Y),
+                                  new Point((int) horPoint2.X, (int) horPoint2.Y),
+                                  horLineColor,
+                                  horLineThickness);
+                    CvInvoke.Line(frame,
+                                  new Point((int) verPoint1.X, (int) verPoint1.Y),
+                                  new Point((int) verPoint2.X, (int) verPoint2.Y),
+                                  verLineColor,
+                                  verLineThickness);
 
                     using (var stream = new MemoryStream())
                     {
