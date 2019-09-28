@@ -3,7 +3,6 @@
 using System;
 using System.Drawing;
 using System.Threading;
-using System.Windows.Threading;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
@@ -15,10 +14,9 @@ namespace DartboardRecognition
 {
     public partial class Measureman
     {
-        private CamWindow camWindowView;
-        private Drawman drawman;
-        private Dispatcher camWindowDispatcher;
-        private ThrowService throwService;
+        private readonly CamWindow camWindowView;
+        private readonly Drawman drawman;
+        private readonly ThrowService throwService;
         private Rectangle roiRectangle;
         private Moments contourMoments;
         private PointF contourCenterPoint;
@@ -40,7 +38,6 @@ namespace DartboardRecognition
             this.camWindowView = camWindowView;
             this.drawman = drawman;
             this.throwService = throwService;
-            camWindowDispatcher = camWindowView.Dispatcher;
         }
 
         public void SetupWorkingCam(Cam cam)
@@ -317,7 +314,7 @@ namespace DartboardRecognition
             {
                 var tempContour = workingCam.allContours[i];
                 var tempContourArcLength = CvInvoke.ArcLength(tempContour, true);
-                if (tempContourArcLength > camWindowView.minContourArcLength &&
+                if (tempContourArcLength > camWindowView.MinContourArcLength &&
                     tempContourArcLength > dartContourArcLength)
                 {
                     dartContourFound = true;

@@ -16,44 +16,38 @@ namespace DartboardRecognition
     {
         private readonly Dispatcher camWindowDispatcher;
         private readonly CamWindow camWindowView;
-        private readonly int camNumber;
         private readonly Measureman measureman;
         private readonly Drawman drawman;
         private readonly ThrowService throwService;
         private readonly Cam cam;
         private CancellationToken cancelToken;
-        private readonly object settingsLock;
 
         public CamWindowViewModel()
         {
         }
 
         public CamWindowViewModel(CamWindow camWindowView,
-                                  int camNumber,
                                   Drawman drawman,
                                   ThrowService throwService,
-                                  CancellationToken cancelToken,
-                                  object settingsLock)
+                                  CancellationToken cancelToken)
         {
             this.camWindowView = camWindowView;
             camWindowDispatcher = camWindowView.Dispatcher;
-            this.camNumber = camNumber;
             this.drawman = drawman;
             this.throwService = throwService;
             this.cancelToken = cancelToken;
-            this.settingsLock = settingsLock;
             measureman = new Measureman(camWindowView, drawman, throwService);
             cam = new Cam(camWindowView);
         }
 
         public void SetWindowTitle()
         {
-            camWindowView.Title = $"Cam {camNumber.ToString()}";
+            camWindowView.Title = $"Cam {camWindowView.camNumber.ToString()}";
         }
 
         public void LoadSettings()
         {
-            var camNumberStr = camNumber.ToString();
+            var camNumberStr = camWindowView.camNumber.ToString();
             camWindowView.TresholdMinSlider.Value = double.Parse(ConfigurationManager.AppSettings[$"Cam{camNumberStr}TresholdMinSlider"]);
             camWindowView.TresholdMaxSlider.Value = double.Parse(ConfigurationManager.AppSettings[$"Cam{camNumberStr}TresholdMaxSlider"]);
             camWindowView.RoiPosXSlider.Value = double.Parse(ConfigurationManager.AppSettings[$"Cam{camNumberStr}RoiPosXSlider"]);
@@ -69,9 +63,9 @@ namespace DartboardRecognition
         public void SaveSettings()
         {
             var doc = new XmlDocument();
-            var camNumberStr = camNumber.ToString();
+            var camNumberStr = camWindowView.camNumber.ToString();
 
-            lock (settingsLock)
+            lock (camWindowView.settingsLock)
             {
                 Rewrite($"Cam{camNumberStr}TresholdMinSlider", camWindowView.TresholdMinSlider.Value.ToString());
                 Rewrite($"Cam{camNumberStr}TresholdMaxSlider", camWindowView.TresholdMaxSlider.Value.ToString());
@@ -153,9 +147,7 @@ namespace DartboardRecognition
 
         private void DoCaptures()
         {
-            var p = cam.videoCapture.QueryFrame();
-            cam.originFrame = p.ToImage<Bgr, byte>();
-
+            cam.originFrame = cam.videoCapture.QueryFrame().ToImage<Bgr, byte>();
             cam.RefreshLines(camWindowView);
             measureman.CalculateSetupLines();
             measureman.CalculateRoiRegion();

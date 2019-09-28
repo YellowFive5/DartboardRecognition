@@ -11,24 +11,24 @@ namespace DartboardRecognition
 {
     public partial class MainWindow
     {
-        private MainWindowViewModel viewModel;
-        public MCvScalar CamContourColor { get; } = new Bgr(System.Drawing.Color.Violet).MCvScalar;
+        private readonly MainWindowViewModel viewModel;
+        public MCvScalar CamContourColor { get; } = new Bgr(Color.Violet).MCvScalar;
         public int CamContourThickness { get; } = 2;
-        public MCvScalar ProjectionGridColor { get; } = new Bgr(System.Drawing.Color.DarkGray).MCvScalar;
+        public MCvScalar ProjectionGridColor { get; } = new Bgr(Color.DarkGray).MCvScalar;
         public int ProjectionFrameHeight { get; } = 1200;
         public int ProjectionFrameWidth { get; } = 1200;
         public PointF Cam1SetupPoint { get; } = new PointF(13, 4);
         public PointF Cam2SetupPoint { get; } = new PointF(1200 - 13, 4);
         public int ProjectionCoefficent { get; } = 3;
         public int ProjectionGridThickness { get; } = 2;
-        public MCvScalar ProjectionSurfaceLineColor { get; } = new Bgr(System.Drawing.Color.Red).MCvScalar;
+        public MCvScalar ProjectionSurfaceLineColor { get; } = new Bgr(Color.Red).MCvScalar;
         public int ProjectionSurfaceLineThickness { get; } = 2;
-        public MCvScalar ProjectionRayColor { get; } = new Bgr(System.Drawing.Color.White).MCvScalar;
+        public MCvScalar ProjectionRayColor { get; } = new Bgr(Color.White).MCvScalar;
         public int ProjectionRayThickness { get; } = 2;
-        public MCvScalar PoiColor { get; } = new Bgr(System.Drawing.Color.Magenta).MCvScalar;
+        public MCvScalar PoiColor { get; } = new Bgr(Color.Magenta).MCvScalar;
         public int PoiRadius { get; } = 6;
         public int PoiThickness { get; } = 6;
-        public Bgr ProjectionDigitsColor { get; } = new Bgr(System.Drawing.Color.White);
+        public Bgr ProjectionDigitsColor { get; } = new Bgr(Color.White);
         public double ProjectionDigitsScale { get; } = 2;
         public int ProjectionDigitsThickness { get; } = 2;
         public int ProjectionLineCam1Bias { get; } = 0;

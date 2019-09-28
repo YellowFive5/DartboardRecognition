@@ -14,13 +14,13 @@ namespace DartboardRecognition
 {
     public class ThrowService
     {
-        private MainWindow mainWindowView;
-        private Drawman drawman;
-        private Dispatcher mainWindowDispatcher;
+        private readonly MainWindow mainWindowView;
+        private readonly Drawman drawman;
+        private readonly Dispatcher mainWindowDispatcher;
         private PointF projectionCenterPoint;
-        private Stack<PointF> cam1RayPoint;
-        private Stack<PointF> cam2RayPoint;
-        private Queue<Throw> throwsCollection;
+        private readonly Stack<PointF> cam1RayPoint;
+        private readonly Stack<PointF> cam2RayPoint;
+        private readonly Queue<Throw> throwsCollection;
         private PointF projectionLineCam1Point1;
         private PointF projectionLineCam1Point2;
         private PointF projectionLineCam2Point1;

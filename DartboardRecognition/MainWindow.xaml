@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DartboardRecognition"
         mc:Ignorable="d"
-        Title="MainWindow"
+        Title="DartboardRecognition"
         Height="623"
         Width="390.2"
         ResizeMode="NoResize"

@@ -18,9 +18,9 @@ namespace DartboardRecognition
 {
     public class Cam
     {
-        private Dispatcher viewDispatcher;
+        private readonly Dispatcher viewDispatcher;
         public Image<Bgr, byte> processingCapture;
-        public VideoCapture videoCapture;
+        public readonly VideoCapture videoCapture;
         public Image<Bgr, byte> originFrame;
         public Image<Bgr, byte> linedFrame;
         public Image<Bgr, byte> roiFrame;
@@ -36,7 +36,7 @@ namespace DartboardRecognition
         public PointF surfaceRightPoint1;
         public PointF surfaceRightPoint2;
         public float spikeLineLength;
-        public Stack<VectorOfPoint> dartContours;
+        public readonly Stack<VectorOfPoint> dartContours;
         public readonly VectorOfVectorOfPoint allContours;
         public readonly Mat matHierarсhy;
         public double tresholdMinSlider;
@@ -50,8 +50,8 @@ namespace DartboardRecognition
         public double surfaceLeftSlider;
         public double surfaceRightSlider;
         public PointF setupPoint;
-        public double toBullAngle;
-        public int camNumber;
+        public readonly double toBullAngle;
+        public readonly int camNumber;
 
         public Cam(CamWindow view)
         {

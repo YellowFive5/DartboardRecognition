@@ -14,6 +14,7 @@ namespace DartboardRecognition
     {
         public readonly int camNumber;
         private readonly CamWindowViewModel viewModel;
+        public readonly object settingsLock;
 
         public Bgr CamRoiRectColor { get; } = new Bgr(Color.LawnGreen);
         public int CamRoiRectThickness { get; } = 5;
@@ -23,7 +24,7 @@ namespace DartboardRecognition
         public int CamContourRectThickness { get; } = 5;
         public MCvScalar CamSpikeLineColor { get; } = new Bgr(Color.White).MCvScalar;
         public int CamSpikeLineThickness { get; } = 4;
-        public int minContourArcLength { get; } = 190;
+        public int MinContourArcLength { get; } = 190;
         public int ProjectionPoiRadius { get; } = 6;
         public MCvScalar ProjectionPoiColor { get; } = new Bgr(Color.Yellow).MCvScalar;
         public int ProjectionPoiThickness { get; } = 6;
@@ -32,7 +33,8 @@ namespace DartboardRecognition
         {
             InitializeComponent();
             this.camNumber = camNumber;
-            viewModel = new CamWindowViewModel(this, camNumber, drawman, throwService, cancelToken, settingsLock);
+            this.settingsLock = settingsLock;
+            viewModel = new CamWindowViewModel(this, drawman, throwService, cancelToken);
             DataContext = viewModel;
 
             Show();
