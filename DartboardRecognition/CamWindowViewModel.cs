@@ -108,12 +108,8 @@ namespace DartboardRecognition
 
         public void RunWork(bool runtimeCapturing)
         {
-            cam.originFrame = cam.videoCapture.QueryFrame().ToImage<Bgr, byte>();
-            cam.RefreshLines(camWindowView);
             measureman.SetupWorkingCam(cam);
-            measureman.CalculateSetupLines();
-            measureman.CalculateRoiRegion();
-            drawman.TresholdRoiRegion(cam);
+            DoCaptures(); // todo Check this after stand complete
 
             while (!cancelToken.IsCancellationRequested)
             {
@@ -124,24 +120,20 @@ namespace DartboardRecognition
                         return;
                     }
 
-                    // var throwDetected = measureman.DetectThrow();
-                    // if (throwDetected)
-                    // {
-                    //     var dartContourFound = measureman.FindDartContour();
-                    //     if (dartContourFound)
-                    //     {
-                    //         measureman.ProcessDartContour();
-                    //         RefreshImageBoxes();
-                    //     }
-                    // }
+                    var throwDetected = measureman.DetectThrow();
+                    if (throwDetected)
+                    {
+                        var dartContourFound = measureman.FindDartContour();
+                        if (dartContourFound)
+                        {
+                            measureman.ProcessDartContour();
+                            RefreshImageBoxes();
+                        }
+                    }
 
                     if (runtimeCapturing)
                     {
-                        cam.originFrame = cam.videoCapture.QueryFrame().ToImage<Bgr, byte>();
-                        cam.RefreshLines(camWindowView);
-                        measureman.CalculateSetupLines();
-                        measureman.CalculateRoiRegion();
-                        drawman.TresholdRoiRegion(cam);
+                        DoCaptures();
                         RefreshImageBoxes();
                     }
                 }
@@ -150,6 +142,15 @@ namespace DartboardRecognition
             camWindowDispatcher.Invoke(() => camWindowView.Close());
             cam.videoCapture.Dispose();
             Dispatcher.CurrentDispatcher.Thread.Abort();
+        }
+
+        private void DoCaptures()
+        {
+            cam.originFrame = cam.videoCapture.QueryFrame().ToImage<Bgr, byte>();
+            cam.RefreshLines(camWindowView);
+            measureman.CalculateSetupLines();
+            measureman.CalculateRoiRegion();
+            drawman.TresholdRoiRegion(cam);
         }
 
         private void RefreshImageBoxes()

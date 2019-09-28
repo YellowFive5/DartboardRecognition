@@ -240,11 +240,13 @@ namespace DartboardRecognition
 
         public bool DetectThrow()
         {
-            bool dartsExtraction;
+            bool dartsExtractProcess;
             bool moveDetected;
-            var throwDetected = false;
+            bool throwDetected = false;
+
             var zeroImage = workingCam.roiTrasholdFrame;
             var firstImage = workingCam.videoCapture.QueryFrame().ToImage<Gray, byte>().Not();
+
             using (firstImage)
             {
                 var diffImage = DiffImage(firstImage, zeroImage);
@@ -259,10 +261,10 @@ namespace DartboardRecognition
                         diffImage = DiffImage(secondImage, zeroImage);
                         moves = diffImage.CountNonzero()[0];
 
-                        dartsExtraction = moves > 7000;
-                        throwDetected = !dartsExtraction && moves > 550;
+                        dartsExtractProcess = moves > 7000;
+                        throwDetected = !dartsExtractProcess && moves > 550;
 
-                        if (dartsExtraction)
+                        if (dartsExtractProcess)
                         {
                             Thread.Sleep(4000);
                             // dispatcher.Invoke(new Action(() => view.PointsBox.Text = ""));

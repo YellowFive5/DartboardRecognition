@@ -76,6 +76,7 @@ namespace DartboardRecognition
             throwsCollection.Enqueue(anotherThrow);
 
             drawman.DrawCircle(DartboardProjectionWorkingFrame, poi, mainWindowView.PoiRadius, mainWindowView.PoiColor, mainWindowView.PoiThickness);
+
             mainWindowDispatcher.Invoke(new Action(() => mainWindowView.DartboardProjectionImageBox.Source = drawman.ConvertToBitmap(DartboardProjectionWorkingFrame)));
             mainWindowDispatcher.Invoke(new Action(() => mainWindowView.PointsBox.Text = ""));
             mainWindowDispatcher.Invoke(new Action(() => mainWindowView.PointsBox.Text += $"{anotherThrow.Sector} x {anotherThrow.Multiplier} = {anotherThrow.TotalPoints}\n"));
@@ -215,10 +216,10 @@ namespace DartboardRecognition
                     cam2RayPoint.Push(rayPoint);
                     break;
                 case 3:
-                    //todo cam1RayPoint.Push(rayPoint);
+                    //todo cam3RayPoint.Push(rayPoint);
                     break;
                 case 4:
-                    //todo cam2RayPoint.Push(rayPoint);
+                    //todo cam4RayPoint.Push(rayPoint);
                     break;
                 default:
                     throw new Exception("Out of cameras range");

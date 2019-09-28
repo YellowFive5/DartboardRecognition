@@ -44,7 +44,7 @@ namespace DartboardRecognition
             StartCam(2, runtimeCapturing, settingsLock);
             StartCam(3, runtimeCapturing, settingsLock);
             StartCam(4, runtimeCapturing, settingsLock);
-            StartThrowService();
+            // StartThrowService();
         }
 
         private void StopCapturing()

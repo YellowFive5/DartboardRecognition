@@ -37,6 +37,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DirectShowLib, Version=2.1.0.1599, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DirectShowLib.1.0.0\lib\DirectShowLib.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Drawing" />
