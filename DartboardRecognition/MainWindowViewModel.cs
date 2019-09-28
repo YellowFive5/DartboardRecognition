@@ -40,11 +40,12 @@ namespace DartboardRecognition
             mainWindowView.DartboardProjectionImageBox.Source = drawman.ConvertToBitmap(dartboardProjectionImage);
 
             var runtimeCapturing = mainWindowView.RuntimeCapturingCheckBox.IsChecked.Value;
+            var withDetection = mainWindowView.WithDetectionCapturingCheckBox.IsChecked.Value;
 
-            StartCam(1, runtimeCapturing, settingsLock);
-            StartCam(2, runtimeCapturing, settingsLock);
-            StartCam(3, runtimeCapturing, settingsLock);
-            StartCam(4, runtimeCapturing, settingsLock);
+            StartCam(1, runtimeCapturing, withDetection, settingsLock);
+            StartCam(2, runtimeCapturing, withDetection, settingsLock);
+            StartCam(3, runtimeCapturing, withDetection, settingsLock);
+            StartCam(4, runtimeCapturing, withDetection, settingsLock);
             StartThrowService();
         }
 
@@ -63,10 +64,10 @@ namespace DartboardRecognition
                      });
         }
 
-        private void StartCam(int camNumber, bool runtimeCapturing, object settingsLock)
+        private void StartCam(int camNumber, bool runtimeCapturing, bool withDetection, object settingsLock)
         {
             var camWindow = new CamWindow(camNumber, drawman, throwService, cancelToken, settingsLock);
-            camWindow.Run(runtimeCapturing);
+            camWindow.Run(runtimeCapturing, withDetection);
         }
 
         public void OnStartButtonClicked()
@@ -85,6 +86,7 @@ namespace DartboardRecognition
         private void ToggleViewControls()
         {
             mainWindowView.RuntimeCapturingCheckBox.IsEnabled = !mainWindowView.RuntimeCapturingCheckBox.IsEnabled;
+            mainWindowView.WithDetectionCapturingCheckBox.IsEnabled = !mainWindowView.WithDetectionCapturingCheckBox.IsEnabled;
             mainWindowView.StartButton.IsEnabled = !mainWindowView.StartButton.IsEnabled;
             mainWindowView.StopButton.IsEnabled = !mainWindowView.StopButton.IsEnabled;
         }

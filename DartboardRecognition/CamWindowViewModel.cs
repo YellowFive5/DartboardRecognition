@@ -104,7 +104,7 @@ namespace DartboardRecognition
             }
         }
 
-        public void RunWork(bool runtimeCapturing)
+        public void RunWork(bool runtimeCapturing, bool withDetection)
         {
             measureman.SetupWorkingCam(cam);
             DoCaptures(); // todo Check this after stand complete
@@ -118,16 +118,19 @@ namespace DartboardRecognition
                         return;
                     }
 
-                    // var throwDetected = measureman.DetectThrow();
-                    // if (throwDetected)
-                    // {
-                    //     var dartContourFound = measureman.FindDartContour();
-                    //     if (dartContourFound)
-                    //     {
-                    //         measureman.ProcessDartContour();
-                    //         RefreshImageBoxes();
-                    //     }
-                    // }
+                    if (withDetection)
+                    {
+                        var throwDetected = measureman.DetectThrow();
+                        if (throwDetected)
+                        {
+                            var dartContourFound = measureman.FindDartContour();
+                            if (dartContourFound)
+                            {
+                                measureman.ProcessDartContour();
+                                RefreshImageBoxes();
+                            }
+                        }
+                    }
 
                     if (runtimeCapturing)
                     {

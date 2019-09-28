@@ -47,12 +47,12 @@ namespace DartboardRecognition
             viewModel.SaveSettings(settingsLock);
         }
 
-        public void Run(bool runtimeCapturing)
+        public void Run(bool runtimeCapturing, bool withDetection)
         {
             Task.Run(() =>
                      {
                          Thread.CurrentThread.Name = $"Cam_{camNumber}_workerThread";
-                         viewModel.RunWork(runtimeCapturing);
+                         viewModel.RunWork(runtimeCapturing, withDetection);
                      });
         }
     }
