@@ -4,8 +4,11 @@ using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
+using DirectShowLib;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
@@ -102,6 +105,20 @@ namespace CamCalibrator
 
             videoCapture.Dispose();
             view.Dispatcher.Invoke(new Action(() => view.ImageBox.Source = new BitmapImage()));
+        }
+
+        public void FindAllCams()
+        {
+            var allCams = DsDevice.GetDevicesOfCat(FilterCategory.VideoInputDevice).ToList();
+            var str = new StringBuilder();
+            for (var i = 0; i < allCams.Count; i++)
+            {
+                str.AppendLine($"[{i}]-[{allCams[i].Name}]-[{allCams[i].DevicePath}]");
+            }
+
+            view.CamsTextBox.Text = allCams.Count == 0
+                                        ? "No cameras found"
+                                        : str.ToString();
         }
     }
 }

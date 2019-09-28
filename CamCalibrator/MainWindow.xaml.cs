@@ -16,6 +16,7 @@ namespace CamCalibrator
             InitializeComponent();
             viewModel = new MainWindowViewModel(this);
             DataContext = viewModel;
+            viewModel.FindAllCams();
         }
 
         private void StartButtonClick(object sender, RoutedEventArgs e)

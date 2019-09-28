@@ -6,8 +6,8 @@
         xmlns:local="clr-namespace:CamCalibrator"
         mc:Ignorable="d"
         Title="MainWindow"
-        Height="680.992"
-        Width="969.69"
+        Height="697.392"
+        Width="974.223"
         ResizeMode="NoResize"
         Closing="OnClosing"
         >
@@ -17,9 +17,10 @@
 
     <Grid>
         <Image Name="ImageBox" HorizontalAlignment="Left" Height="546" Margin="10,10,0,0" VerticalAlignment="Top" Width="943"/>
-        <Button Name="StartButton" Content="Start" HorizontalAlignment="Left" Margin="388,589,0,0" VerticalAlignment="Top" Width="96" Height="25" Click="StartButtonClick"/>
-        <Button Name="StopButton" Content="Stop" HorizontalAlignment="Left" Margin="489,589,0,0" VerticalAlignment="Top" Width="96" Height="25" IsEnabled="False" Click="StopButtonClick"/>
-        <TextBox Name="CamNumberBox" HorizontalAlignment="Left" Height="23" Margin="459,560,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="25" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-        <Label Content="CamIndex" HorizontalAlignment="Left" Margin="388,556,0,0" VerticalAlignment="Top" FontFamily="Agency FB" FontWeight="Bold" FontSize="16" Width="66" Height="28"/>
+        <Button Name="StartButton" Content="Start" HorizontalAlignment="Left" Margin="10,594,0,0" VerticalAlignment="Top" Width="96" Height="25" Click="StartButtonClick"/>
+        <Button Name="StopButton" Content="Stop" HorizontalAlignment="Left" Margin="10,624,0,0" VerticalAlignment="Top" Width="96" Height="25" IsEnabled="False" Click="StopButtonClick"/>
+        <TextBox Name="CamNumberBox" HorizontalAlignment="Left" Height="23" Margin="81,565,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="25" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+        <Label Content="CamIndex" HorizontalAlignment="Left" Margin="10,561,0,0" VerticalAlignment="Top" FontFamily="Agency FB" FontWeight="Bold" FontSize="16" Width="66" Height="28"/>
+        <TextBox Name="CamsTextBox"  HorizontalAlignment="Left" Height="84" Margin="120,565,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="833" IsReadOnly="True" />
     </Grid>
 </Window>
