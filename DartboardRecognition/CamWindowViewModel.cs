@@ -14,20 +14,26 @@ namespace DartboardRecognition
 {
     public class CamWindowViewModel
     {
-        private Dispatcher camWindowDispatcher;
-        private CamWindow camWindowView;
-        private int camNumber;
-        private Measureman measureman;
-        private Drawman drawman;
-        private ThrowService throwService;
-        private Cam cam;
+        private readonly Dispatcher camWindowDispatcher;
+        private readonly CamWindow camWindowView;
+        private readonly int camNumber;
+        private readonly Measureman measureman;
+        private readonly Drawman drawman;
+        private readonly ThrowService throwService;
+        private readonly Cam cam;
         private CancellationToken cancelToken;
+        private readonly object settingsLock;
 
         public CamWindowViewModel()
         {
         }
 
-        public CamWindowViewModel(CamWindow camWindowView, int camNumber, Drawman drawman, ThrowService throwService, CancellationToken cancelToken)
+        public CamWindowViewModel(CamWindow camWindowView,
+                                  int camNumber,
+                                  Drawman drawman,
+                                  ThrowService throwService,
+                                  CancellationToken cancelToken,
+                                  object settingsLock)
         {
             this.camWindowView = camWindowView;
             camWindowDispatcher = camWindowView.Dispatcher;
@@ -35,6 +41,7 @@ namespace DartboardRecognition
             this.drawman = drawman;
             this.throwService = throwService;
             this.cancelToken = cancelToken;
+            this.settingsLock = settingsLock;
             measureman = new Measureman(camWindowView, drawman, throwService);
             cam = new Cam(camWindowView);
         }
@@ -59,7 +66,7 @@ namespace DartboardRecognition
             camWindowView.SurfaceRightSlider.Value = double.Parse(ConfigurationManager.AppSettings[$"Cam{camNumberStr}SurfaceRightSlider"]);
         }
 
-        public void SaveSettings(object settingsLock)
+        public void SaveSettings()
         {
             var doc = new XmlDocument();
             var camNumberStr = camNumber.ToString();
@@ -107,7 +114,7 @@ namespace DartboardRecognition
         public void RunWork(bool runtimeCapturing, bool withDetection)
         {
             measureman.SetupWorkingCam(cam);
-            DoCaptures(); // todo Check this after stand complete
+            DoCaptures();
 
             while (!cancelToken.IsCancellationRequested)
             {

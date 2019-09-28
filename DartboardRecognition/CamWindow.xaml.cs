@@ -12,9 +12,8 @@ namespace DartboardRecognition
 {
     public partial class CamWindow
     {
-        public int camNumber;
-        private CamWindowViewModel viewModel;
-        private object settingsLock;
+        public readonly int camNumber;
+        private readonly CamWindowViewModel viewModel;
 
         public Bgr CamRoiRectColor { get; } = new Bgr(Color.LawnGreen);
         public int CamRoiRectThickness { get; } = 5;
@@ -33,8 +32,7 @@ namespace DartboardRecognition
         {
             InitializeComponent();
             this.camNumber = camNumber;
-            this.settingsLock = settingsLock;
-            viewModel = new CamWindowViewModel(this, camNumber, drawman, throwService, cancelToken);
+            viewModel = new CamWindowViewModel(this, camNumber, drawman, throwService, cancelToken, settingsLock);
             DataContext = viewModel;
 
             Show();
@@ -44,7 +42,7 @@ namespace DartboardRecognition
 
         private void OnClosing(object sender, CancelEventArgs e)
         {
-            viewModel.SaveSettings(settingsLock);
+            viewModel.SaveSettings();
         }
 
         public void Run(bool runtimeCapturing, bool withDetection)

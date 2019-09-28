@@ -3,7 +3,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
-using System.Windows.Threading;
 
 #endregion
 
@@ -11,8 +10,7 @@ namespace DartboardRecognition
 {
     public class MainWindowViewModel
     {
-        private MainWindow mainWindowView;
-        private Dispatcher mainWindowDispatcher;
+        private readonly MainWindow mainWindowView;
         private Drawman drawman;
         private ThrowService throwService;
         private CancellationToken cancelToken;
@@ -25,7 +23,6 @@ namespace DartboardRecognition
         public MainWindowViewModel(MainWindow mainWindowView)
         {
             this.mainWindowView = mainWindowView;
-            mainWindowDispatcher = mainWindowView.Dispatcher;
         }
 
         private void StartCapturing()
@@ -34,18 +31,19 @@ namespace DartboardRecognition
             cts = new CancellationTokenSource();
             cancelToken = cts.Token;
             throwService = new ThrowService(mainWindowView, drawman);
-            var settingsLock = new object();
 
             var dartboardProjectionImage = throwService.PrepareDartboardProjectionImage();
             mainWindowView.DartboardProjectionImageBox.Source = drawman.ConvertToBitmap(dartboardProjectionImage);
 
             var runtimeCapturing = mainWindowView.RuntimeCapturingCheckBox.IsChecked.Value;
             var withDetection = mainWindowView.WithDetectionCapturingCheckBox.IsChecked.Value;
+            var settingsLock = new object();
 
             StartCam(1, runtimeCapturing, withDetection, settingsLock);
             StartCam(2, runtimeCapturing, withDetection, settingsLock);
             StartCam(3, runtimeCapturing, withDetection, settingsLock);
             StartCam(4, runtimeCapturing, withDetection, settingsLock);
+
             StartThrowService();
         }
 
