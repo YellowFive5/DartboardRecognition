@@ -1,6 +1,7 @@
 ﻿#region Usings
 
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
@@ -44,7 +45,7 @@ namespace DartboardRecognition
             StartCam(2, runtimeCapturing, settingsLock);
             StartCam(3, runtimeCapturing, settingsLock);
             StartCam(4, runtimeCapturing, settingsLock);
-            // StartThrowService();
+            StartThrowService();
         }
 
         private void StopCapturing()
@@ -55,35 +56,17 @@ namespace DartboardRecognition
 
         private void StartThrowService()
         {
-            var thread = new Thread(() =>
-                                    {
-                                        SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext(Dispatcher.CurrentDispatcher));
-                                        mainWindowView.Closed += (s, args) =>
-                                                                     Dispatcher.CurrentDispatcher.BeginInvokeShutdown(DispatcherPriority.Background);
-
-                                        throwService.AwaitForThrow(cancelToken);
-
-                                        Dispatcher.Run();
-                                    });
-            thread.SetApartmentState(ApartmentState.STA);
-            thread.Start();
+            Task.Run(() =>
+                     {
+                         Thread.CurrentThread.Name = $"ThrowService_workerThread";
+                         throwService.AwaitForThrow(cancelToken);
+                     });
         }
 
         private void StartCam(int camNumber, bool runtimeCapturing, object settingsLock)
         {
-            var thread = new Thread(() =>
-                                    {
-                                        SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext(Dispatcher.CurrentDispatcher));
-
-                                        var camWindow = new CamWindow(camNumber, drawman, throwService, cancelToken, settingsLock);
-                                        camWindow.Closed += (s, args) =>
-                                                                Dispatcher.CurrentDispatcher.BeginInvokeShutdown(DispatcherPriority.Background);
-                                        camWindow.Run(runtimeCapturing);
-
-                                        Dispatcher.Run();
-                                    });
-            thread.SetApartmentState(ApartmentState.STA);
-            thread.Start();
+            var camWindow = new CamWindow(camNumber, drawman, throwService, cancelToken, settingsLock);
+            camWindow.Run(runtimeCapturing);
         }
 
         public void OnStartButtonClicked()

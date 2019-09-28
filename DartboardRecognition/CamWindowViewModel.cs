@@ -54,7 +54,6 @@ namespace DartboardRecognition
             camWindowView.RoiWidthSlider.Value = double.Parse(ConfigurationManager.AppSettings[$"Cam{camNumberStr}RoiWidthSlider"]);
             camWindowView.RoiHeightSlider.Value = double.Parse(ConfigurationManager.AppSettings[$"Cam{camNumberStr}RoiHeightSlider"]);
             camWindowView.SurfaceSlider.Value = double.Parse(ConfigurationManager.AppSettings[$"Cam{camNumberStr}SurfaceSlider"]);
-            camWindowView.IndexBox.Text = ConfigurationManager.AppSettings[$"Cam{camNumberStr}IndexBox"];
             camWindowView.SurfaceCenterSlider.Value = double.Parse(ConfigurationManager.AppSettings[$"Cam{camNumberStr}SurfaceCenterSlider"]);
             camWindowView.SurfaceLeftSlider.Value = double.Parse(ConfigurationManager.AppSettings[$"Cam{camNumberStr}SurfaceLeftSlider"]);
             camWindowView.SurfaceRightSlider.Value = double.Parse(ConfigurationManager.AppSettings[$"Cam{camNumberStr}SurfaceRightSlider"]);
@@ -74,7 +73,6 @@ namespace DartboardRecognition
                 Rewrite($"Cam{camNumberStr}RoiWidthSlider", camWindowView.RoiWidthSlider.Value.ToString());
                 Rewrite($"Cam{camNumberStr}RoiHeightSlider", camWindowView.RoiHeightSlider.Value.ToString());
                 Rewrite($"Cam{camNumberStr}SurfaceSlider", camWindowView.SurfaceSlider.Value.ToString());
-                Rewrite($"Cam{camNumberStr}IndexBox", camWindowView.IndexBox.Text);
                 Rewrite($"Cam{camNumberStr}SurfaceCenterSlider", camWindowView.SurfaceCenterSlider.Value.ToString());
                 Rewrite($"Cam{camNumberStr}SurfaceLeftSlider", camWindowView.SurfaceLeftSlider.Value.ToString());
                 Rewrite($"Cam{camNumberStr}SurfaceRightSlider", camWindowView.SurfaceRightSlider.Value.ToString());
@@ -120,16 +118,16 @@ namespace DartboardRecognition
                         return;
                     }
 
-                    var throwDetected = measureman.DetectThrow();
-                    if (throwDetected)
-                    {
-                        var dartContourFound = measureman.FindDartContour();
-                        if (dartContourFound)
-                        {
-                            measureman.ProcessDartContour();
-                            RefreshImageBoxes();
-                        }
-                    }
+                    // var throwDetected = measureman.DetectThrow();
+                    // if (throwDetected)
+                    // {
+                    //     var dartContourFound = measureman.FindDartContour();
+                    //     if (dartContourFound)
+                    //     {
+                    //         measureman.ProcessDartContour();
+                    //         RefreshImageBoxes();
+                    //     }
+                    // }
 
                     if (runtimeCapturing)
                     {
@@ -141,12 +139,13 @@ namespace DartboardRecognition
 
             camWindowDispatcher.Invoke(() => camWindowView.Close());
             cam.videoCapture.Dispose();
-            Dispatcher.CurrentDispatcher.Thread.Abort();
         }
 
         private void DoCaptures()
         {
-            cam.originFrame = cam.videoCapture.QueryFrame().ToImage<Bgr, byte>();
+            var p = cam.videoCapture.QueryFrame();
+            cam.originFrame = p.ToImage<Bgr, byte>();
+
             cam.RefreshLines(camWindowView);
             measureman.CalculateSetupLines();
             measureman.CalculateRoiRegion();

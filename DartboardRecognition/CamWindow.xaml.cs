@@ -3,7 +3,7 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.Threading;
-using System.Windows.Threading;
+using System.Threading.Tasks;
 using Emgu.CV.Structure;
 
 #endregion
@@ -49,18 +49,11 @@ namespace DartboardRecognition
 
         public void Run(bool runtimeCapturing)
         {
-            var thread = new Thread(() =>
-                                    {
-                                        SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext(Dispatcher.CurrentDispatcher));
-                                        Closed += (s, args) =>
-                                                      Dispatcher.CurrentDispatcher.BeginInvokeShutdown(DispatcherPriority.Background);
-
-                                        viewModel.RunWork(runtimeCapturing);
-
-                                        Dispatcher.Run();
-                                    });
-            thread.SetApartmentState(ApartmentState.STA);
-            thread.Start();
+            Task.Run(() =>
+                     {
+                         Thread.CurrentThread.Name = $"Cam_{camNumber}_workerThread";
+                         viewModel.RunWork(runtimeCapturing);
+                     });
         }
     }
 }
