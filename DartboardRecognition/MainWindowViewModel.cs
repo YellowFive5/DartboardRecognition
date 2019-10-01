@@ -1,5 +1,6 @@
 ﻿#region Usings
 
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
@@ -33,24 +34,11 @@ namespace DartboardRecognition
             throwService = new ThrowService(mainWindowView, drawman);
 
             var dartboardProjectionImage = throwService.PrepareDartboardProjectionImage();
-            mainWindowView.DartboardProjectionImageBox.Source = drawman.ConvertToBitmap(dartboardProjectionImage);
-
-            var runtimeCapturing = mainWindowView.RuntimeCapturingCheckBox.IsChecked.Value;
-            var withDetection = mainWindowView.WithDetectionCapturingCheckBox.IsChecked.Value;
-            var settingsLock = new object();
-
-            StartCam(1, runtimeCapturing, withDetection, settingsLock);
-            StartCam(2, runtimeCapturing, withDetection, settingsLock);
-            StartCam(3, runtimeCapturing, withDetection, settingsLock);
-            StartCam(4, runtimeCapturing, withDetection, settingsLock);
+            mainWindowView.DartboardProjectionImageBox.Source = drawman.ToBitmap(dartboardProjectionImage);
 
             StartThrowService();
-        }
 
-        private void StopCapturing()
-        {
-            cts?.Cancel();
-            mainWindowView.DartboardProjectionImageBox.Source = new BitmapImage();
+            StartRecognition();
         }
 
         private void StartThrowService()
@@ -62,10 +50,55 @@ namespace DartboardRecognition
                      });
         }
 
-        private void StartCam(int camNumber, bool runtimeCapturing, bool withDetection, object settingsLock)
+        private void StartRecognition()
         {
-            var camWindow = new CamWindow(camNumber, drawman, throwService, cancelToken, settingsLock);
-            camWindow.Run(runtimeCapturing, withDetection);
+            var settingsLock = new object();
+            var runtimeCapturing = mainWindowView.RuntimeCapturingCheckBox.IsChecked.Value;
+            var withDetection = mainWindowView.WithDetectionCapturingCheckBox.IsChecked.Value;
+
+            var cams = new List<CamWindow>
+                       {
+                           new CamWindow(1, drawman, throwService, settingsLock, runtimeCapturing, withDetection),
+                           new CamWindow(2, drawman, throwService, settingsLock, runtimeCapturing, withDetection),
+                           new CamWindow(3, drawman, throwService, settingsLock, runtimeCapturing, withDetection),
+                           new CamWindow(4, drawman, throwService, settingsLock, runtimeCapturing, withDetection)
+                       };
+
+            Task.Run(() =>
+                     {
+                         Thread.CurrentThread.Name = $"Recognition_workerThread";
+
+                         while (!cancelToken.IsCancellationRequested)
+                         {
+                             foreach (var cam in cams)
+                             {
+                                 if (cam.DetectThrow())
+                                 {
+                                     RedetectAll(cams);
+                                     break;
+                                 }
+                             }
+                         }
+
+                         foreach (var cam in cams)
+                         {
+                             cam.Dispatcher.Invoke(() => cam.Close());
+                         }
+                     });
+        }
+
+        private void RedetectAll(List<CamWindow> cams)
+        {
+            foreach (var cam in cams)
+            {
+                cam.FindContour();
+            }
+        }
+
+        private void StopCapturing()
+        {
+            cts?.Cancel();
+            mainWindowView.DartboardProjectionImageBox.Source = new BitmapImage();
         }
 
         public void OnStartButtonClicked()

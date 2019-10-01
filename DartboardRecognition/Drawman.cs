@@ -65,7 +65,7 @@ namespace DartboardRecognition
                        thickness);
         }
 
-        public BitmapImage ConvertToBitmap(IImage image)
+        public BitmapImage ToBitmap(IImage image)
         {
             using (var stream = new MemoryStream())
             {

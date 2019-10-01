@@ -2,8 +2,6 @@
 
 using System.ComponentModel;
 using System.Drawing;
-using System.Threading;
-using System.Threading.Tasks;
 using Emgu.CV.Structure;
 
 #endregion
@@ -29,12 +27,17 @@ namespace DartboardRecognition
         public MCvScalar ProjectionPoiColor { get; } = new Bgr(Color.Yellow).MCvScalar;
         public int ProjectionPoiThickness { get; } = 6;
 
-        public CamWindow(int camNumber, Drawman drawman, ThrowService throwService, CancellationToken cancelToken, object settingsLock)
+        public CamWindow(int camNumber,
+                         Drawman drawman,
+                         ThrowService throwService,
+                         object settingsLock,
+                         bool runtimeCapturing,
+                         bool withDetection)
         {
             InitializeComponent();
             this.camNumber = camNumber;
             this.settingsLock = settingsLock;
-            viewModel = new CamWindowViewModel(this, drawman, throwService, cancelToken);
+            viewModel = new CamWindowViewModel(this, drawman, throwService, runtimeCapturing, withDetection);
             DataContext = viewModel;
 
             Show();
@@ -44,16 +47,18 @@ namespace DartboardRecognition
 
         private void OnClosing(object sender, CancelEventArgs e)
         {
+            viewModel.OnClosing();
             viewModel.SaveSettings();
         }
 
-        public void Run(bool runtimeCapturing, bool withDetection)
+        public bool DetectThrow()
         {
-            Task.Run(() =>
-                     {
-                         Thread.CurrentThread.Name = $"Cam_{camNumber}_workerThread";
-                         viewModel.RunWork(runtimeCapturing, withDetection);
-                     });
+            return viewModel.DetectThrow();
+        }
+
+        public void FindContour()
+        {
+            viewModel.FindContour();
         }
     }
 }

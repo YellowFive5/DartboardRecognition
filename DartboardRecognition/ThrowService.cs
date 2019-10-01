@@ -77,7 +77,7 @@ namespace DartboardRecognition
 
             drawman.DrawCircle(DartboardProjectionWorkingFrame, poi, mainWindowView.PoiRadius, mainWindowView.PoiColor, mainWindowView.PoiThickness);
 
-            mainWindowDispatcher.Invoke(new Action(() => mainWindowView.DartboardProjectionImageBox.Source = drawman.ConvertToBitmap(DartboardProjectionWorkingFrame)));
+            mainWindowDispatcher.Invoke(new Action(() => mainWindowView.DartboardProjectionImageBox.Source = drawman.ToBitmap(DartboardProjectionWorkingFrame)));
             mainWindowDispatcher.Invoke(new Action(() => mainWindowView.PointsBox.Text = ""));
             mainWindowDispatcher.Invoke(new Action(() => mainWindowView.PointsBox.Text += $"{anotherThrow.Sector} x {anotherThrow.Multiplier} = {anotherThrow.TotalPoints}\n"));
         }

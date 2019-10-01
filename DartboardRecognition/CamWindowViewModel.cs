@@ -2,7 +2,6 @@
 
 using System;
 using System.Configuration;
-using System.Threading;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using System.Xml;
@@ -20,7 +19,8 @@ namespace DartboardRecognition
         private readonly Drawman drawman;
         private readonly ThrowService throwService;
         private readonly Cam cam;
-        private CancellationToken cancelToken;
+        private readonly bool runtimeCapturing;
+        private readonly bool withDetection;
 
         public CamWindowViewModel()
         {
@@ -29,15 +29,19 @@ namespace DartboardRecognition
         public CamWindowViewModel(CamWindow camWindowView,
                                   Drawman drawman,
                                   ThrowService throwService,
-                                  CancellationToken cancelToken)
+                                  bool runtimeCapturing,
+                                  bool withDetection)
         {
             this.camWindowView = camWindowView;
             camWindowDispatcher = camWindowView.Dispatcher;
             this.drawman = drawman;
             this.throwService = throwService;
-            this.cancelToken = cancelToken;
+            this.runtimeCapturing = runtimeCapturing;
+            this.withDetection = withDetection;
             measureman = new Measureman(camWindowView, drawman, throwService);
             cam = new Cam(camWindowView);
+
+            measureman.SetupWorkingCam(cam);
         }
 
         public void SetWindowTitle()
@@ -105,62 +109,58 @@ namespace DartboardRecognition
             }
         }
 
-        public void RunWork(bool runtimeCapturing, bool withDetection)
-        {
-            measureman.SetupWorkingCam(cam);
-            DoCaptures();
-
-            while (!cancelToken.IsCancellationRequested)
-            {
-                using (cam.originFrame)
-                {
-                    if (cam.originFrame == null)
-                    {
-                        return;
-                    }
-
-                    if (withDetection)
-                    {
-                        var throwDetected = measureman.DetectThrow();
-                        if (throwDetected)
-                        {
-                            var dartContourFound = measureman.FindDartContour();
-                            if (dartContourFound)
-                            {
-                                measureman.ProcessDartContour();
-                                RefreshImageBoxes();
-                            }
-                        }
-                    }
-
-                    if (runtimeCapturing)
-                    {
-                        DoCaptures();
-                        RefreshImageBoxes();
-                    }
-                }
-            }
-
-            camWindowDispatcher.Invoke(() => camWindowView.Close());
-            cam.videoCapture.Dispose();
-        }
-
         private void DoCaptures()
         {
-            cam.originFrame = cam.videoCapture.QueryFrame().ToImage<Bgr, byte>();
-            cam.RefreshLines(camWindowView);
-            measureman.CalculateSetupLines();
-            measureman.CalculateRoiRegion();
-            drawman.TresholdRoiRegion(cam);
+            using (cam.originFrame = cam.videoCapture.QueryFrame().ToImage<Bgr, byte>())
+            {
+                cam.RefreshLines(camWindowView);
+                measureman.CalculateSetupLines();
+                measureman.CalculateRoiRegion();
+                drawman.TresholdRoiRegion(cam);
+            }
         }
 
         private void RefreshImageBoxes()
         {
-            camWindowDispatcher.Invoke(new Action(() => camWindowView.ImageBox.Source = drawman.ConvertToBitmap(cam.linedFrame)));
-            camWindowDispatcher.Invoke(new Action(() => camWindowView.ImageBoxRoi.Source = drawman.ConvertToBitmap(cam.roiTrasholdFrame)));
+            camWindowDispatcher.Invoke(new Action(() => camWindowView.ImageBox.Source = drawman.ToBitmap(cam.linedFrame)));
+            camWindowDispatcher.Invoke(new Action(() => camWindowView.ImageBoxRoi.Source = drawman.ToBitmap(cam.roiTrasholdFrame)));
             camWindowDispatcher.Invoke(new Action(() => camWindowView.ImageBoxRoiLastThrow.Source = cam.roiTrasholdFrameLastThrow != null
-                                                                                                        ? drawman.ConvertToBitmap(cam.roiTrasholdFrameLastThrow)
+                                                                                                        ? drawman.ToBitmap(cam.roiTrasholdFrameLastThrow)
                                                                                                         : new BitmapImage()));
+        }
+
+        public bool DetectThrow()
+        {
+            DoCaptures();
+
+            var throwDetected = withDetection && measureman.DetectThrow();
+
+            if (throwDetected)
+            {
+                var dartContourFound = measureman.FindDartContour();
+                if (dartContourFound)
+                {
+                    measureman.ProcessDartContour();
+                    RefreshImageBoxes();
+                }
+            }
+
+            if (runtimeCapturing)
+            {
+                RefreshImageBoxes();
+            }
+
+            return throwDetected;
+        }
+
+        public void FindContour()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnClosing()
+        {
+            cam.videoCapture.Dispose();
         }
     }
 }
