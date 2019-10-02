@@ -1,9 +1,10 @@
-﻿<Window x:Class="DartboardRecognition.MainWindow"
+﻿<Window x:Class="DartboardRecognition.Windows.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DartboardRecognition"
+        xmlns:windows="clr-namespace:DartboardRecognition.Windows"
         mc:Ignorable="d"
         Title="DartboardRecognition"
         Height="623"
@@ -11,7 +12,7 @@
         ResizeMode="NoResize"
         Closing="OnClosing">
     <Window.DataContext>
-        <local:MainWindowViewModel />
+        <windows:MainWindowViewModel />
     </Window.DataContext>
     <Grid>
         <Image x:Name="DartboardProjectionImageBox" HorizontalAlignment="Left" Height="308" Margin="33,36,0,0" VerticalAlignment="Top" Width="314" />

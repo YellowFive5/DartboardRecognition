@@ -7,7 +7,7 @@ using Emgu.CV.Structure;
 
 #endregion
 
-namespace DartboardRecognition
+namespace DartboardRecognition.Windows
 {
     public partial class MainWindow
     {

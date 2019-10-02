@@ -2,11 +2,12 @@
 
 using System.ComponentModel;
 using System.Drawing;
+using DartboardRecognition.Services;
 using Emgu.CV.Structure;
 
 #endregion
 
-namespace DartboardRecognition
+namespace DartboardRecognition.Windows
 {
     public partial class CamWindow
     {
@@ -28,7 +29,7 @@ namespace DartboardRecognition
         public int ProjectionPoiThickness { get; } = 6;
 
         public CamWindow(int camNumber,
-                         Drawman drawman,
+                         DrawService drawman,
                          ThrowService throwService,
                          object settingsLock,
                          bool runtimeCapturing,
@@ -56,9 +57,19 @@ namespace DartboardRecognition
             return viewModel.DetectThrow();
         }
 
-        public void FindContour()
+        public void FindDart()
         {
-            viewModel.FindContour();
+            viewModel.FindDart();
+        }
+
+        public void RefreshImages()
+        {
+            viewModel.RefreshImageBoxes();
+        }
+
+        public void DoCaptures()
+        {
+            viewModel.DoCaptures();
         }
     }
 }

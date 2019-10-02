@@ -4,15 +4,16 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
+using DartboardRecognition.Services;
 
 #endregion
 
-namespace DartboardRecognition
+namespace DartboardRecognition.Windows
 {
     public class MainWindowViewModel
     {
         private readonly MainWindow mainWindowView;
-        private Drawman drawman;
+        private DrawService drawService;
         private ThrowService throwService;
         private CancellationToken cancelToken;
         private CancellationTokenSource cts;
@@ -28,13 +29,13 @@ namespace DartboardRecognition
 
         private void StartCapturing()
         {
-            drawman = new Drawman();
+            drawService = new DrawService();
             cts = new CancellationTokenSource();
             cancelToken = cts.Token;
-            throwService = new ThrowService(mainWindowView, drawman);
+            throwService = new ThrowService(mainWindowView, drawService);
 
             var dartboardProjectionImage = throwService.PrepareDartboardProjectionImage();
-            mainWindowView.DartboardProjectionImageBox.Source = drawman.ToBitmap(dartboardProjectionImage);
+            mainWindowView.DartboardProjectionImageBox.Source = drawService.ToBitmap(dartboardProjectionImage);
 
             StartThrowService();
 
@@ -58,10 +59,10 @@ namespace DartboardRecognition
 
             var cams = new List<CamWindow>
                        {
-                           new CamWindow(1, drawman, throwService, settingsLock, runtimeCapturing, withDetection),
-                           new CamWindow(2, drawman, throwService, settingsLock, runtimeCapturing, withDetection),
-                           new CamWindow(3, drawman, throwService, settingsLock, runtimeCapturing, withDetection),
-                           new CamWindow(4, drawman, throwService, settingsLock, runtimeCapturing, withDetection)
+                           new CamWindow(1, drawService, throwService, settingsLock, runtimeCapturing, false),
+                           new CamWindow(2, drawService, throwService, settingsLock, runtimeCapturing, withDetection),
+                           new CamWindow(3, drawService, throwService, settingsLock, runtimeCapturing, withDetection),
+                           new CamWindow(4, drawService, throwService, settingsLock, runtimeCapturing, withDetection)
                        };
 
             Task.Run(() =>
@@ -72,9 +73,10 @@ namespace DartboardRecognition
                          {
                              foreach (var cam in cams)
                              {
-                                 if (cam.DetectThrow())
+                                 var throwDetected = cam.DetectThrow();
+                                 if (throwDetected)
                                  {
-                                     RedetectAll(cams);
+                                     RedetectFromAll(cams);
                                      break;
                                  }
                              }
@@ -87,11 +89,13 @@ namespace DartboardRecognition
                      });
         }
 
-        private void RedetectAll(List<CamWindow> cams)
+        private void RedetectFromAll(List<CamWindow> cams)
         {
             foreach (var cam in cams)
             {
-                cam.FindContour();
+                cam.DoCaptures();
+                cam.RefreshImages();
+                // cam.FindDart();
             }
         }
 

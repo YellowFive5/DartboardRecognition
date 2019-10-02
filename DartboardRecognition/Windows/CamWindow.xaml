@@ -1,9 +1,10 @@
-﻿<Window x:Class="DartboardRecognition.CamWindow"
+﻿<Window x:Class="DartboardRecognition.Windows.CamWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DartboardRecognition"
+        xmlns:windows="clr-namespace:DartboardRecognition.Windows"
         mc:Ignorable="d"
         Title="CamWindow"
         Height="706.429"
@@ -11,7 +12,7 @@
         ResizeMode="NoResize"
         Closing="OnClosing">
     <Window.DataContext>
-        <local:CamWindowViewModel />
+        <windows:CamWindowViewModel />
     </Window.DataContext>
     <Grid>
         <Slider x:Name="TresholdMinSlider"  HorizontalAlignment="Left" Margin="4,438,0,0" VerticalAlignment="Top" Width="487" Maximum="255" Value="197"/>

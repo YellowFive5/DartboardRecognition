@@ -1,22 +1,23 @@
 ﻿#region Usings
 
 using System;
-using Emgu.CV;
-using Emgu.CV.Structure;
-using Emgu.CV.Util;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Threading;
+using DartboardRecognition.Windows;
 using DirectShowLib;
+using Emgu.CV;
 using Emgu.CV.CvEnum;
+using Emgu.CV.Structure;
+using Emgu.CV.Util;
 
 #endregion
 
-namespace DartboardRecognition
+namespace DartboardRecognition.Services
 {
-    public class Cam
+    public class CamService
     {
         private readonly Dispatcher viewDispatcher;
         public Image<Bgr, byte> processingCapture;
@@ -53,7 +54,7 @@ namespace DartboardRecognition
         public readonly double toBullAngle;
         public readonly int camNumber;
 
-        public Cam(CamWindow view)
+        public CamService(CamWindow view)
         {
             viewDispatcher = view.Dispatcher;
             surfacePoint1 = new PointF();

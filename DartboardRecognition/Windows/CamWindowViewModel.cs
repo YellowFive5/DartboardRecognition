@@ -5,20 +5,20 @@ using System.Configuration;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using System.Xml;
-using Emgu.CV.Structure;
+using DartboardRecognition.Services;
 
 #endregion
 
-namespace DartboardRecognition
+namespace DartboardRecognition.Windows
 {
     public class CamWindowViewModel
     {
         private readonly Dispatcher camWindowDispatcher;
         private readonly CamWindow camWindowView;
-        private readonly Measureman measureman;
-        private readonly Drawman drawman;
+        private readonly MeasureService measureService;
+        private readonly DrawService drawService;
         private readonly ThrowService throwService;
-        private readonly Cam cam;
+        private readonly CamService cam;
         private readonly bool runtimeCapturing;
         private readonly bool withDetection;
 
@@ -27,21 +27,21 @@ namespace DartboardRecognition
         }
 
         public CamWindowViewModel(CamWindow camWindowView,
-                                  Drawman drawman,
+                                  DrawService drawService,
                                   ThrowService throwService,
                                   bool runtimeCapturing,
                                   bool withDetection)
         {
             this.camWindowView = camWindowView;
             camWindowDispatcher = camWindowView.Dispatcher;
-            this.drawman = drawman;
+            this.drawService = drawService;
             this.throwService = throwService;
             this.runtimeCapturing = runtimeCapturing;
             this.withDetection = withDetection;
-            measureman = new Measureman(camWindowView, drawman, throwService);
-            cam = new Cam(camWindowView);
+            measureService = new MeasureService(camWindowView, drawService, throwService);
+            cam = new CamService(camWindowView);
 
-            measureman.SetupWorkingCam(cam);
+            measureService.SetupWorkingCam(cam);
         }
 
         public void SetWindowTitle()
@@ -109,23 +109,24 @@ namespace DartboardRecognition
             }
         }
 
-        private void DoCaptures()
+        public void DoCaptures()
         {
-            using (cam.originFrame = cam.videoCapture.QueryFrame().ToImage<Bgr, byte>())
-            {
-                cam.RefreshLines(camWindowView);
-                measureman.CalculateSetupLines();
-                measureman.CalculateRoiRegion();
-                drawman.TresholdRoiRegion(cam);
-            }
+            measureService.DoCaptures();
+            // using (cam.originFrame = cam.videoCapture.QueryFrame().ToImage<Bgr, byte>())
+            // {
+            //     cam.RefreshLines(camWindowView);
+            //     measureman.CalculateSetupLines();
+            //     measureman.CalculateRoiRegion();
+            //     drawman.TresholdRoiRegion(cam);
+            // }
         }
 
-        private void RefreshImageBoxes()
+        public void RefreshImageBoxes()
         {
-            camWindowDispatcher.Invoke(new Action(() => camWindowView.ImageBox.Source = drawman.ToBitmap(cam.linedFrame)));
-            camWindowDispatcher.Invoke(new Action(() => camWindowView.ImageBoxRoi.Source = drawman.ToBitmap(cam.roiTrasholdFrame)));
+            camWindowDispatcher.Invoke(new Action(() => camWindowView.ImageBox.Source = drawService.ToBitmap(cam.linedFrame)));
+            camWindowDispatcher.Invoke(new Action(() => camWindowView.ImageBoxRoi.Source = drawService.ToBitmap(cam.roiTrasholdFrame)));
             camWindowDispatcher.Invoke(new Action(() => camWindowView.ImageBoxRoiLastThrow.Source = cam.roiTrasholdFrameLastThrow != null
-                                                                                                        ? drawman.ToBitmap(cam.roiTrasholdFrameLastThrow)
+                                                                                                        ? drawService.ToBitmap(cam.roiTrasholdFrameLastThrow)
                                                                                                         : new BitmapImage()));
         }
 
@@ -133,17 +134,7 @@ namespace DartboardRecognition
         {
             DoCaptures();
 
-            var throwDetected = withDetection && measureman.DetectThrow();
-
-            if (throwDetected)
-            {
-                var dartContourFound = measureman.FindDartContour();
-                if (dartContourFound)
-                {
-                    measureman.ProcessDartContour();
-                    RefreshImageBoxes();
-                }
-            }
+            var throwDetected = withDetection && measureService.DetectThrow();
 
             if (runtimeCapturing)
             {
@@ -152,10 +143,15 @@ namespace DartboardRecognition
 
             return throwDetected;
         }
-
-        public void FindContour()
+            
+        public void FindDart()
         {
-            throw new NotImplementedException();
+            var dartContourFound = measureService.FindDartContour();
+            if (dartContourFound)
+            {
+                measureService.ProcessDartContour();
+                RefreshImageBoxes();
+            }
         }
 
         public void OnClosing()

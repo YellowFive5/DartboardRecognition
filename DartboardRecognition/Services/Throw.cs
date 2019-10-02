@@ -6,7 +6,7 @@ using Emgu.CV.Structure;
 
 #endregion
 
-namespace DartboardRecognition
+namespace DartboardRecognition.Services
 {
     public class Throw
     {

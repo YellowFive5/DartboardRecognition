@@ -11,9 +11,9 @@ using Point = System.Drawing.Point;
 
 #endregion
 
-namespace DartboardRecognition
+namespace DartboardRecognition.Services
 {
-    public class Drawman
+    public class DrawService
     {
         public void DrawLine(Image<Bgr, byte> image,
                              PointF point1,
@@ -78,7 +78,7 @@ namespace DartboardRecognition
             }
         }
 
-        public void TresholdRoiRegion(Cam cam)
+        public void TresholdRoiRegion(CamService cam)
         {
             cam.roiTrasholdFrame = cam.roiFrame.Clone().Convert<Gray, byte>().Not();
             cam.roiTrasholdFrame._SmoothGaussian(5);
