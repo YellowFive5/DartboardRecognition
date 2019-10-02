@@ -29,7 +29,7 @@ namespace DartboardRecognition.Windows
         public int ProjectionPoiThickness { get; } = 6;
 
         public CamWindow(int camNumber,
-                         DrawService drawman,
+                         DrawService drawService,
                          ThrowService throwService,
                          object settingsLock,
                          bool runtimeCapturing,
@@ -38,7 +38,7 @@ namespace DartboardRecognition.Windows
             InitializeComponent();
             this.camNumber = camNumber;
             this.settingsLock = settingsLock;
-            viewModel = new CamWindowViewModel(this, drawman, throwService, runtimeCapturing, withDetection);
+            viewModel = new CamWindowViewModel(this, drawService, throwService, runtimeCapturing, withDetection);
             DataContext = viewModel;
 
             Show();

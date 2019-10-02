@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using DartboardRecognition.Windows;
 using Emgu.CV;
@@ -15,9 +16,8 @@ namespace DartboardRecognition.Services
 {
     public class ThrowService
     {
-        private readonly MainWindow mainWindowView;
+        private readonly MainWindow mainWindow;
         private readonly DrawService drawService;
-        private readonly Dispatcher mainWindowDispatcher;
         private PointF projectionCenterPoint;
         private readonly Stack<PointF> cam1RayPoint;
         private readonly Stack<PointF> cam2RayPoint;
@@ -29,14 +29,15 @@ namespace DartboardRecognition.Services
         private Image<Bgr, byte> DartboardProjectionFrameBackground { get; }
         private Image<Bgr, byte> DartboardProjectionWorkingFrame { get; set; }
 
-        public ThrowService(MainWindow mainWindowView, DrawService drawService)
+        public ThrowService(MainWindow mainWindow, DrawService drawService)
         {
-            this.mainWindowView = mainWindowView;
+            this.mainWindow = mainWindow;
             this.drawService = drawService;
-            mainWindowDispatcher = mainWindowView.Dispatcher;
-            DartboardProjectionFrameBackground = new Image<Bgr, byte>(mainWindowView.ProjectionFrameWidth, mainWindowView.ProjectionFrameHeight);
+            DartboardProjectionFrameBackground = new Image<Bgr, byte>(mainWindow.ProjectionFrameWidth,
+                                                                      mainWindow.ProjectionFrameHeight);
             DartboardProjectionWorkingFrame = DartboardProjectionFrameBackground.Clone();
-            projectionCenterPoint = new PointF((float) DartboardProjectionFrameBackground.Width / 2, (float) DartboardProjectionFrameBackground.Height / 2);
+            projectionCenterPoint = new PointF((float) DartboardProjectionFrameBackground.Width / 2,
+                                               (float) DartboardProjectionFrameBackground.Height / 2);
             cam1RayPoint = new Stack<PointF>();
             cam2RayPoint = new Stack<PointF>();
             throwsCollection = new Queue<Throw>();
@@ -69,18 +70,18 @@ namespace DartboardRecognition.Services
         private void CalculateAndSaveThrow()
         {
             DartboardProjectionWorkingFrame = DartboardProjectionFrameBackground.Clone();
-            var poi = MeasureService.FindLinesIntersection(mainWindowView.Cam1SetupPoint,
-                                                       cam1RayPoint.Pop(),
-                                                       mainWindowView.Cam2SetupPoint,
-                                                       cam2RayPoint.Pop());
+            var poi = MeasureService.FindLinesIntersection(mainWindow.Cam1SetupPoint,
+                                                           cam1RayPoint.Pop(),
+                                                           mainWindow.Cam2SetupPoint,
+                                                           cam2RayPoint.Pop());
             var anotherThrow = PrepareThrowData(poi);
             throwsCollection.Enqueue(anotherThrow);
 
-            drawService.DrawCircle(DartboardProjectionWorkingFrame, poi, mainWindowView.PoiRadius, mainWindowView.PoiColor, mainWindowView.PoiThickness);
+            drawService.DrawCircle(DartboardProjectionWorkingFrame, poi, mainWindow.PoiRadius, mainWindow.PoiColor, mainWindow.PoiThickness);
 
-            mainWindowDispatcher.Invoke(new Action(() => mainWindowView.DartboardProjectionImageBox.Source = drawService.ToBitmap(DartboardProjectionWorkingFrame)));
-            mainWindowDispatcher.Invoke(new Action(() => mainWindowView.PointsBox.Text = ""));
-            mainWindowDispatcher.Invoke(new Action(() => mainWindowView.PointsBox.Text += $"{anotherThrow.Sector} x {anotherThrow.Multiplier} = {anotherThrow.TotalPoints}\n"));
+            mainWindow.Dispatcher.Invoke(new Action(() => mainWindow.DartboardProjectionImageBox.Source = drawService.ToBitmap(DartboardProjectionWorkingFrame)));
+            mainWindow.Dispatcher.Invoke(new Action(() => mainWindow.PointsBox.Text = ""));
+            mainWindow.Dispatcher.Invoke(new Action(() => mainWindow.PointsBox.Text += $"{anotherThrow.Sector} x {anotherThrow.Multiplier} = {anotherThrow.TotalPoints}\n"));
         }
 
         private Throw PrepareThrowData(PointF poi)
@@ -92,14 +93,14 @@ namespace DartboardRecognition.Services
             var sector = 0;
             var multiplier = 1;
 
-            if (distance >= mainWindowView.ProjectionCoefficent * 95 &&
-                distance <= mainWindowView.ProjectionCoefficent * 105)
+            if (distance >= mainWindow.ProjectionCoefficent * 95 &&
+                distance <= mainWindow.ProjectionCoefficent * 105)
             {
                 multiplier = 3;
             }
 
-            if (distance >= mainWindowView.ProjectionCoefficent * 160 &&
-                distance <= mainWindowView.ProjectionCoefficent * 170)
+            if (distance >= mainWindow.ProjectionCoefficent * 160 &&
+                distance <= mainWindow.ProjectionCoefficent * 170)
             {
                 multiplier = 2;
             }
@@ -187,18 +188,18 @@ namespace DartboardRecognition.Services
                 sector = 20;
             }
 
-            if (distance <= mainWindowView.ProjectionCoefficent * 7)
+            if (distance <= mainWindow.ProjectionCoefficent * 7)
             {
                 sector = 50;
             }
 
-            if (distance > mainWindowView.ProjectionCoefficent * 7 &&
-                distance <= mainWindowView.ProjectionCoefficent * 17)
+            if (distance > mainWindow.ProjectionCoefficent * 7 &&
+                distance <= mainWindow.ProjectionCoefficent * 17)
             {
                 sector = 25;
             }
 
-            if (distance > mainWindowView.ProjectionCoefficent * 170)
+            if (distance > mainWindow.ProjectionCoefficent * 170)
             {
                 sector = 0;
             }
@@ -227,184 +228,184 @@ namespace DartboardRecognition.Services
             }
         }
 
-        public Image<Bgr, byte> PrepareDartboardProjectionImage()
+        public BitmapImage PrepareDartboardProjectionImage()
         {
             // Draw dartboard projection
-            drawService.DrawCircle(DartboardProjectionFrameBackground, projectionCenterPoint, mainWindowView.ProjectionCoefficent * 7, mainWindowView.ProjectionGridColor, mainWindowView.ProjectionGridThickness);
-            drawService.DrawCircle(DartboardProjectionFrameBackground, projectionCenterPoint, mainWindowView.ProjectionCoefficent * 17, mainWindowView.ProjectionGridColor, mainWindowView.ProjectionGridThickness);
-            drawService.DrawCircle(DartboardProjectionFrameBackground, projectionCenterPoint, mainWindowView.ProjectionCoefficent * 95, mainWindowView.ProjectionGridColor, mainWindowView.ProjectionGridThickness);
-            drawService.DrawCircle(DartboardProjectionFrameBackground, projectionCenterPoint, mainWindowView.ProjectionCoefficent * 105, mainWindowView.ProjectionGridColor, mainWindowView.ProjectionGridThickness);
-            drawService.DrawCircle(DartboardProjectionFrameBackground, projectionCenterPoint, mainWindowView.ProjectionCoefficent * 160, mainWindowView.ProjectionGridColor, mainWindowView.ProjectionGridThickness);
-            drawService.DrawCircle(DartboardProjectionFrameBackground, projectionCenterPoint, mainWindowView.ProjectionCoefficent * 170, mainWindowView.ProjectionGridColor, mainWindowView.ProjectionGridThickness);
+            drawService.DrawCircle(DartboardProjectionFrameBackground, projectionCenterPoint, mainWindow.ProjectionCoefficent * 7, mainWindow.ProjectionGridColor, mainWindow.ProjectionGridThickness);
+            drawService.DrawCircle(DartboardProjectionFrameBackground, projectionCenterPoint, mainWindow.ProjectionCoefficent * 17, mainWindow.ProjectionGridColor, mainWindow.ProjectionGridThickness);
+            drawService.DrawCircle(DartboardProjectionFrameBackground, projectionCenterPoint, mainWindow.ProjectionCoefficent * 95, mainWindow.ProjectionGridColor, mainWindow.ProjectionGridThickness);
+            drawService.DrawCircle(DartboardProjectionFrameBackground, projectionCenterPoint, mainWindow.ProjectionCoefficent * 105, mainWindow.ProjectionGridColor, mainWindow.ProjectionGridThickness);
+            drawService.DrawCircle(DartboardProjectionFrameBackground, projectionCenterPoint, mainWindow.ProjectionCoefficent * 160, mainWindow.ProjectionGridColor, mainWindow.ProjectionGridThickness);
+            drawService.DrawCircle(DartboardProjectionFrameBackground, projectionCenterPoint, mainWindow.ProjectionCoefficent * 170, mainWindow.ProjectionGridColor, mainWindow.ProjectionGridThickness);
             for (var i = 0; i <= 360; i += 9)
             {
-                var segmentPoint1 = new PointF((float) (projectionCenterPoint.X + Math.Cos(0.314159 * i - 0.15708) * mainWindowView.ProjectionCoefficent * 170),
-                                               (float) (projectionCenterPoint.Y + Math.Sin(0.314159 * i - 0.15708) * mainWindowView.ProjectionCoefficent * 170));
-                var segmentPoint2 = new PointF((float) (projectionCenterPoint.X + Math.Cos(0.314159 * i - 0.15708) * mainWindowView.ProjectionCoefficent * 17),
-                                               (float) (projectionCenterPoint.Y + Math.Sin(0.314159 * i - 0.15708) * mainWindowView.ProjectionCoefficent * 17));
-                drawService.DrawLine(DartboardProjectionFrameBackground, segmentPoint1, segmentPoint2, mainWindowView.ProjectionGridColor, mainWindowView.ProjectionGridThickness);
+                var segmentPoint1 = new PointF((float) (projectionCenterPoint.X + Math.Cos(0.314159 * i - 0.15708) * mainWindow.ProjectionCoefficent * 170),
+                                               (float) (projectionCenterPoint.Y + Math.Sin(0.314159 * i - 0.15708) * mainWindow.ProjectionCoefficent * 170));
+                var segmentPoint2 = new PointF((float) (projectionCenterPoint.X + Math.Cos(0.314159 * i - 0.15708) * mainWindow.ProjectionCoefficent * 17),
+                                               (float) (projectionCenterPoint.Y + Math.Sin(0.314159 * i - 0.15708) * mainWindow.ProjectionCoefficent * 17));
+                drawService.DrawLine(DartboardProjectionFrameBackground, segmentPoint1, segmentPoint2, mainWindow.ProjectionGridColor, mainWindow.ProjectionGridThickness);
             }
 
             // Draw surface projection lines
-            projectionLineCam1Point1.X = (float) (projectionCenterPoint.X + Math.Cos(-0.785398) * mainWindowView.ProjectionCoefficent * 170) - mainWindowView.ProjectionCoefficent * mainWindowView.ProjectionLineCam1Bias;
-            projectionLineCam1Point1.Y = (float) (projectionCenterPoint.Y + Math.Sin(-0.785398) * mainWindowView.ProjectionCoefficent * 170) - mainWindowView.ProjectionCoefficent * mainWindowView.ProjectionLineCam1Bias;
-            projectionLineCam1Point2.X = (float) (projectionCenterPoint.X + Math.Cos(2.35619) * mainWindowView.ProjectionCoefficent * 170) - mainWindowView.ProjectionCoefficent * mainWindowView.ProjectionLineCam1Bias;
-            projectionLineCam1Point2.Y = (float) (projectionCenterPoint.Y + Math.Sin(2.35619) * mainWindowView.ProjectionCoefficent * 170) - mainWindowView.ProjectionCoefficent * mainWindowView.ProjectionLineCam1Bias;
+            projectionLineCam1Point1.X = (float) (projectionCenterPoint.X + Math.Cos(-0.785398) * mainWindow.ProjectionCoefficent * 170) - mainWindow.ProjectionCoefficent * mainWindow.ProjectionLineCam1Bias;
+            projectionLineCam1Point1.Y = (float) (projectionCenterPoint.Y + Math.Sin(-0.785398) * mainWindow.ProjectionCoefficent * 170) - mainWindow.ProjectionCoefficent * mainWindow.ProjectionLineCam1Bias;
+            projectionLineCam1Point2.X = (float) (projectionCenterPoint.X + Math.Cos(2.35619) * mainWindow.ProjectionCoefficent * 170) - mainWindow.ProjectionCoefficent * mainWindow.ProjectionLineCam1Bias;
+            projectionLineCam1Point2.Y = (float) (projectionCenterPoint.Y + Math.Sin(2.35619) * mainWindow.ProjectionCoefficent * 170) - mainWindow.ProjectionCoefficent * mainWindow.ProjectionLineCam1Bias;
             //drawman.DrawLine(dartboardProjectionFrame, projectionLineCam1Point1, projectionLineCam1Point2, view.ProjectionSurfaceLineColor, view.ProjectionSurfaceLineThickness);
 
-            projectionLineCam2Point1.X = (float) (projectionCenterPoint.X + Math.Cos(0.785398) * mainWindowView.ProjectionCoefficent * 170) + mainWindowView.ProjectionCoefficent * mainWindowView.ProjectionLineCam2Bias;
-            projectionLineCam2Point1.Y = (float) (projectionCenterPoint.Y + Math.Sin(0.785398) * mainWindowView.ProjectionCoefficent * 170) - mainWindowView.ProjectionCoefficent * mainWindowView.ProjectionLineCam2Bias;
-            projectionLineCam2Point2.X = (float) (projectionCenterPoint.X + Math.Cos(3.92699) * mainWindowView.ProjectionCoefficent * 170) + mainWindowView.ProjectionCoefficent * mainWindowView.ProjectionLineCam2Bias;
-            projectionLineCam2Point2.Y = (float) (projectionCenterPoint.Y + Math.Sin(3.92699) * mainWindowView.ProjectionCoefficent * 170) - mainWindowView.ProjectionCoefficent * mainWindowView.ProjectionLineCam2Bias;
+            projectionLineCam2Point1.X = (float) (projectionCenterPoint.X + Math.Cos(0.785398) * mainWindow.ProjectionCoefficent * 170) + mainWindow.ProjectionCoefficent * mainWindow.ProjectionLineCam2Bias;
+            projectionLineCam2Point1.Y = (float) (projectionCenterPoint.Y + Math.Sin(0.785398) * mainWindow.ProjectionCoefficent * 170) - mainWindow.ProjectionCoefficent * mainWindow.ProjectionLineCam2Bias;
+            projectionLineCam2Point2.X = (float) (projectionCenterPoint.X + Math.Cos(3.92699) * mainWindow.ProjectionCoefficent * 170) + mainWindow.ProjectionCoefficent * mainWindow.ProjectionLineCam2Bias;
+            projectionLineCam2Point2.Y = (float) (projectionCenterPoint.Y + Math.Sin(3.92699) * mainWindow.ProjectionCoefficent * 170) - mainWindow.ProjectionCoefficent * mainWindow.ProjectionLineCam2Bias;
             //drawman.DrawLine(dartboardProjectionFrame, projectionLineCam2Point1, projectionLineCam2Point2, view.ProjectionSurfaceLineColor, view.ProjectionSurfaceLineThickness);
 
             // Draw digits
             var startAngle = 0;
             var sectorAngle = 0.314159;
             drawService.DrawString(DartboardProjectionFrameBackground,
-                               "6",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 0) * mainWindowView.ProjectionCoefficent * 180),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 0) * mainWindowView.ProjectionCoefficent * 180),
-                               mainWindowView.ProjectionDigitsScale,
-                               mainWindowView.ProjectionDigitsColor,
-                               mainWindowView.ProjectionDigitsThickness);
+                                   "6",
+                                   (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 0) * mainWindow.ProjectionCoefficent * 180),
+                                   (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 0) * mainWindow.ProjectionCoefficent * 180),
+                                   mainWindow.ProjectionDigitsScale,
+                                   mainWindow.ProjectionDigitsColor,
+                                   mainWindow.ProjectionDigitsThickness);
             drawService.DrawString(DartboardProjectionFrameBackground,
-                               "10",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 1 + 0.05) * mainWindowView.ProjectionCoefficent * 180),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 1 + 0.05) * mainWindowView.ProjectionCoefficent * 180),
-                               mainWindowView.ProjectionDigitsScale,
-                               mainWindowView.ProjectionDigitsColor,
-                               mainWindowView.ProjectionDigitsThickness);
+                                   "10",
+                                   (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 1 + 0.05) * mainWindow.ProjectionCoefficent * 180),
+                                   (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 1 + 0.05) * mainWindow.ProjectionCoefficent * 180),
+                                   mainWindow.ProjectionDigitsScale,
+                                   mainWindow.ProjectionDigitsColor,
+                                   mainWindow.ProjectionDigitsThickness);
             drawService.DrawString(DartboardProjectionFrameBackground,
-                               "15",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 2 + 0.05) * mainWindowView.ProjectionCoefficent * 180),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 2 + 0.05) * mainWindowView.ProjectionCoefficent * 180),
-                               mainWindowView.ProjectionDigitsScale,
-                               mainWindowView.ProjectionDigitsColor,
-                               mainWindowView.ProjectionDigitsThickness);
+                                   "15",
+                                   (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 2 + 0.05) * mainWindow.ProjectionCoefficent * 180),
+                                   (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 2 + 0.05) * mainWindow.ProjectionCoefficent * 180),
+                                   mainWindow.ProjectionDigitsScale,
+                                   mainWindow.ProjectionDigitsColor,
+                                   mainWindow.ProjectionDigitsThickness);
             drawService.DrawString(DartboardProjectionFrameBackground,
-                               "2",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 3 + 0.05) * mainWindowView.ProjectionCoefficent * 190),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 3 + 0.05) * mainWindowView.ProjectionCoefficent * 190),
-                               mainWindowView.ProjectionDigitsScale,
-                               mainWindowView.ProjectionDigitsColor,
-                               mainWindowView.ProjectionDigitsThickness);
+                                   "2",
+                                   (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 3 + 0.05) * mainWindow.ProjectionCoefficent * 190),
+                                   (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 3 + 0.05) * mainWindow.ProjectionCoefficent * 190),
+                                   mainWindow.ProjectionDigitsScale,
+                                   mainWindow.ProjectionDigitsColor,
+                                   mainWindow.ProjectionDigitsThickness);
             drawService.DrawString(DartboardProjectionFrameBackground,
-                               "17",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 4 + 0.05) * mainWindowView.ProjectionCoefficent * 190),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 4 + 0.05) * mainWindowView.ProjectionCoefficent * 190),
-                               mainWindowView.ProjectionDigitsScale,
-                               mainWindowView.ProjectionDigitsColor,
-                               mainWindowView.ProjectionDigitsThickness);
+                                   "17",
+                                   (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 4 + 0.05) * mainWindow.ProjectionCoefficent * 190),
+                                   (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 4 + 0.05) * mainWindow.ProjectionCoefficent * 190),
+                                   mainWindow.ProjectionDigitsScale,
+                                   mainWindow.ProjectionDigitsColor,
+                                   mainWindow.ProjectionDigitsThickness);
             drawService.DrawString(DartboardProjectionFrameBackground,
-                               "3",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 5 + 0.05) * mainWindowView.ProjectionCoefficent * 190),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 5 + 0.05) * mainWindowView.ProjectionCoefficent * 190),
-                               mainWindowView.ProjectionDigitsScale,
-                               mainWindowView.ProjectionDigitsColor,
-                               mainWindowView.ProjectionDigitsThickness);
+                                   "3",
+                                   (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 5 + 0.05) * mainWindow.ProjectionCoefficent * 190),
+                                   (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 5 + 0.05) * mainWindow.ProjectionCoefficent * 190),
+                                   mainWindow.ProjectionDigitsScale,
+                                   mainWindow.ProjectionDigitsColor,
+                                   mainWindow.ProjectionDigitsThickness);
             drawService.DrawString(DartboardProjectionFrameBackground,
-                               "19",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 6 + 0.05) * mainWindowView.ProjectionCoefficent * 200),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 6 + 0.05) * mainWindowView.ProjectionCoefficent * 200),
-                               mainWindowView.ProjectionDigitsScale,
-                               mainWindowView.ProjectionDigitsColor,
-                               mainWindowView.ProjectionDigitsThickness);
+                                   "19",
+                                   (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 6 + 0.05) * mainWindow.ProjectionCoefficent * 200),
+                                   (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 6 + 0.05) * mainWindow.ProjectionCoefficent * 200),
+                                   mainWindow.ProjectionDigitsScale,
+                                   mainWindow.ProjectionDigitsColor,
+                                   mainWindow.ProjectionDigitsThickness);
             drawService.DrawString(DartboardProjectionFrameBackground,
-                               "7",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 7) * mainWindowView.ProjectionCoefficent * 200),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 7) * mainWindowView.ProjectionCoefficent * 200),
-                               mainWindowView.ProjectionDigitsScale,
-                               mainWindowView.ProjectionDigitsColor,
-                               mainWindowView.ProjectionDigitsThickness);
+                                   "7",
+                                   (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 7) * mainWindow.ProjectionCoefficent * 200),
+                                   (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 7) * mainWindow.ProjectionCoefficent * 200),
+                                   mainWindow.ProjectionDigitsScale,
+                                   mainWindow.ProjectionDigitsColor,
+                                   mainWindow.ProjectionDigitsThickness);
             drawService.DrawString(DartboardProjectionFrameBackground,
-                               "16",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 8) * mainWindowView.ProjectionCoefficent * 210),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 8) * mainWindowView.ProjectionCoefficent * 210),
-                               mainWindowView.ProjectionDigitsScale,
-                               mainWindowView.ProjectionDigitsColor,
-                               mainWindowView.ProjectionDigitsThickness);
+                                   "16",
+                                   (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 8) * mainWindow.ProjectionCoefficent * 210),
+                                   (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 8) * mainWindow.ProjectionCoefficent * 210),
+                                   mainWindow.ProjectionDigitsScale,
+                                   mainWindow.ProjectionDigitsColor,
+                                   mainWindow.ProjectionDigitsThickness);
             drawService.DrawString(DartboardProjectionFrameBackground,
-                               "8",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 9) * mainWindowView.ProjectionCoefficent * 200),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 9) * mainWindowView.ProjectionCoefficent * 200),
-                               mainWindowView.ProjectionDigitsScale,
-                               mainWindowView.ProjectionDigitsColor,
-                               mainWindowView.ProjectionDigitsThickness);
+                                   "8",
+                                   (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 9) * mainWindow.ProjectionCoefficent * 200),
+                                   (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 9) * mainWindow.ProjectionCoefficent * 200),
+                                   mainWindow.ProjectionDigitsScale,
+                                   mainWindow.ProjectionDigitsColor,
+                                   mainWindow.ProjectionDigitsThickness);
             drawService.DrawString(DartboardProjectionFrameBackground,
-                               "11",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 10) * mainWindowView.ProjectionCoefficent * 200),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 10) * mainWindowView.ProjectionCoefficent * 200),
-                               mainWindowView.ProjectionDigitsScale,
-                               mainWindowView.ProjectionDigitsColor,
-                               mainWindowView.ProjectionDigitsThickness);
+                                   "11",
+                                   (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 10) * mainWindow.ProjectionCoefficent * 200),
+                                   (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 10) * mainWindow.ProjectionCoefficent * 200),
+                                   mainWindow.ProjectionDigitsScale,
+                                   mainWindow.ProjectionDigitsColor,
+                                   mainWindow.ProjectionDigitsThickness);
             drawService.DrawString(DartboardProjectionFrameBackground,
-                               "14",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 11 - 0.05) * mainWindowView.ProjectionCoefficent * 200),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 11 - 0.05) * mainWindowView.ProjectionCoefficent * 200),
-                               mainWindowView.ProjectionDigitsScale,
-                               mainWindowView.ProjectionDigitsColor,
-                               mainWindowView.ProjectionDigitsThickness);
+                                   "14",
+                                   (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 11 - 0.05) * mainWindow.ProjectionCoefficent * 200),
+                                   (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 11 - 0.05) * mainWindow.ProjectionCoefficent * 200),
+                                   mainWindow.ProjectionDigitsScale,
+                                   mainWindow.ProjectionDigitsColor,
+                                   mainWindow.ProjectionDigitsThickness);
             drawService.DrawString(DartboardProjectionFrameBackground,
-                               "9",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 12 - 0.05) * mainWindowView.ProjectionCoefficent * 200),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 12 - 0.05) * mainWindowView.ProjectionCoefficent * 200),
-                               mainWindowView.ProjectionDigitsScale,
-                               mainWindowView.ProjectionDigitsColor,
-                               mainWindowView.ProjectionDigitsThickness);
+                                   "9",
+                                   (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 12 - 0.05) * mainWindow.ProjectionCoefficent * 200),
+                                   (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 12 - 0.05) * mainWindow.ProjectionCoefficent * 200),
+                                   mainWindow.ProjectionDigitsScale,
+                                   mainWindow.ProjectionDigitsColor,
+                                   mainWindow.ProjectionDigitsThickness);
             drawService.DrawString(DartboardProjectionFrameBackground,
-                               "12",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 13 - 0.05) * mainWindowView.ProjectionCoefficent * 200),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 13 - 0.05) * mainWindowView.ProjectionCoefficent * 200),
-                               mainWindowView.ProjectionDigitsScale,
-                               mainWindowView.ProjectionDigitsColor,
-                               mainWindowView.ProjectionDigitsThickness);
+                                   "12",
+                                   (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 13 - 0.05) * mainWindow.ProjectionCoefficent * 200),
+                                   (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 13 - 0.05) * mainWindow.ProjectionCoefficent * 200),
+                                   mainWindow.ProjectionDigitsScale,
+                                   mainWindow.ProjectionDigitsColor,
+                                   mainWindow.ProjectionDigitsThickness);
             drawService.DrawString(DartboardProjectionFrameBackground,
-                               "5",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 14 - 0.05) * mainWindowView.ProjectionCoefficent * 190),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 14 - 0.05) * mainWindowView.ProjectionCoefficent * 190),
-                               mainWindowView.ProjectionDigitsScale,
-                               mainWindowView.ProjectionDigitsColor,
-                               mainWindowView.ProjectionDigitsThickness);
+                                   "5",
+                                   (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 14 - 0.05) * mainWindow.ProjectionCoefficent * 190),
+                                   (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 14 - 0.05) * mainWindow.ProjectionCoefficent * 190),
+                                   mainWindow.ProjectionDigitsScale,
+                                   mainWindow.ProjectionDigitsColor,
+                                   mainWindow.ProjectionDigitsThickness);
             drawService.DrawString(DartboardProjectionFrameBackground,
-                               "20",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 15 - 0.05) * mainWindowView.ProjectionCoefficent * 180),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 15 - 0.05) * mainWindowView.ProjectionCoefficent * 180),
-                               mainWindowView.ProjectionDigitsScale,
-                               mainWindowView.ProjectionDigitsColor,
-                               mainWindowView.ProjectionDigitsThickness);
+                                   "20",
+                                   (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 15 - 0.05) * mainWindow.ProjectionCoefficent * 180),
+                                   (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 15 - 0.05) * mainWindow.ProjectionCoefficent * 180),
+                                   mainWindow.ProjectionDigitsScale,
+                                   mainWindow.ProjectionDigitsColor,
+                                   mainWindow.ProjectionDigitsThickness);
             drawService.DrawString(DartboardProjectionFrameBackground,
-                               "1",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 16 - 0.05) * mainWindowView.ProjectionCoefficent * 180),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 16 - 0.05) * mainWindowView.ProjectionCoefficent * 180),
-                               mainWindowView.ProjectionDigitsScale,
-                               mainWindowView.ProjectionDigitsColor,
-                               mainWindowView.ProjectionDigitsThickness);
+                                   "1",
+                                   (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 16 - 0.05) * mainWindow.ProjectionCoefficent * 180),
+                                   (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 16 - 0.05) * mainWindow.ProjectionCoefficent * 180),
+                                   mainWindow.ProjectionDigitsScale,
+                                   mainWindow.ProjectionDigitsColor,
+                                   mainWindow.ProjectionDigitsThickness);
             drawService.DrawString(DartboardProjectionFrameBackground,
-                               "18",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 17 - 0.05) * mainWindowView.ProjectionCoefficent * 180),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 17 - 0.05) * mainWindowView.ProjectionCoefficent * 180),
-                               mainWindowView.ProjectionDigitsScale,
-                               mainWindowView.ProjectionDigitsColor,
-                               mainWindowView.ProjectionDigitsThickness);
+                                   "18",
+                                   (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 17 - 0.05) * mainWindow.ProjectionCoefficent * 180),
+                                   (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 17 - 0.05) * mainWindow.ProjectionCoefficent * 180),
+                                   mainWindow.ProjectionDigitsScale,
+                                   mainWindow.ProjectionDigitsColor,
+                                   mainWindow.ProjectionDigitsThickness);
             drawService.DrawString(DartboardProjectionFrameBackground,
-                               "4",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 18 - 0.05) * mainWindowView.ProjectionCoefficent * 180),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 18 - 0.05) * mainWindowView.ProjectionCoefficent * 180),
-                               mainWindowView.ProjectionDigitsScale,
-                               mainWindowView.ProjectionDigitsColor,
-                               mainWindowView.ProjectionDigitsThickness);
+                                   "4",
+                                   (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 18 - 0.05) * mainWindow.ProjectionCoefficent * 180),
+                                   (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 18 - 0.05) * mainWindow.ProjectionCoefficent * 180),
+                                   mainWindow.ProjectionDigitsScale,
+                                   mainWindow.ProjectionDigitsColor,
+                                   mainWindow.ProjectionDigitsThickness);
             drawService.DrawString(DartboardProjectionFrameBackground,
-                               "13",
-                               (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 19) * mainWindowView.ProjectionCoefficent * 180),
-                               (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 19) * mainWindowView.ProjectionCoefficent * 180),
-                               mainWindowView.ProjectionDigitsScale,
-                               mainWindowView.ProjectionDigitsColor,
-                               mainWindowView.ProjectionDigitsThickness);
+                                   "13",
+                                   (int) (projectionCenterPoint.X + Math.Cos(startAngle + sectorAngle * 19) * mainWindow.ProjectionCoefficent * 180),
+                                   (int) (projectionCenterPoint.Y + Math.Sin(startAngle + sectorAngle * 19) * mainWindow.ProjectionCoefficent * 180),
+                                   mainWindow.ProjectionDigitsScale,
+                                   mainWindow.ProjectionDigitsColor,
+                                   mainWindow.ProjectionDigitsThickness);
 
             DartboardProjectionWorkingFrame = DartboardProjectionFrameBackground.Clone();
 
-            return DartboardProjectionFrameBackground;
+            return drawService.ToBitmap(DartboardProjectionFrameBackground);
         }
     }
 }

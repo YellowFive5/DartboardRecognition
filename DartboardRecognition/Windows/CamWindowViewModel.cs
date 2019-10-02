@@ -2,8 +2,6 @@
 
 using System;
 using System.Configuration;
-using System.Windows.Media.Imaging;
-using System.Windows.Threading;
 using System.Xml;
 using DartboardRecognition.Services;
 
@@ -13,12 +11,11 @@ namespace DartboardRecognition.Windows
 {
     public class CamWindowViewModel
     {
-        private readonly Dispatcher camWindowDispatcher;
         private readonly CamWindow camWindowView;
         private readonly MeasureService measureService;
         private readonly DrawService drawService;
         private readonly ThrowService throwService;
-        private readonly CamService cam;
+        private readonly CamService camService;
         private readonly bool runtimeCapturing;
         private readonly bool withDetection;
 
@@ -33,15 +30,12 @@ namespace DartboardRecognition.Windows
                                   bool withDetection)
         {
             this.camWindowView = camWindowView;
-            camWindowDispatcher = camWindowView.Dispatcher;
             this.drawService = drawService;
             this.throwService = throwService;
             this.runtimeCapturing = runtimeCapturing;
             this.withDetection = withDetection;
-            measureService = new MeasureService(camWindowView, drawService, throwService);
-            cam = new CamService(camWindowView);
-
-            measureService.SetupWorkingCam(cam);
+            camService = new CamService(camWindowView, drawService);
+            measureService = new MeasureService(camWindowView, camService, drawService, throwService);
         }
 
         public void SetWindowTitle()
@@ -111,7 +105,7 @@ namespace DartboardRecognition.Windows
 
         public void DoCaptures()
         {
-            measureService.DoCaptures();
+            camService.DoCaptures();
             // using (cam.originFrame = cam.videoCapture.QueryFrame().ToImage<Bgr, byte>())
             // {
             //     cam.RefreshLines(camWindowView);
@@ -123,18 +117,14 @@ namespace DartboardRecognition.Windows
 
         public void RefreshImageBoxes()
         {
-            camWindowDispatcher.Invoke(new Action(() => camWindowView.ImageBox.Source = drawService.ToBitmap(cam.linedFrame)));
-            camWindowDispatcher.Invoke(new Action(() => camWindowView.ImageBoxRoi.Source = drawService.ToBitmap(cam.roiTrasholdFrame)));
-            camWindowDispatcher.Invoke(new Action(() => camWindowView.ImageBoxRoiLastThrow.Source = cam.roiTrasholdFrameLastThrow != null
-                                                                                                        ? drawService.ToBitmap(cam.roiTrasholdFrameLastThrow)
-                                                                                                        : new BitmapImage()));
+            camService.RefreshImageBoxes();
         }
 
         public bool DetectThrow()
         {
             DoCaptures();
 
-            var throwDetected = withDetection && measureService.DetectThrow();
+            var throwDetected = withDetection && camService.DetectThrow();
 
             if (runtimeCapturing)
             {
@@ -143,7 +133,7 @@ namespace DartboardRecognition.Windows
 
             return throwDetected;
         }
-            
+
         public void FindDart()
         {
             var dartContourFound = measureService.FindDartContour();
@@ -156,7 +146,7 @@ namespace DartboardRecognition.Windows
 
         public void OnClosing()
         {
-            cam.videoCapture.Dispose();
+            camService.videoCapture.Dispose();
         }
     }
 }

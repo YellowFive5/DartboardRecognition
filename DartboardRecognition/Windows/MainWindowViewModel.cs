@@ -33,9 +33,7 @@ namespace DartboardRecognition.Windows
             cts = new CancellationTokenSource();
             cancelToken = cts.Token;
             throwService = new ThrowService(mainWindowView, drawService);
-
-            var dartboardProjectionImage = throwService.PrepareDartboardProjectionImage();
-            mainWindowView.DartboardProjectionImageBox.Source = drawService.ToBitmap(dartboardProjectionImage);
+            mainWindowView.DartboardProjectionImageBox.Source = throwService.PrepareDartboardProjectionImage();
 
             StartThrowService();
 
@@ -89,7 +87,7 @@ namespace DartboardRecognition.Windows
                      });
         }
 
-        private void RedetectFromAll(List<CamWindow> cams)
+        private void RedetectFromAll(IEnumerable<CamWindow> cams)
         {
             foreach (var cam in cams)
             {

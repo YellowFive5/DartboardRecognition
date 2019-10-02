@@ -67,23 +67,17 @@ namespace DartboardRecognition.Services
 
         public BitmapImage ToBitmap(IImage image)
         {
+            var imageToSave = new BitmapImage();
+
             using (var stream = new MemoryStream())
             {
-                var imageToSave = new BitmapImage();
                 image.Bitmap.Save(stream, ImageFormat.Bmp);
                 imageToSave.BeginInit();
                 imageToSave.StreamSource = new MemoryStream(stream.ToArray());
                 imageToSave.EndInit();
-                return imageToSave;
             }
-        }
 
-        public void TresholdRoiRegion(CamService cam)
-        {
-            cam.roiTrasholdFrame = cam.roiFrame.Clone().Convert<Gray, byte>().Not();
-            cam.roiTrasholdFrame._SmoothGaussian(5);
-            cam.roiTrasholdFrame._ThresholdBinary(new Gray(cam.tresholdMinSlider),
-                                                  new Gray(cam.tresholdMaxSlider));
+            return imageToSave;
         }
     }
 }
