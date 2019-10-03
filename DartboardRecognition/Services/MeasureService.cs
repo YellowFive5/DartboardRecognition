@@ -65,7 +65,7 @@ namespace DartboardRecognition.Services
             contourMoments = CvInvoke.Moments(contour);
             contourCenterPoint = new PointF((float) (contourMoments.M10 / contourMoments.M00),
                                             (float) camService.roiPosYSlider + (float) (contourMoments.M01 / contourMoments.M00));
-            drawService.DrawCircle(camService.linedFrame,
+            drawService.DrawCircle(camService.LinedFrame,
                                    contourCenterPoint,
                                    4,
                                    new Bgr(Color.Blue).MCvScalar,
@@ -86,10 +86,10 @@ namespace DartboardRecognition.Services
             contourBoxPoint2 = new PointF(box[1].X, (float) camService.roiPosYSlider + box[1].Y);
             contourBoxPoint3 = new PointF(box[2].X, (float) camService.roiPosYSlider + box[2].Y);
             contourBoxPoint4 = new PointF(box[3].X, (float) camService.roiPosYSlider + box[3].Y);
-            drawService.DrawLine(camService.linedFrame, contourBoxPoint1, contourBoxPoint2, camWindowView.CamContourRectColor, camWindowView.CamContourRectThickness);
-            drawService.DrawLine(camService.linedFrame, contourBoxPoint2, contourBoxPoint3, camWindowView.CamContourRectColor, camWindowView.CamContourRectThickness);
-            drawService.DrawLine(camService.linedFrame, contourBoxPoint3, contourBoxPoint4, camWindowView.CamContourRectColor, camWindowView.CamContourRectThickness);
-            drawService.DrawLine(camService.linedFrame, contourBoxPoint4, contourBoxPoint1, camWindowView.CamContourRectColor, camWindowView.CamContourRectThickness);
+            drawService.DrawLine(camService.LinedFrame, contourBoxPoint1, contourBoxPoint2, camWindowView.CamContourRectColor, camWindowView.CamContourRectThickness);
+            drawService.DrawLine(camService.LinedFrame, contourBoxPoint2, contourBoxPoint3, camWindowView.CamContourRectColor, camWindowView.CamContourRectThickness);
+            drawService.DrawLine(camService.LinedFrame, contourBoxPoint3, contourBoxPoint4, camWindowView.CamContourRectColor, camWindowView.CamContourRectThickness);
+            drawService.DrawLine(camService.LinedFrame, contourBoxPoint4, contourBoxPoint1, camWindowView.CamContourRectColor, camWindowView.CamContourRectThickness);
 
             // Setup vertical contour middlepoints
             var contourWidth = FindDistance(contourBoxPoint1, contourBoxPoint2);
@@ -115,7 +115,7 @@ namespace DartboardRecognition.Services
             var angle = FindAngle(contourBoxMiddlePoint2, contourBoxMiddlePoint1);
             spikeLinePoint1.X = (float) (contourBoxMiddlePoint2.X + Math.Cos(angle) * camService.spikeLineLength);
             spikeLinePoint1.Y = (float) (contourBoxMiddlePoint2.Y + Math.Sin(angle) * camService.spikeLineLength);
-            drawService.DrawLine(camService.linedFrame, spikeLinePoint1, spikeLinePoint2, camWindowView.CamSpikeLineColor, camWindowView.CamSpikeLineThickness);
+            drawService.DrawLine(camService.LinedFrame, spikeLinePoint1, spikeLinePoint2, camWindowView.CamSpikeLineColor, camWindowView.CamSpikeLineThickness);
         }
 
         private void CalculateCamPoi()
@@ -124,14 +124,14 @@ namespace DartboardRecognition.Services
             camPoi = FindLinesIntersection(spikeLinePoint1, spikeLinePoint2, camService.surfacePoint1, camService.surfacePoint2);
             if (camPoi != null)
             {
-                drawService.DrawCircle(camService.linedFrame, camPoi.Value, camWindowView.ProjectionPoiRadius, camWindowView.ProjectionPoiColor, camWindowView.ProjectionPoiThickness);
+                drawService.DrawCircle(camService.LinedFrame, camPoi.Value, camWindowView.ProjectionPoiRadius, camWindowView.ProjectionPoiColor, camWindowView.ProjectionPoiThickness);
             }
         }
 
         private void TranslateCamPoiToProjection()
         {
             // Translate cam surface POI to dartboard projection
-            var frameWidth = camService.originFrame.Cols;
+            var frameWidth = camService.OriginFrame.Cols;
             var frameSemiWidth = frameWidth / 2;
             var camFovAngle = 100;
             var camFovSemiAngle = camFovAngle / 2;
@@ -175,7 +175,7 @@ namespace DartboardRecognition.Services
         public bool FindDartContour()
         {
             var dartContourFound = false;
-            CvInvoke.FindContours(camService.roiTrasholdFrameLastThrow,
+            CvInvoke.FindContours(camService.RoiTrasholdFrameLastThrow,
                                   camService.allContours,
                                   camService.matHierarсhy,
                                   RetrType.External,

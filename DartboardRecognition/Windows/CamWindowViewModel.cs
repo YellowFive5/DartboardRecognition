@@ -103,32 +103,16 @@ namespace DartboardRecognition.Windows
             }
         }
 
-        public void DoCaptures()
-        {
-            camService.DoCaptures();
-            // using (cam.originFrame = cam.videoCapture.QueryFrame().ToImage<Bgr, byte>())
-            // {
-            //     cam.RefreshLines(camWindowView);
-            //     measureman.CalculateSetupLines();
-            //     measureman.CalculateRoiRegion();
-            //     drawman.TresholdRoiRegion(cam);
-            // }
-        }
-
-        public void RefreshImageBoxes()
-        {
-            camService.RefreshImageBoxes();
-        }
-
         public bool DetectThrow()
         {
-            DoCaptures();
+            camService.DoCaptures();
 
             var throwDetected = withDetection && camService.DetectThrow();
 
-            if (runtimeCapturing)
+            if (runtimeCapturing && !throwDetected)
             {
-                RefreshImageBoxes();
+                camService.DoCaptures();
+                camService.RefreshImageBoxes();
             }
 
             return throwDetected;
@@ -140,7 +124,7 @@ namespace DartboardRecognition.Windows
             if (dartContourFound)
             {
                 measureService.ProcessDartContour();
-                RefreshImageBoxes();
+                camService.RefreshImageBoxes();
             }
         }
 

@@ -74,7 +74,7 @@ namespace DartboardRecognition.Windows
                                  var throwDetected = cam.DetectThrow();
                                  if (throwDetected)
                                  {
-                                     RedetectFromAll(cams);
+                                     RedetectAllCams(cams);
                                      break;
                                  }
                              }
@@ -87,12 +87,11 @@ namespace DartboardRecognition.Windows
                      });
         }
 
-        private void RedetectFromAll(IEnumerable<CamWindow> cams)
+        private void RedetectAllCams(IEnumerable<CamWindow> cams)
         {
             foreach (var cam in cams)
             {
-                cam.DoCaptures();
-                cam.RefreshImages();
+                // cam.DetectThrow();
                 // cam.FindDart();
             }
         }

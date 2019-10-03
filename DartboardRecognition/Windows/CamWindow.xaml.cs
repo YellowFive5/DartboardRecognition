@@ -61,15 +61,5 @@ namespace DartboardRecognition.Windows
         {
             viewModel.FindDart();
         }
-
-        public void RefreshImages()
-        {
-            viewModel.RefreshImageBoxes();
-        }
-
-        public void DoCaptures()
-        {
-            viewModel.DoCaptures();
-        }
     }
 }
