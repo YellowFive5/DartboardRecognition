@@ -20,7 +20,7 @@ namespace DartboardRecognition.Services
             appConfig.Load(AppDomain.CurrentDomain.SetupInformation.ConfigurationFile);
         }
 
-        public void Set(string key, object value)
+        public void Write(string key, object value)
         {
             lock (locker)
             {
@@ -46,28 +46,31 @@ namespace DartboardRecognition.Services
             }
         }
 
-        public T Get<T>(string key)
+        public T Read<T>(string key)
         {
-            object value;
+            lock (locker)
+            {
+                object value;
 
-            if (typeof(T) == typeof(double))
-            {
-                value = double.Parse(ConfigurationManager.AppSettings[$"{key}"]);
-            }
-            else if (typeof(T) == typeof(int))
-            {
-                value = int.Parse(ConfigurationManager.AppSettings[$"{key}"]);
-            }
-            else if (typeof(T) == typeof(string))
-            {
-                value = ConfigurationManager.AppSettings[$"{key}"];
-            }
-            else
-            {
-                throw new Exception($"Not supported type for {nameof(Get)} method");
-            }
+                if (typeof(T) == typeof(double))
+                {
+                    value = double.Parse(ConfigurationManager.AppSettings[$"{key}"]);
+                }
+                else if (typeof(T) == typeof(int))
+                {
+                    value = int.Parse(ConfigurationManager.AppSettings[$"{key}"]);
+                }
+                else if (typeof(T) == typeof(string))
+                {
+                    value = ConfigurationManager.AppSettings[$"{key}"];
+                }
+                else
+                {
+                    throw new Exception($"Not supported type for {nameof(Read)} method");
+                }
 
-            return (T) value;
+                return (T) value;
+            }
         }
     }
 }
