@@ -49,12 +49,12 @@ namespace DartboardRecognition.Services
         public readonly double toBullAngle;
         public readonly int camNumber;
         private Rectangle roiRectangle;
+        public Image<Gray, byte> OldRoiFrame { get; private set; }
         public Image<Bgr, byte> OriginFrame { get; private set; }
         public Image<Bgr, byte> LinedFrame { get; private set; }
-        public Image<Bgr, byte> RoiFrame { get; private set; }
-        public Image<Gray, byte> RoiTrasholdFrame { get; private set; }
+        public Image<Gray, byte> RoiFrame { get; private set; }
         public Image<Bgr, byte> RoiContourFrame { get; private set; }
-        public Image<Gray, byte> RoiTrasholdFrameLastThrow { get; private set; }
+        public Image<Gray, byte> RoiLastThrowFrame { get; private set; }
         private int SmoothGauss { get; } = 5;
         private int MovesNoise { get; } = 900;
         private int MovesDart { get; } = 1000;
@@ -98,7 +98,7 @@ namespace DartboardRecognition.Services
             videoCapture = new VideoCapture(GetCamIndex(camNumber));
             videoCapture.SetCaptureProperty(CapProp.FrameWidth, 1920);
             videoCapture.SetCaptureProperty(CapProp.FrameHeight, 1080);
-            GetSetupLines();
+            GetSlidersData();
         }
 
         private int GetCamIndex(int camNumber)
@@ -109,7 +109,7 @@ namespace DartboardRecognition.Services
             return index;
         }
 
-        private void GetSetupLines()
+        private void GetSlidersData()
         {
             camWindow.Dispatcher.Invoke(new Action(() => tresholdMinSlider = camWindow.TresholdMinSlider.Value));
             camWindow.Dispatcher.Invoke(new Action(() => tresholdMaxSlider = camWindow.TresholdMaxSlider.Value));
@@ -182,17 +182,20 @@ namespace DartboardRecognition.Services
 
         public void DoCaptures()
         {
-            GetSetupLines();
+            OldRoiFrame?.Dispose();
+
+            GetSlidersData();
             DrawSetupLines();
 
-            RoiFrame = OriginFrame.Clone();
-            RoiFrame.ROI = roiRectangle;
-
-            RoiTrasholdFrame = RoiFrame.Clone().Convert<Gray, byte>().Not();
-            RoiTrasholdFrame._SmoothGaussian(SmoothGauss);
-            RoiTrasholdFrame._ThresholdBinary(new Gray(tresholdMinSlider),
-                                              new Gray(tresholdMaxSlider));
+            RoiFrame = OriginFrame.Clone().Convert<Gray, byte>().Not();
             OriginFrame.Dispose();
+
+            RoiFrame.ROI = roiRectangle;
+            RoiFrame._SmoothGaussian(SmoothGauss);
+            RoiFrame._ThresholdBinary(new Gray(tresholdMinSlider),
+                                      new Gray(tresholdMaxSlider));
+
+            OldRoiFrame = RoiFrame.Clone();
         }
 
         public void RefreshImageBoxes()
@@ -200,67 +203,77 @@ namespace DartboardRecognition.Services
             camWindow.Dispatcher.Invoke(new Action(() => camWindow.ImageBox.Source = LinedFrame?.Data != null
                                                                                          ? drawService.ToBitmap(LinedFrame)
                                                                                          : new BitmapImage()));
-            camWindow.Dispatcher.Invoke(new Action(() => camWindow.ImageBoxRoi.Source = RoiTrasholdFrame?.Data != null
-                                                                                            ? drawService.ToBitmap(RoiTrasholdFrame)
+            camWindow.Dispatcher.Invoke(new Action(() => camWindow.ImageBoxRoi.Source = RoiFrame?.Data != null
+                                                                                            ? drawService.ToBitmap(RoiFrame)
                                                                                             : new BitmapImage()));
-            camWindow.Dispatcher.Invoke(new Action(() => camWindow.ImageBoxRoiLastThrow.Source = RoiTrasholdFrameLastThrow?.Data != null
-                                                                                                     ? drawService.ToBitmap(RoiTrasholdFrameLastThrow)
+            camWindow.Dispatcher.Invoke(new Action(() => camWindow.ImageBoxRoiLastThrow.Source = RoiLastThrowFrame?.Data != null
+                                                                                                     ? drawService.ToBitmap(RoiLastThrowFrame)
                                                                                                      : new BitmapImage()));
             DisposeAllImages();
         }
 
         public bool DetectThrow()
         {
-            bool dartsExtractProcess;
+            bool extractProcess;
             bool moveDetected;
             var throwDetected = false;
 
-            var zeroImage = RoiTrasholdFrame.Clone();
-            var firstImage = videoCapture.QueryFrame().ToImage<Gray, byte>().Not();
-
-            var diffImage = DiffImage(firstImage, zeroImage);
+            var zeroImage = RoiFrame;
+            var diffImage = CaptureAndDiff(zeroImage);
             var moves = diffImage.CountNonzero()[0];
+            diffImage.Dispose();
+
             moveDetected = moves > MovesNoise;
 
             if (moveDetected)
             {
-                // Thread.Sleep(1500);
-                var secondImage = videoCapture.QueryFrame().ToImage<Gray, byte>().Not();
-                diffImage = DiffImage(secondImage, zeroImage);
+                Thread.Sleep(TimeSpan.FromSeconds(0.8));
+
+                diffImage = CaptureAndDiff(zeroImage);
+                zeroImage.Dispose();
                 moves = diffImage.CountNonzero()[0];
 
-                dartsExtractProcess = moves > MovesExtraction;
-                throwDetected = !dartsExtractProcess && moves > MovesDart;
+                extractProcess = moves > MovesExtraction;
+                throwDetected = !extractProcess && moves > MovesDart;
 
-                if (dartsExtractProcess)
+                if (extractProcess)
                 {
                     Thread.Sleep(4000);
                 }
                 else if (throwDetected)
                 {
-                    RoiTrasholdFrameLastThrow = diffImage.Clone();
-
-                    DoCaptures();
-                    RefreshImageBoxes();
+                    RoiLastThrowFrame = diffImage.Clone();
+                    diffImage.Dispose();
                 }
 
-                secondImage.Dispose();
+                DoCaptures();
+                RefreshImageBoxes();
             }
-
-            zeroImage.Dispose();
-            firstImage.Dispose();
-            diffImage.Dispose();
 
             return throwDetected;
         }
 
-        private Image<Gray, byte> DiffImage(Image<Gray, byte> image, Image<Gray, byte> originImage)
+        public void FindThrow()
         {
-            image.ROI = roiRectangle;
-            image._SmoothGaussian(3);
-            image._ThresholdBinary(new Gray(tresholdMinSlider),
-                                   new Gray(tresholdMaxSlider));
-            var diffImage = image.AbsDiff(originImage);
+            var zeroImage = OldRoiFrame;
+            var diffImage = CaptureAndDiff(zeroImage);
+            RoiLastThrowFrame = diffImage.Clone();
+            diffImage.Dispose();
+            DoCaptures();
+            RefreshImageBoxes();
+        }
+
+        private Image<Gray, byte> CaptureAndDiff(Image<Gray, byte> oldImage)
+        {
+            var newImage = videoCapture.QueryFrame().ToImage<Gray, byte>().Not();
+            newImage.ROI = roiRectangle;
+            newImage._SmoothGaussian(SmoothGauss);
+            newImage._ThresholdBinary(new Gray(tresholdMinSlider),
+                                      new Gray(tresholdMaxSlider));
+
+            var diffImage = oldImage.AbsDiff(newImage);
+            newImage.Dispose();
+
             return diffImage;
         }
 
@@ -269,9 +282,8 @@ namespace DartboardRecognition.Services
             OriginFrame?.Dispose();
             LinedFrame?.Dispose();
             RoiFrame?.Dispose();
-            RoiTrasholdFrame?.Dispose();
             RoiContourFrame?.Dispose();
-            RoiTrasholdFrameLastThrow?.Dispose();
+            RoiLastThrowFrame?.Dispose();
         }
     }
 }

@@ -56,7 +56,12 @@ namespace DartboardRecognition.Windows
 
         public void FindDart()
         {
-            viewModel.FindDart();
+            // viewModel.FindDart();
+        }
+
+        public void FindThrow()
+        {
+            viewModel.FindThrow();
         }
     }
 }

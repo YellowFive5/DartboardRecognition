@@ -15,6 +15,7 @@ namespace DartboardRecognition.Windows
         private readonly MainWindow mainWindowView;
         private CancellationToken cancelToken;
         private CancellationTokenSource cts;
+        private List<CamWindow> cams;
 
         public MainWindowViewModel()
         {
@@ -53,17 +54,16 @@ namespace DartboardRecognition.Windows
 
         private void StartRecognition()
         {
-            var settingsLock = new object();
             var runtimeCapturing = mainWindowView.RuntimeCapturingCheckBox.IsChecked.Value;
             var withDetection = mainWindowView.WithDetectionCapturingCheckBox.IsChecked.Value;
 
-            var cams = new List<CamWindow>
-                       {
-                           new CamWindow(1, runtimeCapturing, false),
-                           new CamWindow(2, runtimeCapturing, withDetection),
-                           new CamWindow(3, runtimeCapturing, withDetection),
-                           new CamWindow(4, runtimeCapturing, withDetection)
-                       };
+            cams = new List<CamWindow>
+                   {
+                       new CamWindow(1, runtimeCapturing, false),
+                       new CamWindow(2, runtimeCapturing, withDetection),
+                       new CamWindow(3, runtimeCapturing, withDetection),
+                       new CamWindow(4, runtimeCapturing, withDetection)
+                   };
 
             Task.Run(() =>
                      {
@@ -76,7 +76,7 @@ namespace DartboardRecognition.Windows
                                  var throwDetected = cam.DetectThrow();
                                  if (throwDetected)
                                  {
-                                     RedetectAllCams(cams);
+                                     FindThrowFromRemainingCams(cam);
                                      break;
                                  }
                              }
@@ -89,10 +89,16 @@ namespace DartboardRecognition.Windows
                      });
         }
 
-        private void RedetectAllCams(IEnumerable<CamWindow> cams)
+        private void FindThrowFromRemainingCams(CamWindow succeededCam)
         {
             foreach (var cam in cams)
             {
+                if (cam == succeededCam)
+                {
+                    continue;
+                }
+
+                cam.FindThrow();
                 // cam.DetectThrow();
                 // cam.FindDart();
             }

@@ -173,7 +173,7 @@ namespace DartboardRecognition.Services
         public bool FindDartContour()
         {
             var dartContourFound = false;
-            CvInvoke.FindContours(camService.RoiTrasholdFrameLastThrow,
+            CvInvoke.FindContours(camService.RoiLastThrowFrame,
                                   camService.allContours,
                                   camService.matHierarсhy,
                                   RetrType.External,

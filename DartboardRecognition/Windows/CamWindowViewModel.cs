@@ -92,5 +92,10 @@ namespace DartboardRecognition.Windows
         {
             camService.videoCapture.Dispose();
         }
+
+        public void FindThrow()
+        {
+            camService.FindThrow();
+        }
     }
 }
