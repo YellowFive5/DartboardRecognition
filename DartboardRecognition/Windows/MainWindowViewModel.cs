@@ -13,9 +13,6 @@ namespace DartboardRecognition.Windows
     public class MainWindowViewModel
     {
         private readonly MainWindow mainWindowView;
-        private DrawService drawService;
-        private ThrowService throwService;
-        private ConfigService configService;
         private CancellationToken cancelToken;
         private CancellationTokenSource cts;
 
@@ -26,17 +23,18 @@ namespace DartboardRecognition.Windows
         public MainWindowViewModel(MainWindow mainWindowView)
         {
             this.mainWindowView = mainWindowView;
-            drawService = new DrawService();
-            throwService = new ThrowService(mainWindowView, drawService);
-            configService = new ConfigService();
-            cts = new CancellationTokenSource();
+
+            ServiceBag.Initialize(mainWindowView);
         }
 
         private void StartCapturing()
         {
+            cts = new CancellationTokenSource();
             cancelToken = cts.Token;
-            mainWindowView.DartboardProjectionImageBox.Source = throwService.PrepareDartboardProjectionImage();
 
+            mainWindowView.DartboardProjectionImageBox.Source = ServiceBag.All()
+                                                                          .ThrowService
+                                                                          .PrepareDartboardProjectionImage();
             StartThrowService();
 
             StartRecognition();
@@ -47,7 +45,9 @@ namespace DartboardRecognition.Windows
             Task.Run(() =>
                      {
                          Thread.CurrentThread.Name = $"ThrowService_workerThread";
-                         throwService.AwaitForThrow(cancelToken);
+                         ServiceBag.All()
+                                   .ThrowService
+                                   .AwaitForThrow(cancelToken);
                      });
         }
 
@@ -59,10 +59,10 @@ namespace DartboardRecognition.Windows
 
             var cams = new List<CamWindow>
                        {
-                           new CamWindow(1, drawService, throwService, configService, runtimeCapturing, false),
-                           new CamWindow(2, drawService, throwService, configService, runtimeCapturing, withDetection),
-                           new CamWindow(3, drawService, throwService, configService, runtimeCapturing, withDetection),
-                           new CamWindow(4, drawService, throwService, configService, runtimeCapturing, withDetection)
+                           new CamWindow(1, runtimeCapturing, false),
+                           new CamWindow(2, runtimeCapturing, withDetection),
+                           new CamWindow(3, runtimeCapturing, withDetection),
+                           new CamWindow(4, runtimeCapturing, withDetection)
                        };
 
             Task.Run(() =>

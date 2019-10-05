@@ -78,6 +78,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Services\ConfigService.cs" />
+    <Compile Include="Services\ServiceBag.cs" />
     <Compile Include="Windows\CamWindow.xaml.cs">
       <DependentUpon>CamWindow.xaml</DependentUpon>
     </Compile>

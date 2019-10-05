@@ -2,7 +2,6 @@
 
 using System.ComponentModel;
 using System.Drawing;
-using DartboardRecognition.Services;
 using Emgu.CV.Structure;
 
 #endregion
@@ -28,15 +27,12 @@ namespace DartboardRecognition.Windows
         public int ProjectionPoiThickness { get; } = 6;
 
         public CamWindow(int camNumber,
-                         DrawService drawService,
-                         ThrowService throwService,
-                         ConfigService configService,
                          bool runtimeCapturing,
                          bool withDetection)
         {
             InitializeComponent();
             this.camNumber = camNumber;
-            viewModel = new CamWindowViewModel(this, drawService, throwService, configService, runtimeCapturing, withDetection);
+            viewModel = new CamWindowViewModel(this, runtimeCapturing, withDetection);
             DataContext = viewModel;
 
             Show();

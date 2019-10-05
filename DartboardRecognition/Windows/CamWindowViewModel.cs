@@ -10,8 +10,6 @@ namespace DartboardRecognition.Windows
     {
         private readonly CamWindow camWindowView;
         private readonly MeasureService measureService;
-        private readonly DrawService drawService;
-        private readonly ThrowService throwService;
         private readonly ConfigService configService;
         private readonly CamService camService;
         private readonly bool runtimeCapturing;
@@ -22,20 +20,15 @@ namespace DartboardRecognition.Windows
         }
 
         public CamWindowViewModel(CamWindow camWindowView,
-                                  DrawService drawService,
-                                  ThrowService throwService,
-                                  ConfigService configService,
                                   bool runtimeCapturing,
                                   bool withDetection)
         {
             this.camWindowView = camWindowView;
-            this.drawService = drawService;
-            this.throwService = throwService;
-            this.configService = configService;
+            configService = ServiceBag.All().ConfigService;
             this.runtimeCapturing = runtimeCapturing;
             this.withDetection = withDetection;
-            camService = new CamService(camWindowView, drawService);
-            measureService = new MeasureService(camWindowView, camService, drawService, throwService);
+            camService = new CamService(camWindowView);
+            measureService = new MeasureService(camWindowView, camService);
         }
 
         public void SetWindowTitle()

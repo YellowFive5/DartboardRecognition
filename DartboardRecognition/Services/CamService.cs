@@ -60,10 +60,10 @@ namespace DartboardRecognition.Services
         private int MovesDart { get; } = 1000;
         private int MovesExtraction { get; } = 7000;
 
-        public CamService(CamWindow camWindow, DrawService drawService)
+        public CamService(CamWindow camWindow)
         {
             this.camWindow = camWindow;
-            this.drawService = drawService;
+            drawService = ServiceBag.All().DrawService;
             surfacePoint1 = new PointF();
             surfacePoint2 = new PointF();
             allContours = new VectorOfVectorOfPoint();

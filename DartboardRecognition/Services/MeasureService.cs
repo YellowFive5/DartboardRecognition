@@ -33,14 +33,12 @@ namespace DartboardRecognition.Services
         private PointF rayPoint;
 
         public MeasureService(CamWindow camWindowView,
-                              CamService camService,
-                              DrawService drawService,
-                              ThrowService throwService)
+                              CamService camService)
         {
             this.camWindowView = camWindowView;
             this.camService = camService;
-            this.drawService = drawService;
-            this.throwService = throwService;
+            drawService = ServiceBag.All().DrawService;
+            throwService = ServiceBag.All().ThrowService;
         }
 
         public void ProcessDartContour()
