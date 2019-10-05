@@ -2,6 +2,7 @@
 
 using System.ComponentModel;
 using System.Drawing;
+using DartboardRecognition.Services;
 using Emgu.CV.Structure;
 
 #endregion
@@ -49,9 +50,9 @@ namespace DartboardRecognition.Windows
             viewModel.SaveSettings();
         }
 
-        public bool DetectThrow()
+        public ResponseType Detect()
         {
-            return viewModel.DetectThrow();
+            return viewModel.Detect();
         }
 
         public void FindDart()

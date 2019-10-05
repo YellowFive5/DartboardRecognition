@@ -212,18 +212,14 @@ namespace DartboardRecognition.Services
             DisposeAllImages();
         }
 
-        public bool DetectThrow()
+        public ResponseType Detect()
         {
-            bool extractProcess;
-            bool moveDetected;
-            var throwDetected = false;
-
             var zeroImage = RoiFrame;
             var diffImage = CaptureAndDiff(zeroImage);
             var moves = diffImage.CountNonzero()[0];
             diffImage.Dispose();
 
-            moveDetected = moves > MovesNoise;
+            var moveDetected = moves > MovesNoise;
 
             if (moveDetected)
             {
@@ -233,24 +229,27 @@ namespace DartboardRecognition.Services
                 zeroImage.Dispose();
                 moves = diffImage.CountNonzero()[0];
 
-                extractProcess = moves > MovesExtraction;
-                throwDetected = !extractProcess && moves > MovesDart;
+                var extractProcess = moves > MovesExtraction;
+                var throwDetected = !extractProcess && moves > MovesDart;
 
                 if (extractProcess)
                 {
-                    Thread.Sleep(4000);
+                    return ResponseType.Extraction;
                 }
-                else if (throwDetected)
+
+                if (throwDetected)
                 {
                     RoiLastThrowFrame = diffImage.Clone();
                     diffImage.Dispose();
-                }
 
-                DoCaptures();
-                RefreshImageBoxes();
+                    DoCaptures();
+                    RefreshImageBoxes();
+
+                    return ResponseType.Trow;
+                }
             }
 
-            return throwDetected;
+            return ResponseType.Nothing;
         }
 
         public void FindThrow()
@@ -283,7 +282,6 @@ namespace DartboardRecognition.Services
             LinedFrame?.Dispose();
             RoiFrame?.Dispose();
             RoiContourFrame?.Dispose();
-            RoiLastThrowFrame?.Dispose();
         }
     }
 }

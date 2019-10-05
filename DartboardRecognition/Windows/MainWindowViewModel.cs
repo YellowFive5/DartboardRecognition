@@ -1,6 +1,8 @@
 ﻿#region Usings
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
@@ -73,10 +75,17 @@ namespace DartboardRecognition.Windows
                          {
                              foreach (var cam in cams)
                              {
-                                 var throwDetected = cam.DetectThrow();
-                                 if (throwDetected)
+                                 var response = cam.Detect();
+
+                                 if (response == ResponseType.Trow)
                                  {
                                      FindThrowFromRemainingCams(cam);
+                                     break;
+                                 }
+
+                                 if (response == ResponseType.Extraction)
+                                 {
+                                     Thread.Sleep(TimeSpan.FromSeconds(5));
                                      break;
                                  }
                              }
@@ -91,16 +100,9 @@ namespace DartboardRecognition.Windows
 
         private void FindThrowFromRemainingCams(CamWindow succeededCam)
         {
-            foreach (var cam in cams)
+            foreach (var cam in cams.Where(cam => cam != succeededCam))
             {
-                if (cam == succeededCam)
-                {
-                    continue;
-                }
-
                 cam.FindThrow();
-                // cam.DetectThrow();
-                // cam.FindDart();
             }
         }
 

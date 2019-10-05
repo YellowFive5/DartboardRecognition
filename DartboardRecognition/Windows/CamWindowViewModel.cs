@@ -63,19 +63,20 @@ namespace DartboardRecognition.Windows
             configService.Write($"Cam{camNumberStr}SurfaceRightSlider", camWindowView.SurfaceRightSlider.Value);
         }
 
-        public bool DetectThrow()
+        public ResponseType Detect()
         {
             camService.DoCaptures();
 
-            var throwDetected = withDetection && camService.DetectThrow();
+            var response = withDetection
+                               ? camService.Detect()
+                               : ResponseType.Nothing;
 
-            if (runtimeCapturing && !throwDetected)
+            if (runtimeCapturing)
             {
-                camService.DoCaptures();
                 camService.RefreshImageBoxes();
             }
 
-            return throwDetected;
+            return response;
         }
 
         public void FindDart()
