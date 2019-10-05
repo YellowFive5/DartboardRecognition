@@ -31,13 +31,16 @@ namespace DartboardRecognition.Windows
                          bool withDetection)
         {
             InitializeComponent();
+
             this.camNumber = camNumber;
+            Title = $"Cam {camNumber.ToString()}";
+
             viewModel = new CamWindowViewModel(this, runtimeCapturing, withDetection);
             DataContext = viewModel;
 
-            Show();
-            viewModel.SetWindowTitle();
             viewModel.LoadSettings();
+
+            Show();
         }
 
         private void OnClosing(object sender, CancelEventArgs e)

@@ -31,11 +31,6 @@ namespace DartboardRecognition.Windows
             measureService = new MeasureService(camWindowView, camService);
         }
 
-        public void SetWindowTitle()
-        {
-            camWindowView.Title = $"Cam {camWindowView.camNumber.ToString()}";
-        }
-
         public void LoadSettings()
         {
             var camNumberStr = camWindowView.camNumber.ToString();
