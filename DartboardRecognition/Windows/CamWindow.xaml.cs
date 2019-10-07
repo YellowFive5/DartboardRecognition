@@ -1,9 +1,7 @@
 ﻿#region Usings
 
 using System.ComponentModel;
-using System.Drawing;
 using DartboardRecognition.Services;
-using Emgu.CV.Structure;
 
 #endregion
 
@@ -13,18 +11,6 @@ namespace DartboardRecognition.Windows
     {
         public readonly int camNumber;
         private readonly CamWindowViewModel viewModel;
-
-        public Bgr CamRoiRectColor { get; } = new Bgr(Color.LawnGreen);
-        public int CamRoiRectThickness { get; } = 5;
-        public Bgr CamSurfaceLineColor { get; } = new Bgr(Color.Red);
-        public int CamSurfaceLineThickness { get; } = 5;
-        public MCvScalar CamContourRectColor { get; } = new Bgr(Color.Blue).MCvScalar;
-        public int CamContourRectThickness { get; } = 5;
-        public MCvScalar CamSpikeLineColor { get; } = new Bgr(Color.White).MCvScalar;
-        public int CamSpikeLineThickness { get; } = 4;
-        public MCvScalar ProjectionPoiColor { get; } = new Bgr(Color.Yellow).MCvScalar;
-        public int ProjectionPoiRadius { get; } = 6;
-        public int ProjectionPoiThickness { get; } = 6;
         public int MinContourArcLength { get; } = 190;
 
         public CamWindow(int camNumber,

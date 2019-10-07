@@ -127,8 +127,8 @@ namespace DartboardRecognition.Services
 
             drawService.DrawRectangle(LinedFrame,
                                       roiRectangle,
-                                      camWindow.CamRoiRectColor.MCvScalar,
-                                      camWindow.CamRoiRectThickness);
+                                      drawService.CamRoiRectColor.MCvScalar,
+                                      drawService.CamRoiRectThickness);
 
             surfacePoint1 = new PointF(0, (float) surfaceSlider);
             surfacePoint2 = new PointF(OriginFrame.Cols,
@@ -136,8 +136,8 @@ namespace DartboardRecognition.Services
             drawService.DrawLine(LinedFrame,
                                  surfacePoint1,
                                  surfacePoint2,
-                                 camWindow.CamSurfaceLineColor.MCvScalar,
-                                 camWindow.CamSurfaceLineThickness);
+                                 drawService.CamSurfaceLineColor.MCvScalar,
+                                 drawService.CamSurfaceLineThickness);
 
             surfaceCenterPoint1 = new PointF((float) surfaceCenterSlider,
                                              (float) surfaceSlider);
@@ -147,8 +147,8 @@ namespace DartboardRecognition.Services
             drawService.DrawLine(LinedFrame,
                                  surfaceCenterPoint1,
                                  surfaceCenterPoint2,
-                                 camWindow.CamSurfaceLineColor.MCvScalar,
-                                 camWindow.CamSurfaceLineThickness);
+                                 drawService.CamSurfaceLineColor.MCvScalar,
+                                 drawService.CamSurfaceLineThickness);
 
             surfaceLeftPoint1 = new PointF((float) surfaceLeftSlider,
                                            (float) surfaceSlider);
@@ -157,8 +157,8 @@ namespace DartboardRecognition.Services
             drawService.DrawLine(LinedFrame,
                                  surfaceLeftPoint1,
                                  surfaceLeftPoint2,
-                                 camWindow.CamSurfaceLineColor.MCvScalar,
-                                 camWindow.CamSurfaceLineThickness);
+                                 drawService.CamSurfaceLineColor.MCvScalar,
+                                 drawService.CamSurfaceLineThickness);
 
             surfaceRightPoint1 = new PointF((float) surfaceRightSlider,
                                             (float) surfaceSlider);
@@ -167,8 +167,8 @@ namespace DartboardRecognition.Services
             drawService.DrawLine(LinedFrame,
                                  surfaceRightPoint1,
                                  surfaceRightPoint2,
-                                 camWindow.CamSurfaceLineColor.MCvScalar,
-                                 camWindow.CamSurfaceLineThickness);
+                                 drawService.CamSurfaceLineColor.MCvScalar,
+                                 drawService.CamSurfaceLineThickness);
         }
 
         public void DoCaptures()

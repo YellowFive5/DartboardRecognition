@@ -15,6 +15,34 @@ namespace DartboardRecognition.Services
 {
     public class DrawService
     {
+        public Bgr CamRoiRectColor { get; } = new Bgr(Color.LawnGreen);
+        public int CamRoiRectThickness { get; } = 5;
+        public Bgr CamSurfaceLineColor { get; } = new Bgr(Color.Red);
+        public int CamSurfaceLineThickness { get; } = 5;
+        public MCvScalar CamContourRectColor { get; } = new Bgr(Color.Blue).MCvScalar;
+        public int CamContourRectThickness { get; } = 5;
+        public MCvScalar CamSpikeLineColor { get; } = new Bgr(Color.White).MCvScalar;
+        public int CamSpikeLineThickness { get; } = 4;
+        public MCvScalar ProjectionPoiColor { get; } = new Bgr(Color.Yellow).MCvScalar;
+        public int ProjectionPoiRadius { get; } = 6;
+        public int ProjectionPoiThickness { get; } = 6;
+        public MCvScalar CamContourColor { get; } = new Bgr(Color.Violet).MCvScalar;
+        public int CamContourThickness { get; } = 2;
+        public MCvScalar ProjectionGridColor { get; } = new Bgr(Color.DarkGray).MCvScalar;
+        public MCvScalar ProjectionSurfaceLineColor { get; } = new Bgr(Color.Red).MCvScalar;
+        public int ProjectionSurfaceLineThickness { get; } = 2;
+        public MCvScalar ProjectionRayColor { get; } = new Bgr(Color.White).MCvScalar;
+        public int ProjectionRayThickness { get; } = 2;
+        public MCvScalar PoiColor { get; } = new Bgr(Color.Magenta).MCvScalar;
+        public int PoiRadius { get; } = 6;
+        public int PoiThickness { get; } = 6;
+        public int ProjectionGridThickness { get; } = 2;
+
+        public Bgr ProjectionDigitsColor { get; } = new Bgr(Color.White);
+        public double ProjectionDigitsScale { get; } = 2;
+        public int ProjectionDigitsThickness { get; } = 2;
+
+
         public void DrawLine(Image<Bgr, byte> image,
                              PointF point1,
                              PointF point2,
