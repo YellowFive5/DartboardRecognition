@@ -77,6 +77,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Services\Ray.cs" />
     <Compile Include="Services\ResponseType.cs" />
     <Compile Include="Services\ConfigService.cs" />
     <Compile Include="Services\ServiceBag.cs" />
@@ -85,10 +86,14 @@
     <Compile Include="Windows\CamWindow.xaml.cs">
       <DependentUpon>CamWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\CamWindowViewModel.cs" />
-    <Compile Include="Windows\MainWindowViewModel.cs" />
+    <Compile Include="Windows\CamWindowViewModel.cs">
+      <DependentUpon>CamWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Services\MeasureService.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Windows\MainWindowViewModel.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
     <Page Include="Windows\CamWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

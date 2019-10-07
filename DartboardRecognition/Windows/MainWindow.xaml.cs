@@ -15,10 +15,6 @@ namespace DartboardRecognition.Windows
         public MCvScalar CamContourColor { get; } = new Bgr(Color.Violet).MCvScalar;
         public int CamContourThickness { get; } = 2;
         public MCvScalar ProjectionGridColor { get; } = new Bgr(Color.DarkGray).MCvScalar;
-        public int ProjectionFrameHeight { get; } = 1200;
-        public int ProjectionFrameWidth { get; } = 1200;
-        public PointF Cam1SetupPoint { get; } = new PointF(13, 4);
-        public PointF Cam2SetupPoint { get; } = new PointF(1200 - 13, 4);
         public int ProjectionCoefficent { get; } = 3;
         public int ProjectionGridThickness { get; } = 2;
         public MCvScalar ProjectionSurfaceLineColor { get; } = new Bgr(Color.Red).MCvScalar;
@@ -33,6 +29,8 @@ namespace DartboardRecognition.Windows
         public int ProjectionDigitsThickness { get; } = 2;
         public int ProjectionLineCam1Bias { get; } = 0;
         public int ProjectionLineCam2Bias { get; } = 0;
+        public int ProjectionFrameHeight { get; } = 1200;
+        public int ProjectionFrameWidth { get; } = 1200;
 
         public MainWindow()
         {

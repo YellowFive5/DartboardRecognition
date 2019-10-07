@@ -79,13 +79,12 @@ namespace DartboardRecognition.Windows
             return response;
         }
 
-        public void FindDart()
+        public void ProcessContour()
         {
-            var dartContourFound = measureService.FindDartContour();
-            if (dartContourFound)
+            var found = measureService.FindDartContour();
+            if (found)
             {
                 measureService.ProcessDartContour();
-                camService.RefreshImageBoxes();
             }
         }
 

@@ -22,10 +22,10 @@ namespace DartboardRecognition.Windows
         public int CamContourRectThickness { get; } = 5;
         public MCvScalar CamSpikeLineColor { get; } = new Bgr(Color.White).MCvScalar;
         public int CamSpikeLineThickness { get; } = 4;
-        public int MinContourArcLength { get; } = 190;
-        public int ProjectionPoiRadius { get; } = 6;
         public MCvScalar ProjectionPoiColor { get; } = new Bgr(Color.Yellow).MCvScalar;
+        public int ProjectionPoiRadius { get; } = 6;
         public int ProjectionPoiThickness { get; } = 6;
+        public int MinContourArcLength { get; } = 190;
 
         public CamWindow(int camNumber,
                          bool runtimeCapturing,
@@ -55,9 +55,9 @@ namespace DartboardRecognition.Windows
             return viewModel.Detect();
         }
 
-        public void FindDart()
+        public void ProcessContour()
         {
-            // viewModel.FindDart();
+            viewModel.ProcessContour();
         }
 
         public void FindThrow()

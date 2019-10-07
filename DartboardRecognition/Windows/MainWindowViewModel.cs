@@ -38,23 +38,10 @@ namespace DartboardRecognition.Windows
             mainWindowView.DartboardProjectionImageBox.Source = ServiceBag.All()
                                                                           .ThrowService
                                                                           .PrepareDartboardProjectionImage();
-            StartThrowService();
-
-            StartRecognition();
+            StartDetection();
         }
 
-        private void StartThrowService()
-        {
-            Task.Run(() =>
-                     {
-                         Thread.CurrentThread.Name = $"ThrowService_workerThread";
-                         ServiceBag.All()
-                                   .ThrowService
-                                   .AwaitForThrow(cancelToken);
-                     });
-        }
-
-        private void StartRecognition()
+        private void StartDetection()
         {
             var runtimeCapturing = mainWindowView.RuntimeCapturingCheckBox.IsChecked.Value;
             var withDetection = mainWindowView.WithDetectionCapturingCheckBox.IsChecked.Value;
@@ -79,6 +66,7 @@ namespace DartboardRecognition.Windows
 
                                  if (response == ResponseType.Trow)
                                  {
+                                     cam.ProcessContour();
                                      FindThrowFromRemainingCams(cam);
                                      break;
                                  }
@@ -103,7 +91,10 @@ namespace DartboardRecognition.Windows
             foreach (var cam in cams.Where(cam => cam != succeededCam))
             {
                 cam.FindThrow();
+                cam.ProcessContour();
             }
+
+            ServiceBag.All().ThrowService.CalculateAndSaveThrow();
         }
 
         private void StopCapturing()

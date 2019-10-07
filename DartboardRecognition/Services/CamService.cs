@@ -1,7 +1,6 @@
 ﻿#region Usings
 
 using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Drawing;
 using System.Linq;
@@ -12,7 +11,6 @@ using DirectShowLib;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
-using Emgu.CV.Util;
 
 #endregion
 
@@ -31,10 +29,6 @@ namespace DartboardRecognition.Services
         public PointF surfaceLeftPoint2;
         public PointF surfaceRightPoint1;
         public PointF surfaceRightPoint2;
-        public float spikeLineLength;
-        public readonly Stack<VectorOfPoint> dartContours;
-        public readonly VectorOfVectorOfPoint allContours;
-        public readonly Mat matHierarсhy;
         public double tresholdMinSlider;
         public double tresholdMaxSlider;
         public double roiPosXSlider;
@@ -66,9 +60,6 @@ namespace DartboardRecognition.Services
             drawService = ServiceBag.All().DrawService;
             surfacePoint1 = new PointF();
             surfacePoint2 = new PointF();
-            allContours = new VectorOfVectorOfPoint();
-            dartContours = new Stack<VectorOfPoint>();
-            matHierarсhy = new Mat();
             switch (camWindow.camNumber)
             {
                 case 1:

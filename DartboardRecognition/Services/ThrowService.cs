@@ -3,9 +3,8 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Threading;
+using System.Linq;
 using System.Windows.Media.Imaging;
-using System.Windows.Threading;
 using DartboardRecognition.Windows;
 using Emgu.CV;
 using Emgu.CV.Structure;
@@ -19,13 +18,12 @@ namespace DartboardRecognition.Services
         private readonly MainWindow mainWindow;
         private readonly DrawService drawService;
         private PointF projectionCenterPoint;
-        private readonly Stack<PointF> cam1RayPoint;
-        private readonly Stack<PointF> cam2RayPoint;
-        private readonly Queue<Throw> throwsCollection;
+        private readonly List<Ray> rays;
         private PointF projectionLineCam1Point1;
         private PointF projectionLineCam1Point2;
         private PointF projectionLineCam2Point1;
         private PointF projectionLineCam2Point2;
+        private readonly Queue<Throw> throwsCollection;
         private Image<Bgr, byte> DartboardProjectionFrameBackground { get; }
         private Image<Bgr, byte> DartboardProjectionWorkingFrame { get; set; }
 
@@ -38,51 +36,33 @@ namespace DartboardRecognition.Services
             DartboardProjectionWorkingFrame = DartboardProjectionFrameBackground.Clone();
             projectionCenterPoint = new PointF((float) DartboardProjectionFrameBackground.Width / 2,
                                                (float) DartboardProjectionFrameBackground.Height / 2);
-            cam1RayPoint = new Stack<PointF>();
-            cam2RayPoint = new Stack<PointF>();
+            rays = new List<Ray>();
             throwsCollection = new Queue<Throw>();
         }
 
-        public void AwaitForThrow(CancellationToken cancelToken)
-        {
-            while (!cancelToken.IsCancellationRequested)
-            {
-                var throwFromAnyCamDetected = cam1RayPoint.Count + cam2RayPoint.Count > 0;
-                if (throwFromAnyCamDetected)
-                {
-                    Thread.Sleep(2000);
-                    var anotherThrowDetectedCorrectly = cam1RayPoint.Count == 1 && cam2RayPoint.Count == 1;
-                    if (anotherThrowDetectedCorrectly)
-                    {
-                        CalculateAndSaveThrow();
-                    }
-                    else
-                    {
-                        cam1RayPoint.Clear();
-                        cam2RayPoint.Clear();
-                    }
-                }
-            }
-
-            Dispatcher.CurrentDispatcher.Thread.Abort();
-        }
-
-        private void CalculateAndSaveThrow()
+        public void CalculateAndSaveThrow()
         {
             DartboardProjectionWorkingFrame = DartboardProjectionFrameBackground.Clone();
-            var poi = MeasureService.FindLinesIntersection(mainWindow.Cam1SetupPoint,
-                                                           cam1RayPoint.Pop(),
-                                                           mainWindow.Cam2SetupPoint,
-                                                           cam2RayPoint.Pop());
+
+            var firstBestRay = rays.OrderByDescending(i => i.ContourWidth).First();
+            rays.Remove(firstBestRay);
+            var secondBestRay = rays.OrderByDescending(i => i.ContourWidth).First();
+            rays.Clear();
+
+            var poi = MeasureService.FindLinesIntersection(firstBestRay.CamPoint,
+                                                           firstBestRay.RayPoint,
+                                                           secondBestRay.CamPoint,
+                                                           secondBestRay.RayPoint);
             var anotherThrow = PrepareThrowData(poi);
             throwsCollection.Enqueue(anotherThrow);
 
             drawService.DrawCircle(DartboardProjectionWorkingFrame, poi, mainWindow.PoiRadius, mainWindow.PoiColor, mainWindow.PoiThickness);
 
             mainWindow.Dispatcher.Invoke(new Action(() => mainWindow.DartboardProjectionImageBox.Source = drawService.ToBitmap(DartboardProjectionWorkingFrame)));
-            mainWindow.Dispatcher.Invoke(new Action(() => mainWindow.PointsBox.Text = ""));
-            mainWindow.Dispatcher.Invoke(new Action(() => mainWindow.PointsBox.Text += $"{anotherThrow.Sector} x {anotherThrow.Multiplier} = {anotherThrow.TotalPoints}\n"));
+            // mainWindow.Dispatcher.Invoke(new Action(() => mainWindow.PointsBox.Text = ""));
+            // mainWindow.Dispatcher.Invoke(new Action(() => mainWindow.PointsBox.Text += $"{anotherThrow.Sector} x {anotherThrow.Multiplier} = {anotherThrow.TotalPoints}\n"));
         }
+
 
         private Throw PrepareThrowData(PointF poi)
         {
@@ -207,25 +187,9 @@ namespace DartboardRecognition.Services
             return new Throw(poi, sector, multiplier, DartboardProjectionFrameBackground);
         }
 
-        public void SaveRay(PointF rayPoint, CamService cam)
+        public void SaveRay(Ray ray)
         {
-            switch (cam.camNumber)
-            {
-                case 1:
-                    cam1RayPoint.Push(rayPoint);
-                    break;
-                case 2:
-                    cam2RayPoint.Push(rayPoint);
-                    break;
-                case 3:
-                    //todo cam3RayPoint.Push(rayPoint);
-                    break;
-                case 4:
-                    //todo cam4RayPoint.Push(rayPoint);
-                    break;
-                default:
-                    throw new Exception("Out of cameras range");
-            }
+            rays.Add(ray);
         }
 
         public BitmapImage PrepareDartboardProjectionImage()
