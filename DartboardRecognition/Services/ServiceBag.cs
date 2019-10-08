@@ -12,14 +12,16 @@ namespace DartboardRecognition.Services
         public ConfigService ConfigService { get; }
         public DrawService DrawService { get; }
         public ThrowService ThrowService { get; }
+        public MainWindow MainWindow { get; }
 
         private static ServiceBag services;
 
         private ServiceBag(MainWindow mainWindow)
         {
+            MainWindow = mainWindow;
             ConfigService = new ConfigService();
             DrawService = new DrawService();
-            ThrowService = new ThrowService(mainWindow, DrawService);
+            ThrowService = new ThrowService();
         }
 
         public static void Initialize(MainWindow mainWindow)

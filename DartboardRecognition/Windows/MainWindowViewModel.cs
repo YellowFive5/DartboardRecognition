@@ -35,9 +35,10 @@ namespace DartboardRecognition.Windows
             cts = new CancellationTokenSource();
             cancelToken = cts.Token;
 
-            mainWindowView.DartboardProjectionImageBox.Source = ServiceBag.All()
-                                                                          .ThrowService
-                                                                          .PrepareDartboardProjectionImage();
+            ServiceBag.All()
+                      .DrawService
+                      .DrawProjectionImage();
+
             StartDetection();
         }
 

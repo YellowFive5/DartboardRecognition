@@ -1,8 +1,6 @@
 ﻿#region Usings
 
 using System.Drawing;
-using Emgu.CV;
-using Emgu.CV.Structure;
 
 #endregion
 
@@ -11,8 +9,7 @@ namespace DartboardRecognition.Services
     public class Throw
     {
         public PointF Poi { get; }
-        public int ProjectionResolutionX { get; }
-        public int ProjectionResolutionY { get; }
+        public int ProjectionResolution { get; }
         public int Sector { get; }
         public int Multiplier { get; }
         public int TotalPoints { get; }
@@ -23,13 +20,12 @@ namespace DartboardRecognition.Services
         public bool IsDouble { get; }
         public bool IsTremble { get; }
 
-        public Throw(PointF poi, int sector, int multiplier, Image<Bgr, byte> dartboardProjectionFrame)
+        public Throw(PointF poi, int sector, int multiplier, int projectionSide)
         {
             Poi = poi;
             Sector = sector;
             Multiplier = multiplier;
-            ProjectionResolutionX = dartboardProjectionFrame.Width;
-            ProjectionResolutionY = dartboardProjectionFrame.Height;
+            ProjectionResolution = projectionSide;
             TotalPoints = sector * multiplier;
             switch (multiplier)
             {
