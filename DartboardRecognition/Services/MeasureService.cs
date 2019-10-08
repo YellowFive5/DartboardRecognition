@@ -136,7 +136,7 @@ namespace DartboardRecognition.Services
             }
 
             // Translate cam surface POI to dartboard projection
-            var frameWidth = camService.OriginFrame.Cols;
+            var frameWidth = camService.RoiLastThrowFrame.Cols;
             var frameSemiWidth = frameWidth / 2;
             var camFovAngle = 100;
             var camFovSemiAngle = camFovAngle / 2;

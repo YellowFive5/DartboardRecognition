@@ -21,9 +21,14 @@ namespace DartboardRecognition.Services
 
         public void CalculateAndSaveThrow()
         {
-            var firstBestRay = rays.OrderByDescending(i => i.ContourWidth).First();
-            rays.Remove(firstBestRay);
-            var secondBestRay = rays.OrderByDescending(i => i.ContourWidth).First();
+            if (rays.Count < 2)
+            {
+                rays.Clear();
+                return;
+            }
+
+            var firstBestRay = rays.OrderByDescending(i => i.ContourWidth).ElementAt(0);
+            var secondBestRay = rays.OrderByDescending(i => i.ContourWidth).ElementAt(1);
             rays.Clear();
 
             var poi = MeasureService.FindLinesIntersection(firstBestRay.CamPoint,
