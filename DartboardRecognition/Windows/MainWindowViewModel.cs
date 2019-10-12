@@ -31,15 +31,13 @@ namespace DartboardRecognition.Windows
             this.mainWindowView = mainWindowView;
             drawService = MainWindow.ServiceContainer.Resolve<DrawService>();
             throwService = MainWindow.ServiceContainer.Resolve<ThrowService>();
+            drawService.DrawProjectionImage();
         }
 
         private void StartCapturing()
         {
             cts = new CancellationTokenSource();
             cancelToken = cts.Token;
-
-            drawService.DrawProjectionImage();
-
             StartDetection();
         }
 

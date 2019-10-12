@@ -66,22 +66,22 @@ namespace DartboardRecognition.Services
                 case 1:
                     toBullAngle = 0.785398;
                     camNumber = 1;
-                    setupPoint = new PointF(10, 10); //todo
+                    setupPoint = new PointF(305, 512);
                     break;
                 case 2:
-                    toBullAngle = 2.35619;
+                    toBullAngle = 2.35619; //todo
                     camNumber = 2;
-                    setupPoint = new PointF(1200 - 10, 10); //todo
+                    setupPoint = new PointF(800, 159);
                     break;
                 case 3:
                     toBullAngle = 2.35619; //todo
                     camNumber = 3;
-                    setupPoint = new PointF(1200 - 10, 10); //todo
+                    setupPoint = new PointF(1405, 159);
                     break;
                 case 4:
                     toBullAngle = 2.35619; //todo
                     camNumber = 4;
-                    setupPoint = new PointF(1200 - 10, 10); //todo
+                    setupPoint = new PointF(1889, 512);
                     break;
                 default:
                     throw new Exception("Out of cameras range");

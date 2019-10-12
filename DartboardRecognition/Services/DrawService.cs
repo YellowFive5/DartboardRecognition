@@ -47,7 +47,7 @@ namespace DartboardRecognition.Services
         public PointF ProjectionCenterPoint { get; }
         private int ProjectionLineCam1Bias { get; } = 0;
         private int ProjectionLineCam2Bias { get; } = 0;
-        public int ProjectionFrameSide { get; } = 1200;
+        public int ProjectionFrameSide { get; } = 2200;
         private Image<Bgr, byte> DartboardProjectionFrameBackground { get; }
         private Image<Bgr, byte> DartboardProjectionWorkingFrame { get; set; }
 
@@ -306,6 +306,17 @@ namespace DartboardRecognition.Services
             }
 
             return imageToSave;
+        }
+
+        private void SaveToFile(BitmapSource image, string path = null)
+        {
+            var pathString = path ?? "image.png";
+            BitmapEncoder encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(image));
+            using (var fileStream = new FileStream(pathString, FileMode.Create))
+            {
+                encoder.Save(fileStream);
+            }
         }
     }
 }
