@@ -10,11 +10,13 @@ namespace DartboardRecognition.Services
 {
     public class ThrowService
     {
+        private readonly DrawService drawService;
         private readonly List<Ray> rays;
         private readonly Queue<Throw> throwsCollection;
 
-        public ThrowService()
+        public ThrowService(DrawService drawService)
         {
+            this.drawService = drawService; 
             rays = new List<Ray>();
             throwsCollection = new Queue<Throw>();
         }
@@ -38,7 +40,7 @@ namespace DartboardRecognition.Services
             var anotherThrow = PrepareThrowData(poi);
             throwsCollection.Enqueue(anotherThrow);
 
-            ServiceBag.All().DrawService.DrawThrow(poi);
+            drawService.DrawThrow(poi);
 
             // mainWindow.Dispatcher.Invoke(new Action(() => mainWindow.PointsBox.Text = ""));
             // mainWindow.Dispatcher.Invoke(new Action(() => mainWindow.PointsBox.Text += $"{anotherThrow.Sector} x {anotherThrow.Multiplier} = {anotherThrow.TotalPoints}\n"));
@@ -48,19 +50,19 @@ namespace DartboardRecognition.Services
         {
             var startRadSector = -1.41372;
             var radSectorStep = 0.314159;
-            var angle = MeasureService.FindAngle(ServiceBag.All().DrawService.ProjectionCenterPoint, poi);
-            var distance = MeasureService.FindDistance(ServiceBag.All().DrawService.ProjectionCenterPoint, poi);
+            var angle = MeasureService.FindAngle(drawService.ProjectionCenterPoint, poi);
+            var distance = MeasureService.FindDistance(drawService.ProjectionCenterPoint, poi);
             var sector = 0;
             var multiplier = 1;
 
-            if (distance >= ServiceBag.All().DrawService.ProjectionCoefficent * 95 &&
-                distance <= ServiceBag.All().DrawService.ProjectionCoefficent * 105)
+            if (distance >= drawService.ProjectionCoefficent * 95 &&
+                distance <= drawService.ProjectionCoefficent * 105)
             {
                 multiplier = 3;
             }
 
-            if (distance >= ServiceBag.All().DrawService.ProjectionCoefficent * 160 &&
-                distance <= ServiceBag.All().DrawService.ProjectionCoefficent * 170)
+            if (distance >= drawService.ProjectionCoefficent * 160 &&
+                distance <= drawService.ProjectionCoefficent * 170)
             {
                 multiplier = 2;
             }
@@ -148,23 +150,23 @@ namespace DartboardRecognition.Services
                 sector = 20;
             }
 
-            if (distance <= ServiceBag.All().DrawService.ProjectionCoefficent * 7)
+            if (distance <= drawService.ProjectionCoefficent * 7)
             {
                 sector = 50;
             }
 
-            if (distance > ServiceBag.All().DrawService.ProjectionCoefficent * 7 &&
-                distance <= ServiceBag.All().DrawService.ProjectionCoefficent * 17)
+            if (distance > drawService.ProjectionCoefficent * 7 &&
+                distance <= drawService.ProjectionCoefficent * 17)
             {
                 sector = 25;
             }
 
-            if (distance > ServiceBag.All().DrawService.ProjectionCoefficent * 170)
+            if (distance > drawService.ProjectionCoefficent * 170)
             {
                 sector = 0;
             }
 
-            return new Throw(poi, sector, multiplier, ServiceBag.All().DrawService.ProjectionFrameSide);
+            return new Throw(poi, sector, multiplier, drawService.ProjectionFrameSide);
         }
 
         public void SaveRay(Ray ray)

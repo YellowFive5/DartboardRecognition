@@ -57,6 +57,9 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Autofac, Version=4.9.4.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\packages\Autofac.4.9.4\lib\net45\Autofac.dll</HintPath>
+    </Reference>
     <Reference Include="DirectShowLib, Version=2.1.0.1599, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\DirectShowLib.1.0.0\lib\DirectShowLib.dll</HintPath>
     </Reference>
@@ -80,7 +83,6 @@
     <Compile Include="Services\Ray.cs" />
     <Compile Include="Services\ResponseType.cs" />
     <Compile Include="Services\ConfigService.cs" />
-    <Compile Include="Services\ServiceBag.cs" />
     <Compile Include="Services\Throw.cs" />
     <Compile Include="Services\ThrowService.cs" />
     <Compile Include="Windows\CamWindow.xaml.cs">

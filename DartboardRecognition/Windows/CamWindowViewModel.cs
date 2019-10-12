@@ -1,5 +1,6 @@
 ﻿#region Usings
 
+using Autofac;
 using DartboardRecognition.Services;
 
 #endregion
@@ -24,11 +25,11 @@ namespace DartboardRecognition.Windows
                                   bool withDetection)
         {
             this.camWindowView = camWindowView;
-            configService = ServiceBag.All().ConfigService;
             this.runtimeCapturing = runtimeCapturing;
             this.withDetection = withDetection;
             camService = new CamService(camWindowView);
             measureService = new MeasureService(camWindowView, camService);
+            configService = MainWindow.ServiceContainer.Resolve<ConfigService>();
         }
 
         public void LoadSettings()

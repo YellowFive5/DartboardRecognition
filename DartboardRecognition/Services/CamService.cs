@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Windows.Media.Imaging;
+using Autofac;
 using DartboardRecognition.Windows;
 using DirectShowLib;
 using Emgu.CV;
@@ -57,7 +58,7 @@ namespace DartboardRecognition.Services
         public CamService(CamWindow camWindow)
         {
             this.camWindow = camWindow;
-            drawService = ServiceBag.All().DrawService;
+            drawService = MainWindow.ServiceContainer.Resolve<DrawService>();
             surfacePoint1 = new PointF();
             surfacePoint2 = new PointF();
             switch (camWindow.camNumber)

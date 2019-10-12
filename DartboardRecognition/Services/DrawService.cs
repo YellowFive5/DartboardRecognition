@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Media.Imaging;
+using DartboardRecognition.Windows;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
@@ -16,6 +17,7 @@ namespace DartboardRecognition.Services
 {
     public class DrawService
     {
+        private readonly MainWindow mainWindow;
         public Bgr CamRoiRectColor { get; } = new Bgr(Color.LawnGreen);
         public int CamRoiRectThickness { get; } = 5;
         public Bgr CamSurfaceLineColor { get; } = new Bgr(Color.Red);
@@ -49,8 +51,9 @@ namespace DartboardRecognition.Services
         private Image<Bgr, byte> DartboardProjectionFrameBackground { get; }
         private Image<Bgr, byte> DartboardProjectionWorkingFrame { get; set; }
 
-        public DrawService()
+        public DrawService(MainWindow mainWindow)
         {
+            this.mainWindow = mainWindow;
             DartboardProjectionFrameBackground = new Image<Bgr, byte>(ProjectionFrameSide,
                                                                       ProjectionFrameSide);
             ProjectionCenterPoint = new PointF((float) DartboardProjectionFrameBackground.Width / 2,
@@ -112,7 +115,7 @@ namespace DartboardRecognition.Services
             DartboardProjectionWorkingFrame = DartboardProjectionFrameBackground.Clone();
             DrawCircle(DartboardProjectionWorkingFrame, poi, PoiRadius, PoiColor, PoiThickness);
 
-            ServiceBag.All().MainWindow.Dispatcher.Invoke(new Action(() => ServiceBag.All().MainWindow.DartboardProjectionImageBox.Source = ToBitmap(DartboardProjectionWorkingFrame)));
+            mainWindow.Dispatcher.Invoke(new Action(() => mainWindow.DartboardProjectionImageBox.Source = ToBitmap(DartboardProjectionWorkingFrame)));
         }
 
         public void DrawProjectionImage()
@@ -287,7 +290,7 @@ namespace DartboardRecognition.Services
 
             DartboardProjectionWorkingFrame = DartboardProjectionFrameBackground.Clone();
 
-            ServiceBag.All().MainWindow.Dispatcher.Invoke(new Action(() => ServiceBag.All().MainWindow.DartboardProjectionImageBox.Source = ToBitmap(DartboardProjectionWorkingFrame)));
+            mainWindow.Dispatcher.Invoke(new Action(() => mainWindow.DartboardProjectionImageBox.Source = ToBitmap(DartboardProjectionWorkingFrame)));
         }
 
         public BitmapImage ToBitmap(IImage image)

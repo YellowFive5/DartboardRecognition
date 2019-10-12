@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
+using Autofac;
 using DartboardRecognition.Services;
 
 #endregion
@@ -18,6 +19,8 @@ namespace DartboardRecognition.Windows
         private CancellationToken cancelToken;
         private CancellationTokenSource cts;
         private List<CamWindow> cams;
+        private readonly DrawService drawService;
+        private readonly ThrowService throwService;
 
         public MainWindowViewModel()
         {
@@ -26,8 +29,8 @@ namespace DartboardRecognition.Windows
         public MainWindowViewModel(MainWindow mainWindowView)
         {
             this.mainWindowView = mainWindowView;
-
-            ServiceBag.Initialize(mainWindowView);
+            drawService = MainWindow.ServiceContainer.Resolve<DrawService>();
+            throwService = MainWindow.ServiceContainer.Resolve<ThrowService>();
         }
 
         private void StartCapturing()
@@ -35,9 +38,7 @@ namespace DartboardRecognition.Windows
             cts = new CancellationTokenSource();
             cancelToken = cts.Token;
 
-            ServiceBag.All()
-                      .DrawService
-                      .DrawProjectionImage();
+            drawService.DrawProjectionImage();
 
             StartDetection();
         }
@@ -95,7 +96,7 @@ namespace DartboardRecognition.Windows
                 cam.ProcessContour();
             }
 
-            ServiceBag.All().ThrowService.CalculateAndSaveThrow();
+            throwService.CalculateAndSaveThrow();
         }
 
         private void StopCapturing()

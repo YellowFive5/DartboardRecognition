@@ -2,6 +2,7 @@
 
 using System;
 using System.Drawing;
+using Autofac;
 using DartboardRecognition.Windows;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
@@ -24,8 +25,8 @@ namespace DartboardRecognition.Services
         {
             this.camWindowView = camWindowView;
             this.camService = camService;
-            drawService = ServiceBag.All().DrawService;
-            throwService = ServiceBag.All().ThrowService;
+            drawService = MainWindow.ServiceContainer.Resolve<DrawService>();
+            throwService = MainWindow.ServiceContainer.Resolve<ThrowService>();
         }
 
         public bool FindDartContour()
