@@ -31,8 +31,6 @@ namespace DartboardRecognition.Services
 
         public bool FindDartContour()
         {
-            var contourFound = false;
-
             var allContours = new VectorOfVectorOfPoint();
             var matHierarсhy = new Mat();
             CvInvoke.FindContours(camService.RoiLastThrowFrame,
@@ -56,19 +54,21 @@ namespace DartboardRecognition.Services
                 if (tempContourArcLength > camWindowView.MinContourArcLength &&
                     tempContourArcLength > dartContourArcLength)
                 {
-                    contourFound = true;
                     dartContourArcLength = tempContourArcLength;
                     dartContour = tempContour;
                     // CvInvoke.DrawContours(camService.linedFrame, contour, -1, contourColor, contourThickness, offset: new System.Drawing.Point(0, (int)RoiPosYSlider.Value));
                 }
             }
 
-            if (dartContourArcLength > 0)
+            var found = dartContourArcLength <= 0
+                            ? false
+                            : true;
+            if (found)
             {
                 processedContour = dartContour;
             }
 
-            return contourFound;
+            return found;
         }
 
         public void ProcessDartContour()
@@ -173,7 +173,7 @@ namespace DartboardRecognition.Services
             rayPoint.X = (float) (camService.setupPoint.X + Math.Cos(angle) * 2000);
             rayPoint.Y = (float) (camService.setupPoint.Y + Math.Sin(angle) * 2000);
 
-            //drawman.DrawLine(dartboardProjectionFrame, rayPoint2, rayPoint1, view.ProjectionRayColor, view.ProjectionRayThickness);
+            drawService.DrawLine(camService.setupPoint, rayPoint);
 
             var ray = new Ray(camService.setupPoint, rayPoint, contourWidth);
 

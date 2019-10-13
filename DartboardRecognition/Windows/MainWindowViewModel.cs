@@ -36,6 +36,7 @@ namespace DartboardRecognition.Windows
 
         private void StartCapturing()
         {
+            drawService.DrawProjectionImage();
             cts = new CancellationTokenSource();
             cancelToken = cts.Token;
             StartDetection();

@@ -64,29 +64,30 @@ namespace DartboardRecognition.Services
             switch (camWindow.camNumber)
             {
                 case 1:
-                    toBullAngle = 0.785398;
                     camNumber = 1;
-                    setupPoint = new PointF(305, 512);
+                    setupPoint = new PointF(305 - (2200 - drawService.ProjectionFrameSide),
+                                            512 - (2200 - drawService.ProjectionFrameSide));
                     break;
                 case 2:
-                    toBullAngle = 2.35619; //todo
                     camNumber = 2;
-                    setupPoint = new PointF(800, 159);
+                    setupPoint = new PointF(800 - (2200 - drawService.ProjectionFrameSide),
+                                            159 - (2200 - drawService.ProjectionFrameSide));
                     break;
                 case 3:
-                    toBullAngle = 2.35619; //todo
                     camNumber = 3;
-                    setupPoint = new PointF(1405, 159);
+                    setupPoint = new PointF(1405 - (2200 - drawService.ProjectionFrameSide),
+                                            159 - (2200 - drawService.ProjectionFrameSide));
                     break;
                 case 4:
-                    toBullAngle = 2.35619; //todo
                     camNumber = 4;
-                    setupPoint = new PointF(1889, 512);
+                    setupPoint = new PointF(1889 - (2200 - drawService.ProjectionFrameSide),
+                                            512 - (2200 - drawService.ProjectionFrameSide));
                     break;
                 default:
                     throw new Exception("Out of cameras range");
             }
 
+            toBullAngle = MeasureService.FindAngle(setupPoint, drawService.ProjectionCenterPoint);
             videoCapture = new VideoCapture(GetCamIndex(camNumber));
             videoCapture.SetCaptureProperty(CapProp.FrameWidth, 1920);
             videoCapture.SetCaptureProperty(CapProp.FrameHeight, 1080);

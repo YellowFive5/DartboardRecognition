@@ -118,6 +118,15 @@ namespace DartboardRecognition.Services
             mainWindow.Dispatcher.Invoke(new Action(() => mainWindow.DartboardProjectionImageBox.Source = ToBitmap(DartboardProjectionWorkingFrame)));
         }
 
+        public void DrawLine(PointF point1,
+                             PointF point2)
+        {
+            // DartboardProjectionWorkingFrame = DartboardProjectionFrameBackground.Clone();
+            DrawLine(DartboardProjectionWorkingFrame, point1, point2, PoiColor, PoiThickness);
+
+            mainWindow.Dispatcher.Invoke(new Action(() => mainWindow.DartboardProjectionImageBox.Source = ToBitmap(DartboardProjectionWorkingFrame)));
+        }
+
         public void DrawProjectionImage()
         {
             // Draw dartboard projection
