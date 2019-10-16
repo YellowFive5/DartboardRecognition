@@ -19,10 +19,9 @@
 ## App details
 ### PreSetup using CamCalibrator
 * CamCalibrator is simple project to presetup camera when you fix it on stand. The idea is to stick dart into bull and run calibrator. You need to set camera like next screenshot. Blue line goes throught dart, red line lies on dartboard surface. Then you fix camera tightly. This position of cameras is correct for main app work. 
-* Each of 4 cameras, connected to PC, have index. [0,1,2,3] to setup each of it. 
-
-![CamCalibrator](https://user-images.githubusercontent.com/42347722/65386346-284a0e00-dd43-11e9-865b-a90d0066a61e.jpg)
-
+* Each of 4 cameras, connected to PC, have index. [0,1,2,3] to setup each of it. All connected to PC cameras will be print in textbox.
+![CamCalibrator](https://user-images.githubusercontent.com/42347722/66772929-84c5c680-eec6-11e9-8888-f73d5b29745f.png)
+* **Notice, that it can be situation, when all your connected cams will not be work together at same time - it can be if you trying to connect 4 cams in 1 usb hub and this hub in PC usb port. It happens because there are not enough power in 1 PC usb port for working 4 cams at same time. You see all 4 cams connected via Control Panel but they don't work. To check this situation you can use CamCalibrator. Just run it 4 times at the same time and run in on all 4 cams. If not all cams translate image - you need to reconnect cams.**
 ### Main app
 
 * Main app also need presetup each camera. Using sliders you need to set up surface, center point, and region of interesting (ROI)
