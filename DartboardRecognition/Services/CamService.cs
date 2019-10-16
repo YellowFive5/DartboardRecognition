@@ -44,11 +44,9 @@ namespace DartboardRecognition.Services
         public readonly double toBullAngle;
         public readonly int camNumber;
         private Rectangle roiRectangle;
-        public Image<Gray, byte> OldRoiFrame { get; private set; }
-        public Image<Bgr, byte> OriginFrame { get; private set; }
-        public Image<Bgr, byte> LinedFrame { get; private set; }
-        public Image<Gray, byte> RoiFrame { get; private set; }
-        public Image<Bgr, byte> RoiContourFrame { get; private set; }
+        private Image<Bgr, byte> OriginFrame { get; set; }
+        private Image<Bgr, byte> LinedFrame { get; set; }
+        private Image<Gray, byte> RoiFrame { get; set; }
         public Image<Gray, byte> RoiLastThrowFrame { get; private set; }
         private int SmoothGauss { get; } = 5;
         private int MovesNoise { get; } = 900;
@@ -173,9 +171,9 @@ namespace DartboardRecognition.Services
                                  drawService.CamSurfaceLineThickness);
         }
 
-        public void DoCaptures()
+        public void DoCapture()
         {
-            OldRoiFrame?.Dispose();
+            RoiFrame?.Dispose();
 
             GetSlidersData();
             DrawSetupLines();
@@ -187,8 +185,6 @@ namespace DartboardRecognition.Services
             RoiFrame._SmoothGaussian(SmoothGauss);
             RoiFrame._ThresholdBinary(new Gray(tresholdMinSlider),
                                       new Gray(tresholdMaxSlider));
-
-            OldRoiFrame = RoiFrame.Clone();
         }
 
         public void RefreshImageBoxes()
@@ -235,7 +231,7 @@ namespace DartboardRecognition.Services
                     RoiLastThrowFrame = diffImage.Clone();
                     diffImage.Dispose();
 
-                    DoCaptures();
+                    DoCapture();
                     RefreshImageBoxes();
 
                     return ResponseType.Trow;
@@ -247,11 +243,11 @@ namespace DartboardRecognition.Services
 
         public void FindThrow()
         {
-            var zeroImage = OldRoiFrame;
+            var zeroImage = RoiFrame;
             var diffImage = CaptureAndDiff(zeroImage);
             RoiLastThrowFrame = diffImage.Clone();
             diffImage.Dispose();
-            DoCaptures();
+            DoCapture();
             RefreshImageBoxes();
         }
 
@@ -273,8 +269,6 @@ namespace DartboardRecognition.Services
         {
             OriginFrame?.Dispose();
             LinedFrame?.Dispose();
-            RoiFrame?.Dispose();
-            RoiContourFrame?.Dispose();
         }
     }
 }

@@ -50,5 +50,10 @@ namespace DartboardRecognition.Windows
         {
             viewModel.FindThrow();
         }
+
+        public void DoCapture()
+        {
+            viewModel.DoCapture();
+        }
     }
 }

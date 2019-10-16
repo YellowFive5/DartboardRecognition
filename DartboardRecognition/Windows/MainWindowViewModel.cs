@@ -55,6 +55,8 @@ namespace DartboardRecognition.Windows
                        new CamWindow(4, runtimeCapturing, withDetection)
                    };
 
+            DoCaptures();
+
             Task.Run(() =>
                      {
                          Thread.CurrentThread.Name = $"Recognition_workerThread";
@@ -75,6 +77,7 @@ namespace DartboardRecognition.Windows
                                  if (response == ResponseType.Extraction)
                                  {
                                      Thread.Sleep(TimeSpan.FromSeconds(5));
+                                     DoCaptures();
                                      break;
                                  }
                              }
@@ -96,6 +99,14 @@ namespace DartboardRecognition.Windows
             }
 
             throwService.CalculateAndSaveThrow();
+        }
+
+        private void DoCaptures()
+        {
+            foreach (var cam in cams)
+            {
+                cam.DoCapture();
+            }
         }
 
         private void StopCapturing()
