@@ -19,7 +19,7 @@
         <TextBox x:Name="PointsBox" HorizontalAlignment="Left" Height="118" Margin="34,362,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="314"/>
         <Button x:Name="StartButton" Content="Start" HorizontalAlignment="Left" Margin="34,519,0,0" VerticalAlignment="Top" Width="153" Click="StartButtonClick" Height="39"/>
         <Button x:Name="StopButton" Content="Stop" HorizontalAlignment="Left" Margin="194,519,0,0" VerticalAlignment="Top" Width="154" Click="StopButtonClick" Height="39" IsEnabled="False"/>
-        <CheckBox x:Name="RuntimeCapturingCheckBox" Content="Runtime capturing" HorizontalAlignment="Left" Margin="34,493,0,0" VerticalAlignment="Top" IsChecked="True"/>
-        <CheckBox x:Name="WithDetectionCapturingCheckBox" Content="With detection" HorizontalAlignment="Left" Margin="161,493,0,0" VerticalAlignment="Top"/>
+        <CheckBox x:Name="RuntimeCapturingCheckBox" Content="Runtime capturing" HorizontalAlignment="Left" Margin="34,493,0,0" VerticalAlignment="Top" IsChecked="False"/>
+        <CheckBox x:Name="WithDetectionCapturingCheckBox" Content="With detection" HorizontalAlignment="Left" Margin="161,493,0,0" VerticalAlignment="Top" IsChecked="True"/>
     </Grid>
 </Window>

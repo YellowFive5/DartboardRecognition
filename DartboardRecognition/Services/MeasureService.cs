@@ -60,9 +60,8 @@ namespace DartboardRecognition.Services
                 }
             }
 
-            var found = dartContourArcLength <= 0
-                            ? false
-                            : true;
+            var found = dartContourArcLength > 0 && dartContour.Size > 0;
+
             if (found)
             {
                 processedContour = dartContour;
@@ -73,6 +72,11 @@ namespace DartboardRecognition.Services
 
         public void ProcessDartContour()
         {
+            if (processedContour.Size <= 0)
+            {
+                return;
+            }
+
             var contourMoments = CvInvoke.Moments(processedContour);
             var contourCenterPoint = new PointF((float) (contourMoments.M10 / contourMoments.M00),
                                                 (float) camService.roiPosYSlider + (float) (contourMoments.M01 / contourMoments.M00));
@@ -178,6 +182,8 @@ namespace DartboardRecognition.Services
             var ray = new Ray(camService.setupPoint, rayPoint, contourWidth);
 
             throwService.SaveRay(ray);
+
+            processedContour = null;
         }
 
         public static PointF FindLinesIntersection(PointF line1Point1,
