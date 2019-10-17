@@ -13,8 +13,6 @@ namespace DartboardRecognition.Windows
         private readonly MeasureService measureService;
         private readonly ConfigService configService;
         private readonly CamService camService;
-        private readonly bool runtimeCapturing;
-        private readonly bool withDetection;
 
         public CamWindowViewModel()
         {
@@ -25,9 +23,7 @@ namespace DartboardRecognition.Windows
                                   bool withDetection)
         {
             this.camWindowView = camWindowView;
-            this.runtimeCapturing = runtimeCapturing;
-            this.withDetection = withDetection;
-            camService = new CamService(camWindowView);
+            camService = new CamService(camWindowView, runtimeCapturing, withDetection);
             measureService = new MeasureService(camWindowView, camService);
             configService = MainWindow.ServiceContainer.Resolve<ConfigService>();
         }
@@ -72,16 +68,7 @@ namespace DartboardRecognition.Windows
 
         public ResponseType Detect()
         {
-            var response = withDetection
-                               ? camService.Detect()
-                               : ResponseType.Nothing;
-
-            if (runtimeCapturing)
-            {
-                camService.RefreshImageBoxes();
-            }
-
-            return response;
+            return camService.Detect();
         }
 
         public void FindThrow()

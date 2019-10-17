@@ -52,10 +52,14 @@ namespace DartboardRecognition.Services
         private int MovesNoise { get; } = 900;
         private int MovesDart { get; } = 1000;
         private int MovesExtraction { get; } = 7000;
+        private readonly bool runtimeCapturing;
+        private readonly bool withDetection;
 
-        public CamService(CamWindow camWindow)
+        public CamService(CamWindow camWindow, bool runtimeCapturing, bool withDetection)
         {
             this.camWindow = camWindow;
+            this.runtimeCapturing = runtimeCapturing;
+            this.withDetection = withDetection;
             drawService = MainWindow.ServiceContainer.Resolve<DrawService>();
             surfacePoint1 = new PointF();
             surfacePoint2 = new PointF();
@@ -198,44 +202,54 @@ namespace DartboardRecognition.Services
             camWindow.Dispatcher.Invoke(new Action(() => camWindow.ImageBoxRoiLastThrow.Source = RoiLastThrowFrame?.Data != null
                                                                                                      ? drawService.ToBitmap(RoiLastThrowFrame)
                                                                                                      : new BitmapImage()));
-            DisposeAllImages();
+            OriginFrame?.Dispose();
+            LinedFrame?.Dispose();
         }
 
         public ResponseType Detect()
         {
-            var zeroImage = RoiFrame;
-            var diffImage = CaptureAndDiff(zeroImage);
-            var moves = diffImage.CountNonzero()[0];
-            diffImage.Dispose();
-
-            var moveDetected = moves > MovesNoise;
-
-            if (moveDetected)
+            if (withDetection)
             {
-                Thread.Sleep(TimeSpan.FromSeconds(0.8));
+                var zeroImage = RoiFrame;
+                var diffImage = CaptureAndDiff(zeroImage);
+                var moves = diffImage.CountNonzero()[0];
+                diffImage.Dispose();
 
-                diffImage = CaptureAndDiff(zeroImage);
-                zeroImage.Dispose();
-                moves = diffImage.CountNonzero()[0];
+                var moveDetected = moves > MovesNoise;
 
-                var extractProcess = moves > MovesExtraction;
-                var throwDetected = !extractProcess && moves > MovesDart;
-
-                if (extractProcess)
+                if (moveDetected)
                 {
-                    return ResponseType.Extraction;
+                    Thread.Sleep(TimeSpan.FromSeconds(1));
+
+                    diffImage = CaptureAndDiff(zeroImage);
+                    zeroImage.Dispose();
+                    moves = diffImage.CountNonzero()[0];
+
+                    var extractProcess = moves > MovesExtraction;
+                    var throwDetected = !extractProcess && moves > MovesDart;
+
+                    if (extractProcess)
+                    {
+                        return ResponseType.Extraction;
+                    }
+
+                    if (throwDetected)
+                    {
+                        RoiLastThrowFrame = diffImage.Clone();
+                        diffImage.Dispose();
+
+                        DoCapture();
+                        RefreshImageBoxes();
+
+                        return ResponseType.Trow;
+                    }
                 }
+            }
 
-                if (throwDetected)
-                {
-                    RoiLastThrowFrame = diffImage.Clone();
-                    diffImage.Dispose();
-
-                    DoCapture();
-                    RefreshImageBoxes();
-
-                    return ResponseType.Trow;
-                }
+            if (runtimeCapturing)
+            {
+                DoCapture();
+                RefreshImageBoxes();
             }
 
             return ResponseType.Nothing;
@@ -263,12 +277,6 @@ namespace DartboardRecognition.Services
             newImage.Dispose();
 
             return diffImage;
-        }
-
-        private void DisposeAllImages()
-        {
-            OriginFrame?.Dispose();
-            LinedFrame?.Dispose();
         }
     }
 }
