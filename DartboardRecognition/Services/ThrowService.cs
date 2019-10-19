@@ -16,7 +16,7 @@ namespace DartboardRecognition.Services
 
         public ThrowService(DrawService drawService)
         {
-            this.drawService = drawService; 
+            this.drawService = drawService;
             rays = new List<Ray>();
             throwsCollection = new Queue<Throw>();
         }
@@ -40,10 +40,8 @@ namespace DartboardRecognition.Services
             var anotherThrow = PrepareThrowData(poi);
             throwsCollection.Enqueue(anotherThrow);
 
+            drawService.PrintThrow(anotherThrow);
             drawService.DrawThrow(poi);
-
-            // mainWindow.Dispatcher.Invoke(new Action(() => mainWindow.PointsBox.Text = ""));
-            // mainWindow.Dispatcher.Invoke(new Action(() => mainWindow.PointsBox.Text += $"{anotherThrow.Sector} x {anotherThrow.Multiplier} = {anotherThrow.TotalPoints}\n"));
         }
 
         private Throw PrepareThrowData(PointF poi)

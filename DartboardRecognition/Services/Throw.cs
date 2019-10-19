@@ -53,5 +53,10 @@ namespace DartboardRecognition.Services
                     break;
             }
         }
+
+        public override string ToString()
+        {
+            return $"{Multiplier} x {Sector} = {TotalPoints}";
+        }
     }
 }

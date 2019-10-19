@@ -110,6 +110,11 @@ namespace DartboardRecognition.Services
                        thickness);
         }
 
+        public void PrintThrow(Throw thrw)
+        {
+            mainWindow.Dispatcher.Invoke(new Action(() => mainWindow.PointsBox.Text = thrw.ToString()));
+        }
+
         public void DrawThrow(PointF poi)
         {
             DartboardProjectionWorkingFrame = DartboardProjectionFrameBackground.Clone();
