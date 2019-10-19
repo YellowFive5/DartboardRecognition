@@ -149,7 +149,10 @@ namespace DartboardRecognition.Services
 
             drawService.ProjectionDrawLine(camService.setupPoint, rayPoint, false);
 
-            var ray = new Ray(camService.setupPoint, rayPoint, contourWidth);
+            var width = contourWidth < contourHeight
+                            ? contourWidth
+                            : contourHeight;
+            var ray = new Ray(camService.setupPoint, rayPoint, width);
 
             throwService.SaveRay(ray);
 
