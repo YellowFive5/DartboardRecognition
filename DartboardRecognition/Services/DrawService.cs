@@ -34,9 +34,9 @@ namespace DartboardRecognition.Services
         private MCvScalar ProjectionGridColor { get; } = new Bgr(Color.DarkGray).MCvScalar;
         public MCvScalar ProjectionSurfaceLineColor { get; } = new Bgr(Color.Red).MCvScalar;
         public int ProjectionSurfaceLineThickness { get; } = 2;
-        public MCvScalar ProjectionRayColor { get; } = new Bgr(Color.White).MCvScalar;
+        public MCvScalar ProjectionRayColor { get; } = new Bgr(Color.DeepSkyBlue).MCvScalar;
         public int ProjectionRayThickness { get; } = 2;
-        private MCvScalar PoiColor { get; } = new Bgr(Color.Magenta).MCvScalar;
+        private MCvScalar PoiColor { get; } = new Bgr(Color.MediumVioletRed).MCvScalar;
         private int PoiRadius { get; } = 6;
         private int PoiThickness { get; } = 6;
         private int ProjectionGridThickness { get; } = 2;
@@ -47,7 +47,7 @@ namespace DartboardRecognition.Services
         public PointF ProjectionCenterPoint { get; }
         private int ProjectionLineCam1Bias { get; } = 0;
         private int ProjectionLineCam2Bias { get; } = 0;
-        public int ProjectionFrameSide { get; } = 2200;
+        public int ProjectionFrameSide { get; } = 1300;
         private Image<Bgr, byte> DartboardProjectionFrameBackground { get; }
         private Image<Bgr, byte> DartboardProjectionWorkingFrame { get; set; }
 
@@ -115,24 +115,31 @@ namespace DartboardRecognition.Services
             mainWindow.Dispatcher.Invoke(new Action(() => mainWindow.PointsBox.Text = thrw.ToString()));
         }
 
-        public void DrawThrow(PointF poi)
+        public void ProjectionDrawThrow(PointF poi, bool exclusiveDraw = true)
         {
-            DartboardProjectionWorkingFrame = DartboardProjectionFrameBackground.Clone();
+            if (exclusiveDraw)
+            {
+                DartboardProjectionWorkingFrame = DartboardProjectionFrameBackground.Clone();
+            }
+
             DrawCircle(DartboardProjectionWorkingFrame, poi, PoiRadius, PoiColor, PoiThickness);
 
             mainWindow.Dispatcher.Invoke(new Action(() => mainWindow.DartboardProjectionImageBox.Source = ToBitmap(DartboardProjectionWorkingFrame)));
         }
 
-        public void DrawLine(PointF point1,
-                             PointF point2)
+        public void ProjectionDrawLine(PointF point1, PointF point2, bool exclusiveDraw = true)
         {
-            // DartboardProjectionWorkingFrame = DartboardProjectionFrameBackground.Clone();
-            DrawLine(DartboardProjectionWorkingFrame, point1, point2, PoiColor, PoiThickness);
+            if (exclusiveDraw)
+            {
+                DartboardProjectionWorkingFrame = DartboardProjectionFrameBackground.Clone();
+            }
+
+            DrawLine(DartboardProjectionWorkingFrame, point1, point2, ProjectionRayColor, PoiThickness);
 
             mainWindow.Dispatcher.Invoke(new Action(() => mainWindow.DartboardProjectionImageBox.Source = ToBitmap(DartboardProjectionWorkingFrame)));
         }
 
-        public void DrawProjectionImage()
+        public void DrawProjection()
         {
             // Draw dartboard projection
             DrawCircle(DartboardProjectionFrameBackground, ProjectionCenterPoint, ProjectionCoefficent * 7, ProjectionGridColor, ProjectionGridThickness);
@@ -149,14 +156,6 @@ namespace DartboardRecognition.Services
                                                (float) (ProjectionCenterPoint.Y + Math.Sin(0.314159 * i - 0.15708) * ProjectionCoefficent * 17));
                 DrawLine(DartboardProjectionFrameBackground, segmentPoint1, segmentPoint2, ProjectionGridColor, ProjectionGridThickness);
             }
-
-            // Draw surface projection lines
-            var projectionLineCam1Point1 = new PointF {X = (float) (ProjectionCenterPoint.X + Math.Cos(-0.785398) * ProjectionCoefficent * 170) - ProjectionCoefficent * ProjectionLineCam1Bias, Y = (float) (ProjectionCenterPoint.Y + Math.Sin(-0.785398) * ProjectionCoefficent * 170) - ProjectionCoefficent * ProjectionLineCam1Bias};
-            var projectionLineCam1Point2 = new PointF {X = (float) (ProjectionCenterPoint.X + Math.Cos(2.35619) * ProjectionCoefficent * 170) - ProjectionCoefficent * ProjectionLineCam1Bias, Y = (float) (ProjectionCenterPoint.Y + Math.Sin(2.35619) * ProjectionCoefficent * 170) - ProjectionCoefficent * ProjectionLineCam1Bias};
-            //drawman.DrawLine(dartboardProjectionFrame, projectionLineCam1Point1, projectionLineCam1Point2, view.ProjectionSurfaceLineColor, view.ProjectionSurfaceLineThickness);
-            var projectionLineCam2Point1 = new PointF {X = (float) (ProjectionCenterPoint.X + Math.Cos(0.785398) * ProjectionCoefficent * 170) + ProjectionCoefficent * ProjectionLineCam2Bias, Y = (float) (ProjectionCenterPoint.Y + Math.Sin(0.785398) * ProjectionCoefficent * 170) - ProjectionCoefficent * ProjectionLineCam2Bias};
-            var projectionLineCam2Point2 = new PointF {X = (float) (ProjectionCenterPoint.X + Math.Cos(3.92699) * ProjectionCoefficent * 170) + ProjectionCoefficent * ProjectionLineCam2Bias, Y = (float) (ProjectionCenterPoint.Y + Math.Sin(3.92699) * ProjectionCoefficent * 170) - ProjectionCoefficent * ProjectionLineCam2Bias};
-            //drawman.DrawLine(dartboardProjectionFrame, projectionLineCam2Point1, projectionLineCam2Point2, view.ProjectionSurfaceLineColor, view.ProjectionSurfaceLineThickness);
 
             // Draw digits
             var startAngle = 0;

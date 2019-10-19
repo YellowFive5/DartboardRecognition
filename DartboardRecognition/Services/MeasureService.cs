@@ -56,7 +56,6 @@ namespace DartboardRecognition.Services
                 {
                     dartContourArcLength = tempContourArcLength;
                     dartContour = tempContour;
-                    // CvInvoke.DrawContours(camService.linedFrame, contour, -1, contourColor, contourThickness, offset: new System.Drawing.Point(0, (int)RoiPosYSlider.Value));
                 }
             }
 
@@ -72,48 +71,27 @@ namespace DartboardRecognition.Services
 
         public void ProcessDartContour()
         {
-            if (processedContour.Size <= 0)
-            {
-                return;
-            }
-
-            var contourMoments = CvInvoke.Moments(processedContour);
-            var contourCenterPoint = new PointF((float) (contourMoments.M10 / contourMoments.M00),
-                                                (float) camService.roiPosYSlider + (float) (contourMoments.M01 / contourMoments.M00));
-
-            // drawService.DrawCircle(camService.LinedFrame,
-            //                        contourCenterPoint,
-            //                        4,
-            //                        new Bgr(Color.Blue).MCvScalar,
-            //                        3);
+            // Moments and centerpoint
+            // var contourMoments = CvInvoke.Moments(processedContour);
+            // var contourCenterPoint = new PointF((float) (contourMoments.M10 / contourMoments.M00),
+            //                                     (float) camService.roiPosYSlider + (float) (contourMoments.M01 / contourMoments.M00));
 
             // Find contour rectangle
             var rect = CvInvoke.MinAreaRect(processedContour);
             var box = CvInvoke.BoxPoints(rect);
 
-            // Maybe expected width processing
-            // var a1 = FindDistance(new PointF(box[0].X, box[0].Y), new PointF(box[1].X, box[1].Y));
-            // var a2 = FindDistance(new PointF(box[1].X, box[1].Y), new PointF(box[2].X, box[2].Y));
-            // var a3 = FindDistance(new PointF(box[2].X, box[2].Y), new PointF(box[3].X, box[3].Y));
-            // var a4 = FindDistance(new PointF(box[3].X, box[3].Y), new PointF(box[0].X, box[0].Y));
-            // ...
-
             var contourBoxPoint1 = new PointF(box[0].X, (float) camService.roiPosYSlider + box[0].Y);
             var contourBoxPoint2 = new PointF(box[1].X, (float) camService.roiPosYSlider + box[1].Y);
             var contourBoxPoint3 = new PointF(box[2].X, (float) camService.roiPosYSlider + box[2].Y);
             var contourBoxPoint4 = new PointF(box[3].X, (float) camService.roiPosYSlider + box[3].Y);
-            // drawService.DrawLine(camService.LinedFrame, contourBoxPoint1, contourBoxPoint2, camWindowView.CamContourRectColor, camWindowView.CamContourRectThickness);
-            // drawService.DrawLine(camService.LinedFrame, contourBoxPoint2, contourBoxPoint3, camWindowView.CamContourRectColor, camWindowView.CamContourRectThickness);
-            // drawService.DrawLine(camService.LinedFrame, contourBoxPoint3, contourBoxPoint4, camWindowView.CamContourRectColor, camWindowView.CamContourRectThickness);
-            // drawService.DrawLine(camService.LinedFrame, contourBoxPoint4, contourBoxPoint1, camWindowView.CamContourRectColor, camWindowView.CamContourRectThickness);
 
             // Setup vertical contour middlepoints
-            var contourWidth = FindDistance(contourBoxPoint1, contourBoxPoint2);
-            var contourHeight = FindDistance(contourBoxPoint4, contourBoxPoint1);
+            var contourHeight = FindDistance(contourBoxPoint1, contourBoxPoint2);
+            var contourWidth = FindDistance(contourBoxPoint4, contourBoxPoint1);
             PointF contourBoxMiddlePoint1;
             PointF contourBoxMiddlePoint2;
 
-            if (contourWidth < contourHeight)
+            if (contourWidth > contourHeight)
             {
                 contourBoxMiddlePoint1 = FindMiddle(contourBoxPoint1, contourBoxPoint2);
                 contourBoxMiddlePoint2 = FindMiddle(contourBoxPoint4, contourBoxPoint3);
@@ -131,19 +109,14 @@ namespace DartboardRecognition.Services
             var spikeAngle = FindAngle(contourBoxMiddlePoint2, contourBoxMiddlePoint1);
             spikeLinePoint1.X = (float) (contourBoxMiddlePoint2.X + Math.Cos(spikeAngle) * spikeLineLength);
             spikeLinePoint1.Y = (float) (contourBoxMiddlePoint2.Y + Math.Sin(spikeAngle) * spikeLineLength);
-            // drawService.DrawLine(camService.LinedFrame, spikeLinePoint1, spikeLinePoint2, camWindowView.CamSpikeLineColor, camWindowView.CamSpikeLineThickness);
 
             // Find point of impact with surface
             PointF? camPoi = FindLinesIntersection(spikeLinePoint1, spikeLinePoint2, camService.surfacePoint1, camService.surfacePoint2);
-            if (camPoi != null)
-            {
-                // drawService.DrawCircle(camService.LinedFrame, camPoi.Value, camWindowView.ProjectionPoiRadius, camWindowView.ProjectionPoiColor, camWindowView.ProjectionPoiThickness);
-            }
 
             // Translate cam surface POI to dartboard projection
             var frameWidth = camService.RoiLastThrowFrame.Cols;
             var frameSemiWidth = frameWidth / 2;
-            var camFovAngle = 100;
+            var camFovAngle = 89;
             var camFovSemiAngle = camFovAngle / 2;
             var projectionToCenter = new PointF();
             var surfacePoiToCenterDistance = FindDistance(camService.surfaceCenterPoint1, camPoi.GetValueOrDefault());
@@ -168,16 +141,13 @@ namespace DartboardRecognition.Services
                                     Y = (float) (camService.setupPoint.Y + Math.Sin(camService.toBullAngle + poiCamCenterAngle) * 2000)
                                 };
 
-            //drawman.DrawCircle(dartboardProjectionFrame, projectionToCenter, view.ProjectionPoiRadius, view.ProjectionPoiColor, view.ProjectionPoiThickness);
-            //drawman.DrawCircle(dartboardProjectionFrame, projectionPoi, view.ProjectionPoiRadius, view.ProjectionPoiColor, view.ProjectionPoiThickness);
-
             // Draw line from cam through projection POI
             var rayPoint = projectionPoi;
             var angle = FindAngle(camService.setupPoint, rayPoint);
             rayPoint.X = (float) (camService.setupPoint.X + Math.Cos(angle) * 2000);
             rayPoint.Y = (float) (camService.setupPoint.Y + Math.Sin(angle) * 2000);
 
-            drawService.DrawLine(camService.setupPoint, rayPoint);
+            drawService.ProjectionDrawLine(camService.setupPoint, rayPoint, false);
 
             var ray = new Ray(camService.setupPoint, rayPoint, contourWidth);
 

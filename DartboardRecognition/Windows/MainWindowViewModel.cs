@@ -31,12 +31,12 @@ namespace DartboardRecognition.Windows
             this.mainWindowView = mainWindowView;
             drawService = MainWindow.ServiceContainer.Resolve<DrawService>();
             throwService = MainWindow.ServiceContainer.Resolve<ThrowService>();
-            drawService.DrawProjectionImage();
+            drawService.DrawProjection();
         }
 
         private void StartCapturing()
         {
-            drawService.DrawProjectionImage();
+            drawService.DrawProjection();
             cts = new CancellationTokenSource();
             cancelToken = cts.Token;
             StartDetection();
@@ -49,7 +49,7 @@ namespace DartboardRecognition.Windows
 
             cams = new List<CamWindow>
                    {
-                       new CamWindow(1, runtimeCapturing, false),
+                       new CamWindow(1, runtimeCapturing, withDetection),
                        new CamWindow(2, runtimeCapturing, withDetection),
                        new CamWindow(3, runtimeCapturing, withDetection),
                        new CamWindow(4, runtimeCapturing, withDetection)
@@ -76,7 +76,9 @@ namespace DartboardRecognition.Windows
 
                                  if (response == ResponseType.Extraction)
                                  {
-                                     Thread.Sleep(TimeSpan.FromSeconds(5));
+                                     var now = DateTime.Now;
+                                     while (DateTime.Now - now < TimeSpan.FromSeconds(5)) { }
+
                                      DoCaptures();
                                      break;
                                  }

@@ -4,7 +4,6 @@ using System;
 using System.Configuration;
 using System.Drawing;
 using System.Linq;
-using System.Threading;
 using System.Windows.Media.Imaging;
 using Autofac;
 using DartboardRecognition.Windows;
@@ -63,27 +62,29 @@ namespace DartboardRecognition.Services
             drawService = MainWindow.ServiceContainer.Resolve<DrawService>();
             surfacePoint1 = new PointF();
             surfacePoint2 = new PointF();
+            var coeff = (2200 - drawService.ProjectionFrameSide) / 2;
+
             switch (camWindow.camNumber)
             {
                 case 1:
                     camNumber = 1;
-                    setupPoint = new PointF(305 - (2200 - drawService.ProjectionFrameSide),
-                                            512 - (2200 - drawService.ProjectionFrameSide));
+                    setupPoint = new PointF(305 - coeff,
+                                            512 - coeff);
                     break;
                 case 2:
                     camNumber = 2;
-                    setupPoint = new PointF(800 - (2200 - drawService.ProjectionFrameSide),
-                                            159 - (2200 - drawService.ProjectionFrameSide));
+                    setupPoint = new PointF(800 - coeff,
+                                            159 - coeff);
                     break;
                 case 3:
                     camNumber = 3;
-                    setupPoint = new PointF(1405 - (2200 - drawService.ProjectionFrameSide),
-                                            159 - (2200 - drawService.ProjectionFrameSide));
+                    setupPoint = new PointF(1405 - coeff,
+                                            159 - coeff);
                     break;
                 case 4:
                     camNumber = 4;
-                    setupPoint = new PointF(1889 - (2200 - drawService.ProjectionFrameSide),
-                                            512 - (2200 - drawService.ProjectionFrameSide));
+                    setupPoint = new PointF(1889 - coeff,
+                                            512 - coeff);
                     break;
                 default:
                     throw new Exception("Out of cameras range");
@@ -219,7 +220,8 @@ namespace DartboardRecognition.Services
 
                 if (moveDetected)
                 {
-                    Thread.Sleep(TimeSpan.FromSeconds(1));
+                    var now = DateTime.Now;
+                    while (DateTime.Now - now < TimeSpan.FromSeconds(1)){}
 
                     diffImage = CaptureAndDiff(zeroImage);
                     zeroImage.Dispose();
