@@ -26,7 +26,7 @@
 
 * Main app also need presetup each camera. Using sliders you need to set up surface, center point, and region of interesting (ROI)
 
-![MainApp](https://user-images.githubusercontent.com/42347722/65386514-5892ac00-dd45-11e9-8c98-9e46d4d82473.jpg)
+![MainApp](https://user-images.githubusercontent.com/42347722/67162119-d7413000-f369-11e9-9c1d-e222ccac6ef0.png)
 
 * The main idea of app working process:
   * ![process](https://user-images.githubusercontent.com/42347722/65386705-ea9bb400-dd47-11e9-9c09-b78dc986e84b.jpg)
@@ -38,6 +38,4 @@
   * Intersection of this ray and surface gives us point of impact (white) from one camera
   * Using information about POI from all 4 cameras, we can calculate actual dart POI on dartboard if draw rays from cameras setup points to cameras POIs
   
-![MainApp2jpg](https://user-images.githubusercontent.com/42347722/65386812-cd1b1a00-dd48-11e9-9bb1-57a17373da27.jpg)
-
 * Thats how it works. Sounds simple, but there are many things to stuck with...
