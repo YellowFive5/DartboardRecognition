@@ -19,36 +19,36 @@ namespace DartboardRecognition.Services
     public class DrawService
     {
         private readonly MainWindow mainWindow;
-        public Bgr CamRoiRectColor { get; } = new Bgr(Color.LawnGreen);
-        public int CamRoiRectThickness { get; } = 5;
-        public Bgr CamSurfaceLineColor { get; } = new Bgr(Color.Red);
-        public int CamSurfaceLineThickness { get; } = 5;
-        public MCvScalar CamContourRectColor { get; } = new Bgr(Color.Blue).MCvScalar;
-        public int CamContourRectThickness { get; } = 5;
-        public MCvScalar CamSpikeLineColor { get; } = new Bgr(Color.White).MCvScalar;
-        public int CamSpikeLineThickness { get; } = 4;
-        public MCvScalar ProjectionPoiColor { get; } = new Bgr(Color.Yellow).MCvScalar;
-        public int ProjectionPoiRadius { get; } = 6;
-        public int ProjectionPoiThickness { get; } = 6;
-        public MCvScalar CamContourColor { get; } = new Bgr(Color.Violet).MCvScalar;
-        public int CamContourThickness { get; } = 2;
-        private MCvScalar ProjectionGridColor { get; } = new Bgr(Color.DarkGray).MCvScalar;
-        public MCvScalar ProjectionSurfaceLineColor { get; } = new Bgr(Color.Red).MCvScalar;
-        public int ProjectionSurfaceLineThickness { get; } = 2;
-        public MCvScalar ProjectionRayColor { get; } = new Bgr(Color.DeepSkyBlue).MCvScalar;
-        public int ProjectionRayThickness { get; } = 2;
-        private MCvScalar PoiColor { get; } = new Bgr(Color.MediumVioletRed).MCvScalar;
-        private int PoiRadius { get; } = 6;
-        private int PoiThickness { get; } = 6;
-        private int ProjectionGridThickness { get; } = 2;
-        private Bgr ProjectionDigitsColor { get; } = new Bgr(Color.White);
-        private double ProjectionDigitsScale { get; } = 2;
-        private int ProjectionDigitsThickness { get; } = 2;
-        public int ProjectionCoefficent { get; } = 3;
-        public PointF ProjectionCenterPoint { get; }
-        private int ProjectionLineCam1Bias { get; } = 0;
-        private int ProjectionLineCam2Bias { get; } = 0;
-        public int ProjectionFrameSide { get; } = 1300;
+        public Bgr CamRoiRectColor = new Bgr(Color.LawnGreen);
+        public readonly int CamRoiRectThickness = 5;
+        public Bgr CamSurfaceLineColor = new Bgr(Color.Red);
+        public readonly int CamSurfaceLineThickness = 5;
+        public MCvScalar CamContourRectColor = new Bgr(Color.Blue).MCvScalar;
+        public int CamContourRectThickness = 5;
+        public MCvScalar CamSpikeLineColor = new Bgr(Color.White).MCvScalar;
+        public int CamSpikeLineThickness = 4;
+        public MCvScalar ProjectionPoiColor = new Bgr(Color.Yellow).MCvScalar;
+        public int ProjectionPoiRadius = 6;
+        public int ProjectionPoiThickness = 6;
+        public MCvScalar CamContourColor = new Bgr(Color.Violet).MCvScalar;
+        public int CamContourThickness = 2;
+        private readonly MCvScalar ProjectionGridColor = new Bgr(Color.DarkGray).MCvScalar;
+        public MCvScalar ProjectionSurfaceLineColor = new Bgr(Color.Red).MCvScalar;
+        public int ProjectionSurfaceLineThickness = 2;
+        private MCvScalar ProjectionRayColor = new Bgr(Color.DeepSkyBlue).MCvScalar;
+        public int ProjectionRayThickness = 2;
+        private MCvScalar PoiColor = new Bgr(Color.MediumVioletRed).MCvScalar;
+        private readonly int PoiRadius = 6;
+        private readonly int PoiThickness = 6;
+        private readonly int ProjectionGridThickness = 2;
+        private Bgr ProjectionDigitsColor = new Bgr(Color.White);
+        private readonly double ProjectionDigitsScale = 2;
+        private readonly int ProjectionDigitsThickness = 2;
+        public readonly int ProjectionCoefficent = 3;
+        public PointF ProjectionCenterPoint;
+        private int ProjectionLineCam1Bias = 0;
+        private int ProjectionLineCam2Bias = 0;
+        public readonly int ProjectionFrameSide = 1300;
         private Image<Bgr, byte> DartboardProjectionFrameBackground { get; }
         private Image<Bgr, byte> DartboardProjectionWorkingFrame { get; set; }
 

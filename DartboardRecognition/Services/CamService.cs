@@ -21,6 +21,7 @@ namespace DartboardRecognition.Services
         private readonly CamWindow camWindow;
         private readonly DrawService drawService;
         public readonly VideoCapture videoCapture;
+        private readonly ConfigService configService;
         public PointF surfacePoint1;
         public PointF surfacePoint2;
         public PointF surfaceCenterPoint1;
@@ -43,16 +44,19 @@ namespace DartboardRecognition.Services
         public readonly double toBullAngle;
         public readonly int camNumber;
         private Rectangle roiRectangle;
+        private readonly bool runtimeCapturing;
+        private readonly bool withDetection;
         private Image<Bgr, byte> OriginFrame { get; set; }
         private Image<Bgr, byte> LinedFrame { get; set; }
         private Image<Gray, byte> RoiFrame { get; set; }
         public Image<Gray, byte> RoiLastThrowFrame { get; private set; }
-        private int SmoothGauss { get; } = 5;
-        private int MovesNoise { get; } = 900;
-        private int MovesDart { get; } = 1000;
-        private int MovesExtraction { get; } = 7000;
-        private readonly bool runtimeCapturing;
-        private readonly bool withDetection;
+
+        private const int ResolutionWidth = 1920;
+        private const int ResolutionHeight = 1080;
+        private const int MovesExtraction = 7000;
+        private const int MovesDart = 1000;
+        private const int MovesNoise = 900;
+        private const int SmoothGauss = 5;
 
         public CamService(CamWindow camWindow, bool runtimeCapturing, bool withDetection)
         {
@@ -60,6 +64,7 @@ namespace DartboardRecognition.Services
             this.runtimeCapturing = runtimeCapturing;
             this.withDetection = withDetection;
             drawService = MainWindow.ServiceContainer.Resolve<DrawService>();
+            configService = MainWindow.ServiceContainer.Resolve<ConfigService>();
             surfacePoint1 = new PointF();
             surfacePoint2 = new PointF();
             var coeff = (2200 - drawService.ProjectionFrameSide) / 2;
@@ -73,18 +78,18 @@ namespace DartboardRecognition.Services
                     break;
                 case 2:
                     camNumber = 2;
-                    setupPoint = new PointF(800 - coeff,
-                                            159 - coeff);
+                    setupPoint = new PointF(798 - coeff,
+                                            153 - coeff);
                     break;
                 case 3:
                     camNumber = 3;
-                    setupPoint = new PointF(1405 - coeff,
-                                            159 - coeff);
+                    setupPoint = new PointF(1414 - coeff,
+                                            133 - coeff);
                     break;
                 case 4:
                     camNumber = 4;
-                    setupPoint = new PointF(1889 - coeff,
-                                            512 - coeff);
+                    setupPoint = new PointF(1939 - coeff,
+                                            475 - coeff);
                     break;
                 default:
                     throw new Exception("Out of cameras range");
@@ -92,15 +97,15 @@ namespace DartboardRecognition.Services
 
             toBullAngle = MeasureService.FindAngle(setupPoint, drawService.ProjectionCenterPoint);
             videoCapture = new VideoCapture(GetCamIndex(camNumber));
-            videoCapture.SetCaptureProperty(CapProp.FrameWidth, 1920);
-            videoCapture.SetCaptureProperty(CapProp.FrameHeight, 1080);
+            videoCapture.SetCaptureProperty(CapProp.FrameWidth, ResolutionWidth);
+            videoCapture.SetCaptureProperty(CapProp.FrameHeight, ResolutionHeight);
             GetSlidersData();
         }
 
         private int GetCamIndex(int camNumber)
         {
             var allCams = DsDevice.GetDevicesOfCat(FilterCategory.VideoInputDevice).ToList();
-            var camId = ConfigurationManager.AppSettings[$"Cam{camNumber}Id"];
+            var camId = configService.Read<string>($"Cam{camNumber}Id");
             var index = allCams.FindIndex(x => x.DevicePath.Contains(camId));
             return index;
         }
@@ -121,9 +126,9 @@ namespace DartboardRecognition.Services
 
         private void DrawSetupLines()
         {
-            OriginFrame = videoCapture.QueryFrame().ToImage<Bgr, byte>();
+            OriginFrame = videoCapture.QueryFrame()?.ToImage<Bgr, byte>();
 
-            LinedFrame = OriginFrame.Clone();
+            LinedFrame = OriginFrame?.Clone();
 
             roiRectangle = new Rectangle((int) roiPosXSlider,
                                          (int) roiPosYSlider,
@@ -136,7 +141,7 @@ namespace DartboardRecognition.Services
                                       drawService.CamRoiRectThickness);
 
             surfacePoint1 = new PointF(0, (float) surfaceSlider);
-            surfacePoint2 = new PointF(OriginFrame.Cols,
+            surfacePoint2 = new PointF(ResolutionWidth,
                                        (float) surfaceSlider);
             drawService.DrawLine(LinedFrame,
                                  surfacePoint1,
@@ -178,7 +183,7 @@ namespace DartboardRecognition.Services
 
         public void DoCapture()
         {
-            RoiFrame?.Dispose();
+            // RoiFrame?.Dispose(); todo check and delete
 
             GetSlidersData();
             DrawSetupLines();
@@ -221,7 +226,9 @@ namespace DartboardRecognition.Services
                 if (moveDetected)
                 {
                     var now = DateTime.Now;
-                    while (DateTime.Now - now < TimeSpan.FromSeconds(1)){}
+                    while (DateTime.Now - now < TimeSpan.FromSeconds(1))
+                    {
+                    }
 
                     diffImage = CaptureAndDiff(zeroImage);
                     zeroImage.Dispose();
@@ -275,7 +282,9 @@ namespace DartboardRecognition.Services
             newImage._ThresholdBinary(new Gray(tresholdMinSlider),
                                       new Gray(tresholdMaxSlider));
 
-            var diffImage = oldImage.AbsDiff(newImage);
+            var diffImage = oldImage.Data != null
+                                ? oldImage.AbsDiff(newImage)
+                                : new Image<Gray, byte>(newImage.Width, newImage.Height, new Gray(255)); // todo check this
             newImage.Dispose();
 
             return diffImage;

@@ -18,8 +18,9 @@ namespace DartboardRecognition.Services
         private readonly DrawService drawService;
         private readonly ThrowService throwService;
         private VectorOfPoint processedContour;
-        private int MinContourArea { get; } = 1000;
 
+        private const int MinContourArea = 1000;
+        private const int CamFovAngle = 87;
 
         public MeasureService(CamService camService)
         {
@@ -115,8 +116,7 @@ namespace DartboardRecognition.Services
             // Translate cam surface POI to dartboard projection
             var frameWidth = camService.RoiLastThrowFrame.Cols;
             var frameSemiWidth = frameWidth / 2;
-            var camFovAngle = 90;
-            var camFovSemiAngle = camFovAngle / 2;
+            var camFovSemiAngle = CamFovAngle / 2;
             var projectionToCenter = new PointF();
             var surfacePoiToCenterDistance = FindDistance(camService.surfaceCenterPoint1, camPoi.GetValueOrDefault());
             var surfaceLeftToPoiDistance = FindDistance(camService.surfaceLeftPoint1, camPoi.GetValueOrDefault());
