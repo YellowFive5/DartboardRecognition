@@ -24,7 +24,7 @@ namespace DartboardRecognition.Windows
         {
             this.camWindowView = camWindowView;
             camService = new CamService(camWindowView, runtimeCapturing, withDetection);
-            measureService = new MeasureService(camWindowView, camService);
+            measureService = new MeasureService(camService);
             configService = MainWindow.ServiceContainer.Resolve<ConfigService>();
         }
 

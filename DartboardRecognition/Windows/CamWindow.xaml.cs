@@ -11,7 +11,6 @@ namespace DartboardRecognition.Windows
     {
         public readonly int camNumber;
         private readonly CamWindowViewModel viewModel;
-        public int MinContourArcLength { get; } = 190;
 
         public CamWindow(int camNumber,
                          bool runtimeCapturing,

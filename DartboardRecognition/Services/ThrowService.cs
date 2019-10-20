@@ -29,8 +29,8 @@ namespace DartboardRecognition.Services
                 return;
             }
 
-            var firstBestRay = rays.OrderByDescending(i => i.ContourWidth).ElementAt(0);
-            var secondBestRay = rays.OrderByDescending(i => i.ContourWidth).ElementAt(1);
+            var firstBestRay = rays.OrderByDescending(i => i.ContourArea).ElementAt(0);
+            var secondBestRay = rays.OrderByDescending(i => i.ContourArea).ElementAt(1);
             rays.Clear();
 
             var poi = MeasureService.FindLinesIntersection(firstBestRay.CamPoint,

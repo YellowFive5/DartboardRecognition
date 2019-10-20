@@ -14,16 +14,15 @@ namespace DartboardRecognition.Services
 {
     public class MeasureService
     {
-        private readonly CamWindow camWindowView;
         private readonly CamService camService;
         private readonly DrawService drawService;
         private readonly ThrowService throwService;
         private VectorOfPoint processedContour;
+        private int MinContourArea { get; } = 1000;
 
-        public MeasureService(CamWindow camWindowView,
-                              CamService camService)
+
+        public MeasureService(CamService camService)
         {
-            this.camWindowView = camWindowView;
             this.camService = camService;
             drawService = MainWindow.ServiceContainer.Resolve<DrawService>();
             throwService = MainWindow.ServiceContainer.Resolve<ThrowService>();
@@ -45,21 +44,21 @@ namespace DartboardRecognition.Services
             }
 
             var dartContour = new VectorOfPoint();
-            var dartContourArcLength = 0.0;
+            var dartContourArea = 0.0;
 
             for (var i = 0; i < allContours.Size; i++)
             {
                 var tempContour = allContours[i];
-                var tempContourArcLength = CvInvoke.ArcLength(tempContour, true);
-                if (tempContourArcLength > camWindowView.MinContourArcLength &&
-                    tempContourArcLength > dartContourArcLength)
+                var tempContourArea = CvInvoke.ContourArea(tempContour);
+                if (tempContourArea > MinContourArea &&
+                    tempContourArea > dartContourArea)
                 {
-                    dartContourArcLength = tempContourArcLength;
+                    dartContourArea = tempContourArea;
                     dartContour = tempContour;
                 }
             }
 
-            var found = dartContourArcLength > 0 && dartContour.Size > 0;
+            var found = dartContourArea > 0 && dartContour.Size > 0;
 
             if (found)
             {
@@ -116,7 +115,7 @@ namespace DartboardRecognition.Services
             // Translate cam surface POI to dartboard projection
             var frameWidth = camService.RoiLastThrowFrame.Cols;
             var frameSemiWidth = frameWidth / 2;
-            var camFovAngle = 89;
+            var camFovAngle = 90;
             var camFovSemiAngle = camFovAngle / 2;
             var projectionToCenter = new PointF();
             var surfacePoiToCenterDistance = FindDistance(camService.surfaceCenterPoint1, camPoi.GetValueOrDefault());
@@ -149,10 +148,8 @@ namespace DartboardRecognition.Services
 
             drawService.ProjectionDrawLine(camService.setupPoint, rayPoint, false);
 
-            var width = contourWidth < contourHeight
-                            ? contourWidth
-                            : contourHeight;
-            var ray = new Ray(camService.setupPoint, rayPoint, width);
+            var contourArea = contourHeight * contourWidth;
+            var ray = new Ray(camService.setupPoint, rayPoint, contourArea);
 
             throwService.SaveRay(ray);
 
