@@ -7,7 +7,7 @@
         xmlns:windows="clr-namespace:DartboardRecognition.Windows"
         mc:Ignorable="d"
         Title="CamWindow"
-        Height="706.429"
+        Height="463.594"
         Width="592.4"
         ResizeMode="NoResize"
         Closing="OnClosing">
@@ -26,8 +26,8 @@
         <Slider x:Name="SurfaceLeftSlider"  HorizontalAlignment="Left" Margin="4,626,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="488" Maximum="2000" Value="536"/>
         <Slider x:Name="SurfaceRightSlider"  HorizontalAlignment="Left" Margin="4,649,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="488" Maximum="2000" Value="536"/>
 
-        <Image x:Name="ImageBox" HorizontalAlignment="Left" Height="314" Margin="8,8,0,0" VerticalAlignment="Top" Width="568" />
-        <Image x:Name="ImageBoxRoi" HorizontalAlignment="Left" Height="48" Margin="8,327,0,0" VerticalAlignment="Top" Width="568" />
+        <Image x:Name="ImageBox" HorizontalAlignment="Left" Height="319" Margin="8,8,0,0" VerticalAlignment="Top" Width="568" />
+        <Image x:Name="ImageBoxRoi" HorizontalAlignment="Left" Height="48" Margin="8,330,0,0" VerticalAlignment="Top" Width="568" />
         <Image x:Name="ImageBoxRoiLastThrow" HorizontalAlignment="Left" Height="48" Margin="8,380,0,0" VerticalAlignment="Top" Width="568" />
         <Label Content="Treshold min" HorizontalAlignment="Left" Margin="492,433,0,0" VerticalAlignment="Top" Width="84" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" RenderTransformOrigin="0.594,0.181"/>
         <Label Content="Treshold min" Margin="492,456,0,0" VerticalAlignment="Top" Width="84" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" RenderTransformOrigin="0.594,0.181" HorizontalAlignment="Left"/>

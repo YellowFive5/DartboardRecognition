@@ -21,6 +21,7 @@ namespace DartboardRecognition.Windows
             RegisterContainer();
             viewModel = new MainWindowViewModel(this);
             DataContext = viewModel;
+            viewModel.LoadSettings();
         }
 
         private void RegisterContainer()
@@ -51,6 +52,7 @@ namespace DartboardRecognition.Windows
         private void OnClosing(object sender, CancelEventArgs e)
         {
             viewModel.OnStopButtonClicked();
+            viewModel.SaveSettings();
         }
     }
 }

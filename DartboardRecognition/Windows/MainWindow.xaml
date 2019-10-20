@@ -7,19 +7,24 @@
         xmlns:windows="clr-namespace:DartboardRecognition.Windows"
         mc:Ignorable="d"
         Title="DartboardRecognition"
-        Height="623"
-        Width="390.2"
+        Height="552.2"
+        Width="351.267"
         ResizeMode="NoResize"
         Closing="OnClosing">
     <Window.DataContext>
         <windows:MainWindowViewModel />
     </Window.DataContext>
     <Grid>
-        <Image x:Name="DartboardProjectionImageBox" HorizontalAlignment="Left" Height="308" Margin="33,36,0,0" VerticalAlignment="Top" Width="314" />
-        <TextBox x:Name="PointsBox" HorizontalAlignment="Left" Height="118" Margin="34,362,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="314"/>
-        <Button x:Name="StartButton" Content="Start" HorizontalAlignment="Left" Margin="34,519,0,0" VerticalAlignment="Top" Width="153" Click="StartButtonClick" Height="39"/>
-        <Button x:Name="StopButton" Content="Stop" HorizontalAlignment="Left" Margin="194,519,0,0" VerticalAlignment="Top" Width="154" Click="StopButtonClick" Height="39" IsEnabled="False"/>
-        <CheckBox x:Name="RuntimeCapturingCheckBox" Content="Runtime capturing" HorizontalAlignment="Left" Margin="34,493,0,0" VerticalAlignment="Top" IsChecked="False"/>
-        <CheckBox x:Name="WithDetectionCapturingCheckBox" Content="With detection" HorizontalAlignment="Left" Margin="161,493,0,0" VerticalAlignment="Top" IsChecked="True"/>
+        <Image x:Name="DartboardProjectionImageBox" HorizontalAlignment="Left" Margin="11,12,0,0" VerticalAlignment="Top" Width="314" Height="314" />
+        <TextBox x:Name="PointsBox" HorizontalAlignment="Left" Height="52" Margin="11,328,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="314"/>
+        <Button x:Name="StartButton" Content="Start" HorizontalAlignment="Left" Margin="12,465,0,0" VerticalAlignment="Top" Width="153" Click="StartButtonClick" Height="39"/>
+        <Button x:Name="StopButton" Content="Stop" HorizontalAlignment="Left" Margin="172,465,0,0" VerticalAlignment="Top" Width="154" Click="StopButtonClick" Height="39" IsEnabled="False"/>
+        <CheckBox x:Name="RuntimeCapturingCheckBox" Content="Runtime capturing" HorizontalAlignment="Left" Margin="171,383,0,0" VerticalAlignment="Top" IsChecked="False"/>
+        <CheckBox x:Name="WithDetectionCheckBox" Content="With detection" HorizontalAlignment="Left" Margin="171,403,0,0" VerticalAlignment="Top" IsChecked="True"/>
+        <CheckBox x:Name="SetupSlidersCheckBox" Content="Show setup sliders" HorizontalAlignment="Left" Margin="171,423,0,0" VerticalAlignment="Top" IsChecked="False"/>
+        <CheckBox x:Name="Cam1CheckBox" Content="Cam 1" HorizontalAlignment="Left" Margin="11,383,0,0" VerticalAlignment="Top" IsChecked="True"/>
+        <CheckBox x:Name="Cam2CheckBox" Content="Cam 2" HorizontalAlignment="Left" Margin="11,401,0,0" VerticalAlignment="Top" IsChecked="True"/>
+        <CheckBox x:Name="Cam3CheckBox" Content="Cam 3" HorizontalAlignment="Left" Margin="11,420,0,0" VerticalAlignment="Top" IsChecked="True"/>
+        <CheckBox x:Name="Cam4CheckBox" Content="Cam 4" HorizontalAlignment="Left" Margin="11,439,0,0" VerticalAlignment="Top" IsChecked="True"/>
     </Grid>
 </Window>

@@ -14,9 +14,14 @@ namespace DartboardRecognition.Windows
 
         public CamWindow(int camNumber,
                          bool runtimeCapturing,
-                         bool withDetection)
+                         bool withDetection,
+                         bool withSetupSliders)
         {
             InitializeComponent();
+            if (withSetupSliders)
+            {
+                Height = 707;
+            }
 
             this.camNumber = camNumber;
             Title = $"Cam {camNumber.ToString()}";

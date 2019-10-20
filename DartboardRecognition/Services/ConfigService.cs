@@ -60,6 +60,10 @@ namespace DartboardRecognition.Services
                 {
                     value = int.Parse(ConfigurationManager.AppSettings[$"{key}"]);
                 }
+                else if (typeof(T) == typeof(bool))
+                {
+                    value = bool.Parse(ConfigurationManager.AppSettings[$"{key}"]);
+                }
                 else if (typeof(T) == typeof(string))
                 {
                     value = ConfigurationManager.AppSettings[$"{key}"];
