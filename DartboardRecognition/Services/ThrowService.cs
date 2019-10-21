@@ -55,33 +55,33 @@ namespace DartboardRecognition.Services
                               10, 15, 2, 17, 3,
                               19, 7, 16, 8, 11
                           };
-            var angle = MeasureService.FindAngle(drawService.ProjectionCenterPoint, poi);
-            var distance = MeasureService.FindDistance(drawService.ProjectionCenterPoint, poi);
+            var angle = MeasureService.FindAngle(drawService.projectionCenterPoint, poi);
+            var distance = MeasureService.FindDistance(drawService.projectionCenterPoint, poi);
             var sector = 0;
             var multiplier = 1;
 
-            if (distance >= drawService.ProjectionCoefficent * 95 &&
-                distance <= drawService.ProjectionCoefficent * 105)
+            if (distance >= drawService.projectionCoefficent * 95 &&
+                distance <= drawService.projectionCoefficent * 105)
             {
                 multiplier = 3;
             }
-            else if (distance >= drawService.ProjectionCoefficent * 160 &&
-                     distance <= drawService.ProjectionCoefficent * 170)
+            else if (distance >= drawService.projectionCoefficent * 160 &&
+                     distance <= drawService.projectionCoefficent * 170)
             {
                 multiplier = 2;
             }
 
             // Find sector
-            if (distance <= drawService.ProjectionCoefficent * 7)
+            if (distance <= drawService.projectionCoefficent * 7)
             {
                 sector = 50;
             }
-            else if (distance > drawService.ProjectionCoefficent * 7 &&
-                     distance <= drawService.ProjectionCoefficent * 17)
+            else if (distance > drawService.projectionCoefficent * 7 &&
+                     distance <= drawService.projectionCoefficent * 17)
             {
                 sector = 25;
             }
-            else if (distance > drawService.ProjectionCoefficent * 170)
+            else if (distance > drawService.projectionCoefficent * 170)
             {
                 sector = 0;
             }
@@ -104,7 +104,7 @@ namespace DartboardRecognition.Services
                 }
             }
 
-            return new Throw(poi, sector, multiplier, drawService.ProjectionFrameSide);
+            return new Throw(poi, sector, multiplier, drawService.projectionFrameSide);
         }
 
         public void SaveRay(Ray ray)

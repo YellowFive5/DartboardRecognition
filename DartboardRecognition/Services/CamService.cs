@@ -1,7 +1,6 @@
 ﻿#region Usings
 
 using System;
-using System.Configuration;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Media.Imaging;
@@ -51,12 +50,12 @@ namespace DartboardRecognition.Services
         private Image<Gray, byte> RoiFrame { get; set; }
         public Image<Gray, byte> RoiLastThrowFrame { get; private set; }
 
-        private const int ResolutionWidth = 1920;
-        private const int ResolutionHeight = 1080;
-        private const int MovesExtraction = 7000;
-        private const int MovesDart = 1000;
-        private const int MovesNoise = 900;
-        private const int SmoothGauss = 5;
+        private readonly int resolutionWidth;
+        private readonly int resolutionHeight;
+        private readonly int movesExtraction;
+        private readonly int movesDart;
+        private readonly int movesNoise;
+        private readonly int smoothGauss;
 
         public CamService(CamWindow camWindow, bool runtimeCapturing, bool withDetection)
         {
@@ -67,38 +66,20 @@ namespace DartboardRecognition.Services
             configService = MainWindow.ServiceContainer.Resolve<ConfigService>();
             surfacePoint1 = new PointF();
             surfacePoint2 = new PointF();
-            var coeff = (2200 - drawService.ProjectionFrameSide) / 2;
-
-            switch (camWindow.camNumber)
-            {
-                case 1:
-                    camNumber = 1;
-                    setupPoint = new PointF(305 - coeff,
-                                            512 - coeff);
-                    break;
-                case 2:
-                    camNumber = 2;
-                    setupPoint = new PointF(798 - coeff,
-                                            153 - coeff);
-                    break;
-                case 3:
-                    camNumber = 3;
-                    setupPoint = new PointF(1414 - coeff,
-                                            133 - coeff);
-                    break;
-                case 4:
-                    camNumber = 4;
-                    setupPoint = new PointF(1939 - coeff,
-                                            475 - coeff);
-                    break;
-                default:
-                    throw new Exception("Out of cameras range");
-            }
-
-            toBullAngle = MeasureService.FindAngle(setupPoint, drawService.ProjectionCenterPoint);
+            camNumber = camWindow.camNumber;
+            var projectionCoefficient = (2200 - drawService.projectionFrameSide) / 2;
+            setupPoint = new PointF(configService.Read<float>($"Cam{camNumber}X") - projectionCoefficient,
+                                    configService.Read<float>($"Cam{camNumber}Y") - projectionCoefficient);
+            resolutionWidth = configService.Read<int>("ResolutionWidth");
+            resolutionHeight = configService.Read<int>("ResolutionHeight");
+            movesExtraction = configService.Read<int>("MovesExtraction");
+            movesDart = configService.Read<int>("MovesDart");
+            movesNoise = configService.Read<int>("MovesNoise");
+            smoothGauss = configService.Read<int>("SmoothGauss");
+            toBullAngle = MeasureService.FindAngle(setupPoint, drawService.projectionCenterPoint);
             videoCapture = new VideoCapture(GetCamIndex(camNumber));
-            videoCapture.SetCaptureProperty(CapProp.FrameWidth, ResolutionWidth);
-            videoCapture.SetCaptureProperty(CapProp.FrameHeight, ResolutionHeight);
+            videoCapture.SetCaptureProperty(CapProp.FrameWidth, resolutionWidth);
+            videoCapture.SetCaptureProperty(CapProp.FrameHeight, resolutionHeight);
             GetSlidersData();
         }
 
@@ -137,17 +118,17 @@ namespace DartboardRecognition.Services
 
             drawService.DrawRectangle(LinedFrame,
                                       roiRectangle,
-                                      drawService.CamRoiRectColor.MCvScalar,
-                                      drawService.CamRoiRectThickness);
+                                      drawService.camRoiRectColor.MCvScalar,
+                                      drawService.camRoiRectThickness);
 
             surfacePoint1 = new PointF(0, (float) surfaceSlider);
-            surfacePoint2 = new PointF(ResolutionWidth,
+            surfacePoint2 = new PointF(resolutionWidth,
                                        (float) surfaceSlider);
             drawService.DrawLine(LinedFrame,
                                  surfacePoint1,
                                  surfacePoint2,
-                                 drawService.CamSurfaceLineColor.MCvScalar,
-                                 drawService.CamSurfaceLineThickness);
+                                 drawService.camSurfaceLineColor.MCvScalar,
+                                 drawService.camSurfaceLineThickness);
 
             surfaceCenterPoint1 = new PointF((float) surfaceCenterSlider,
                                              (float) surfaceSlider);
@@ -157,8 +138,8 @@ namespace DartboardRecognition.Services
             drawService.DrawLine(LinedFrame,
                                  surfaceCenterPoint1,
                                  surfaceCenterPoint2,
-                                 drawService.CamSurfaceLineColor.MCvScalar,
-                                 drawService.CamSurfaceLineThickness);
+                                 drawService.camSurfaceLineColor.MCvScalar,
+                                 drawService.camSurfaceLineThickness);
 
             surfaceLeftPoint1 = new PointF((float) surfaceLeftSlider,
                                            (float) surfaceSlider);
@@ -167,8 +148,8 @@ namespace DartboardRecognition.Services
             drawService.DrawLine(LinedFrame,
                                  surfaceLeftPoint1,
                                  surfaceLeftPoint2,
-                                 drawService.CamSurfaceLineColor.MCvScalar,
-                                 drawService.CamSurfaceLineThickness);
+                                 drawService.camSurfaceLineColor.MCvScalar,
+                                 drawService.camSurfaceLineThickness);
 
             surfaceRightPoint1 = new PointF((float) surfaceRightSlider,
                                             (float) surfaceSlider);
@@ -177,8 +158,8 @@ namespace DartboardRecognition.Services
             drawService.DrawLine(LinedFrame,
                                  surfaceRightPoint1,
                                  surfaceRightPoint2,
-                                 drawService.CamSurfaceLineColor.MCvScalar,
-                                 drawService.CamSurfaceLineThickness);
+                                 drawService.camSurfaceLineColor.MCvScalar,
+                                 drawService.camSurfaceLineThickness);
         }
 
         public void DoCapture()
@@ -192,7 +173,7 @@ namespace DartboardRecognition.Services
             OriginFrame.Dispose();
 
             RoiFrame.ROI = roiRectangle;
-            RoiFrame._SmoothGaussian(SmoothGauss);
+            RoiFrame._SmoothGaussian(smoothGauss);
             RoiFrame._ThresholdBinary(new Gray(tresholdMinSlider),
                                       new Gray(tresholdMaxSlider));
         }
@@ -211,7 +192,7 @@ namespace DartboardRecognition.Services
             OriginFrame?.Dispose();
             LinedFrame?.Dispose();
         }
-
+         
         public ResponseType Detect()
         {
             if (withDetection)
@@ -221,7 +202,7 @@ namespace DartboardRecognition.Services
                 var moves = diffImage.CountNonzero()[0];
                 diffImage.Dispose();
 
-                var moveDetected = moves > MovesNoise;
+                var moveDetected = moves > movesNoise;
 
                 if (moveDetected)
                 {
@@ -234,8 +215,8 @@ namespace DartboardRecognition.Services
                     zeroImage.Dispose();
                     moves = diffImage.CountNonzero()[0];
 
-                    var extractProcess = moves > MovesExtraction;
-                    var throwDetected = !extractProcess && moves > MovesDart;
+                    var extractProcess = moves > movesExtraction;
+                    var throwDetected = !extractProcess && moves > movesDart;
 
                     if (extractProcess)
                     {
@@ -278,7 +259,7 @@ namespace DartboardRecognition.Services
         {
             var newImage = videoCapture.QueryFrame().ToImage<Gray, byte>().Not();
             newImage.ROI = roiRectangle;
-            newImage._SmoothGaussian(SmoothGauss);
+            newImage._SmoothGaussian(smoothGauss);
             newImage._ThresholdBinary(new Gray(tresholdMinSlider),
                                       new Gray(tresholdMaxSlider));
 

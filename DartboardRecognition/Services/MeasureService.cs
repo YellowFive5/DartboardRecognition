@@ -17,16 +17,20 @@ namespace DartboardRecognition.Services
         private readonly CamService camService;
         private readonly DrawService drawService;
         private readonly ThrowService throwService;
+        private readonly ConfigService configService;
         private VectorOfPoint processedContour;
 
-        private const int MinContourArea = 1000;
-        private const int CamFovAngle = 87;
+        private readonly int minContourArea;
+        private readonly int camFovAngle;
 
         public MeasureService(CamService camService)
         {
             this.camService = camService;
             drawService = MainWindow.ServiceContainer.Resolve<DrawService>();
             throwService = MainWindow.ServiceContainer.Resolve<ThrowService>();
+            configService = MainWindow.ServiceContainer.Resolve<ConfigService>();
+            minContourArea = configService.Read<int>("MinContourArea");
+            camFovAngle = configService.Read<int>("CamFovAngle");
         }
 
         public bool FindDartContour()
@@ -51,7 +55,7 @@ namespace DartboardRecognition.Services
             {
                 var tempContour = allContours[i];
                 var tempContourArea = CvInvoke.ContourArea(tempContour);
-                if (tempContourArea > MinContourArea &&
+                if (tempContourArea > minContourArea &&
                     tempContourArea > dartContourArea)
                 {
                     dartContourArea = tempContourArea;
@@ -116,7 +120,7 @@ namespace DartboardRecognition.Services
             // Translate cam surface POI to dartboard projection
             var frameWidth = camService.RoiLastThrowFrame.Cols;
             var frameSemiWidth = frameWidth / 2;
-            var camFovSemiAngle = CamFovAngle / 2;
+            var camFovSemiAngle = camFovAngle / 2;
             var projectionToCenter = new PointF();
             var surfacePoiToCenterDistance = FindDistance(camService.surfaceCenterPoint1, camPoi.GetValueOrDefault());
             var surfaceLeftToPoiDistance = FindDistance(camService.surfaceLeftPoint1, camPoi.GetValueOrDefault());
@@ -148,7 +152,7 @@ namespace DartboardRecognition.Services
 
             drawService.ProjectionDrawLine(camService.setupPoint, rayPoint, false);
 
-            var contourArea = contourHeight * contourWidth;
+            var contourArea = contourHeight * contourWidth; // todo Here must be not Area but Arc. But CvInvoke.ArcLength() not work correct.
             var ray = new Ray(camService.setupPoint, rayPoint, contourArea);
 
             throwService.SaveRay(ray);

@@ -28,9 +28,10 @@ namespace DartboardRecognition.Windows
         {
             var cb = new ContainerBuilder();
 
-            cb.RegisterType<ConfigService>().AsSelf().SingleInstance();
+            var configService = new ConfigService();
+            cb.Register(r => configService).AsSelf().SingleInstance();
 
-            var drawService = new DrawService(this);
+            var drawService = new DrawService(this, configService);
             cb.Register(r => drawService).AsSelf().SingleInstance();
 
             var throwService = new ThrowService(drawService);

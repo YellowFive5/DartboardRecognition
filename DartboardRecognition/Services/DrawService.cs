@@ -19,10 +19,11 @@ namespace DartboardRecognition.Services
     public class DrawService
     {
         private readonly MainWindow mainWindow;
-        public Bgr CamRoiRectColor = new Bgr(Color.LawnGreen);
-        public readonly int CamRoiRectThickness = 5;
-        public Bgr CamSurfaceLineColor = new Bgr(Color.Red);
-        public readonly int CamSurfaceLineThickness = 5;
+        private readonly ConfigService configService;
+        public Bgr camRoiRectColor = new Bgr(Color.LawnGreen);
+        public readonly int camRoiRectThickness = 5;
+        public Bgr camSurfaceLineColor = new Bgr(Color.Red);
+        public readonly int camSurfaceLineThickness = 5;
         public MCvScalar CamContourRectColor = new Bgr(Color.Blue).MCvScalar;
         public int CamContourRectThickness = 5;
         public MCvScalar CamSpikeLineColor = new Bgr(Color.White).MCvScalar;
@@ -32,32 +33,32 @@ namespace DartboardRecognition.Services
         public int ProjectionPoiThickness = 6;
         public MCvScalar CamContourColor = new Bgr(Color.Violet).MCvScalar;
         public int CamContourThickness = 2;
-        private readonly MCvScalar ProjectionGridColor = new Bgr(Color.DarkGray).MCvScalar;
+        private readonly MCvScalar projectionGridColor = new Bgr(Color.DarkGray).MCvScalar;
         public MCvScalar ProjectionSurfaceLineColor = new Bgr(Color.Red).MCvScalar;
         public int ProjectionSurfaceLineThickness = 2;
-        private MCvScalar ProjectionRayColor = new Bgr(Color.DeepSkyBlue).MCvScalar;
+        private readonly MCvScalar projectionRayColor = new Bgr(Color.DeepSkyBlue).MCvScalar;
         public int ProjectionRayThickness = 2;
-        private MCvScalar PoiColor = new Bgr(Color.MediumVioletRed).MCvScalar;
-        private readonly int PoiRadius = 6;
-        private readonly int PoiThickness = 6;
-        private readonly int ProjectionGridThickness = 2;
-        private Bgr ProjectionDigitsColor = new Bgr(Color.White);
-        private readonly double ProjectionDigitsScale = 2;
-        private readonly int ProjectionDigitsThickness = 2;
-        public readonly int ProjectionCoefficent = 3;
-        public PointF ProjectionCenterPoint;
-        private int ProjectionLineCam1Bias = 0;
-        private int ProjectionLineCam2Bias = 0;
-        public readonly int ProjectionFrameSide = 1300;
+        private readonly MCvScalar poiColor = new Bgr(Color.MediumVioletRed).MCvScalar;
+        private readonly int poiRadius = 6;
+        private readonly int poiThickness = 6;
+        private readonly int projectionGridThickness = 2;
+        private readonly Bgr projectionDigitsColor = new Bgr(Color.White);
+        private readonly double projectionDigitsScale = 2;
+        private readonly int projectionDigitsThickness = 2;
+        public readonly int projectionCoefficent = 3;
+        public PointF projectionCenterPoint;
+        public readonly int projectionFrameSide;
         private Image<Bgr, byte> DartboardProjectionFrameBackground { get; }
         private Image<Bgr, byte> DartboardProjectionWorkingFrame { get; set; }
 
-        public DrawService(MainWindow mainWindow)
+        public DrawService(MainWindow mainWindow, ConfigService configService)
         {
             this.mainWindow = mainWindow;
-            DartboardProjectionFrameBackground = new Image<Bgr, byte>(ProjectionFrameSide,
-                                                                      ProjectionFrameSide);
-            ProjectionCenterPoint = new PointF((float) DartboardProjectionFrameBackground.Width / 2,
+            this.configService = configService;
+            projectionFrameSide = this.configService.Read<int>("ProjectionFrameSide");
+            DartboardProjectionFrameBackground = new Image<Bgr, byte>(projectionFrameSide,
+                                                                      projectionFrameSide);
+            projectionCenterPoint = new PointF((float) DartboardProjectionFrameBackground.Width / 2,
                                                (float) DartboardProjectionFrameBackground.Height / 2);
         }
 
@@ -123,7 +124,7 @@ namespace DartboardRecognition.Services
                 DartboardProjectionWorkingFrame = DartboardProjectionFrameBackground.Clone();
             }
 
-            DrawCircle(DartboardProjectionWorkingFrame, poi, PoiRadius, PoiColor, PoiThickness);
+            DrawCircle(DartboardProjectionWorkingFrame, poi, poiRadius, poiColor, poiThickness);
 
             mainWindow.Dispatcher.Invoke(new Action(() => mainWindow.DartboardProjectionImageBox.Source = ToBitmap(DartboardProjectionWorkingFrame)));
         }
@@ -135,7 +136,7 @@ namespace DartboardRecognition.Services
                 DartboardProjectionWorkingFrame = DartboardProjectionFrameBackground.Clone();
             }
 
-            DrawLine(DartboardProjectionWorkingFrame, point1, point2, ProjectionRayColor, PoiThickness);
+            DrawLine(DartboardProjectionWorkingFrame, point1, point2, projectionRayColor, poiThickness);
 
             mainWindow.Dispatcher.Invoke(new Action(() => mainWindow.DartboardProjectionImageBox.Source = ToBitmap(DartboardProjectionWorkingFrame)));
         }
@@ -143,19 +144,19 @@ namespace DartboardRecognition.Services
         public void DrawProjection()
         {
             // Draw dartboard projection
-            DrawCircle(DartboardProjectionFrameBackground, ProjectionCenterPoint, ProjectionCoefficent * 7, ProjectionGridColor, ProjectionGridThickness);
-            DrawCircle(DartboardProjectionFrameBackground, ProjectionCenterPoint, ProjectionCoefficent * 17, ProjectionGridColor, ProjectionGridThickness);
-            DrawCircle(DartboardProjectionFrameBackground, ProjectionCenterPoint, ProjectionCoefficent * 95, ProjectionGridColor, ProjectionGridThickness);
-            DrawCircle(DartboardProjectionFrameBackground, ProjectionCenterPoint, ProjectionCoefficent * 105, ProjectionGridColor, ProjectionGridThickness);
-            DrawCircle(DartboardProjectionFrameBackground, ProjectionCenterPoint, ProjectionCoefficent * 160, ProjectionGridColor, ProjectionGridThickness);
-            DrawCircle(DartboardProjectionFrameBackground, ProjectionCenterPoint, ProjectionCoefficent * 170, ProjectionGridColor, ProjectionGridThickness);
+            DrawCircle(DartboardProjectionFrameBackground, projectionCenterPoint, projectionCoefficent * 7, projectionGridColor, projectionGridThickness);
+            DrawCircle(DartboardProjectionFrameBackground, projectionCenterPoint, projectionCoefficent * 17, projectionGridColor, projectionGridThickness);
+            DrawCircle(DartboardProjectionFrameBackground, projectionCenterPoint, projectionCoefficent * 95, projectionGridColor, projectionGridThickness);
+            DrawCircle(DartboardProjectionFrameBackground, projectionCenterPoint, projectionCoefficent * 105, projectionGridColor, projectionGridThickness);
+            DrawCircle(DartboardProjectionFrameBackground, projectionCenterPoint, projectionCoefficent * 160, projectionGridColor, projectionGridThickness);
+            DrawCircle(DartboardProjectionFrameBackground, projectionCenterPoint, projectionCoefficent * 170, projectionGridColor, projectionGridThickness);
             for (var i = 0; i <= 360; i += 9)
             {
-                var segmentPoint1 = new PointF((float) (ProjectionCenterPoint.X + Math.Cos(0.314159 * i - 0.15708) * ProjectionCoefficent * 170),
-                                               (float) (ProjectionCenterPoint.Y + Math.Sin(0.314159 * i - 0.15708) * ProjectionCoefficent * 170));
-                var segmentPoint2 = new PointF((float) (ProjectionCenterPoint.X + Math.Cos(0.314159 * i - 0.15708) * ProjectionCoefficent * 17),
-                                               (float) (ProjectionCenterPoint.Y + Math.Sin(0.314159 * i - 0.15708) * ProjectionCoefficent * 17));
-                DrawLine(DartboardProjectionFrameBackground, segmentPoint1, segmentPoint2, ProjectionGridColor, ProjectionGridThickness);
+                var segmentPoint1 = new PointF((float) (projectionCenterPoint.X + Math.Cos(0.314159 * i - 0.15708) * projectionCoefficent * 170),
+                                               (float) (projectionCenterPoint.Y + Math.Sin(0.314159 * i - 0.15708) * projectionCoefficent * 170));
+                var segmentPoint2 = new PointF((float) (projectionCenterPoint.X + Math.Cos(0.314159 * i - 0.15708) * projectionCoefficent * 17),
+                                               (float) (projectionCenterPoint.Y + Math.Sin(0.314159 * i - 0.15708) * projectionCoefficent * 17));
+                DrawLine(DartboardProjectionFrameBackground, segmentPoint1, segmentPoint2, projectionGridColor, projectionGridThickness);
             }
 
             // Draw digits
@@ -173,11 +174,11 @@ namespace DartboardRecognition.Services
             {
                 DrawString(DartboardProjectionFrameBackground,
                            sector.ToString(),
-                           (int) (ProjectionCenterPoint.X - 40 + Math.Cos(radSector) * ProjectionCoefficent * 190),
-                           (int) (ProjectionCenterPoint.Y + 20 + Math.Sin(radSector) * ProjectionCoefficent * 190),
-                           ProjectionDigitsScale,
-                           ProjectionDigitsColor,
-                           ProjectionDigitsThickness);
+                           (int) (projectionCenterPoint.X - 40 + Math.Cos(radSector) * projectionCoefficent * 190),
+                           (int) (projectionCenterPoint.Y + 20 + Math.Sin(radSector) * projectionCoefficent * 190),
+                           projectionDigitsScale,
+                           projectionDigitsColor,
+                           projectionDigitsThickness);
                 radSector += radSectorStep;
             }
 

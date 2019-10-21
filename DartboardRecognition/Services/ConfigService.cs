@@ -56,6 +56,10 @@ namespace DartboardRecognition.Services
                 {
                     value = double.Parse(ConfigurationManager.AppSettings[$"{key}"]);
                 }
+                else if (typeof(T) == typeof(float))
+                {
+                    value = float.Parse(ConfigurationManager.AppSettings[$"{key}"]);
+                }
                 else if (typeof(T) == typeof(int))
                 {
                     value = int.Parse(ConfigurationManager.AppSettings[$"{key}"]);
