@@ -38,6 +38,6 @@
   * Intersection of this ray and surface gives us point of impact (white) from one camera
   * Using information about POI from all 4 cameras, we can calculate actual dart POI on dartboard if draw rays from cameras setup points to cameras POIs
   
-![MainApp2jpg](https://user-images.githubusercontent.com/42347722/65386812-cd1b1a00-dd48-11e9-9bb1-57a17373da27.jpg)
-
+  ![MainApp2jpg](https://user-images.githubusercontent.com/42347722/67162119-d7413000-f369-11e9-9c1d-e222ccac6ef0.png)
+  
 * Thats how it works. Sounds simple, but there are many things to stuck with...
