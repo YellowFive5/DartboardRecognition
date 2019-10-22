@@ -18,10 +18,10 @@ namespace DartboardRecognition.Services
         private readonly DrawService drawService;
         private readonly ThrowService throwService;
         private readonly ConfigService configService;
-        private VectorOfPoint processedContour;
+        private VectorOfPoint processedContour = new VectorOfPoint();
 
-        private readonly int minContourArea;
-        private readonly int camFovAngle;
+        private readonly int minContourArc;
+        private readonly double camFovAngle;
 
         public MeasureService(CamService camService)
         {
@@ -29,8 +29,8 @@ namespace DartboardRecognition.Services
             drawService = MainWindow.ServiceContainer.Resolve<DrawService>();
             throwService = MainWindow.ServiceContainer.Resolve<ThrowService>();
             configService = MainWindow.ServiceContainer.Resolve<ConfigService>();
-            minContourArea = configService.Read<int>("MinContourArea");
-            camFovAngle = configService.Read<int>("CamFovAngle");
+            minContourArc = configService.Read<int>("MinContourArc");
+            camFovAngle = configService.Read<double>("CamFovAngle");
         }
 
         public bool FindDartContour()
@@ -54,8 +54,8 @@ namespace DartboardRecognition.Services
             for (var i = 0; i < allContours.Size; i++)
             {
                 var tempContour = allContours[i];
-                var tempContourArea = CvInvoke.ContourArea(tempContour);
-                if (tempContourArea > minContourArea &&
+                var tempContourArea = CvInvoke.ArcLength(tempContour, true);
+                if (tempContourArea > minContourArc &&
                     tempContourArea > dartContourArea)
                 {
                     dartContourArea = tempContourArea;
@@ -67,7 +67,7 @@ namespace DartboardRecognition.Services
 
             if (found)
             {
-                processedContour = dartContour;
+                processedContour.Push(dartContour);
             }
 
             return found;
@@ -152,12 +152,12 @@ namespace DartboardRecognition.Services
 
             drawService.ProjectionDrawLine(camService.setupPoint, rayPoint, false);
 
-            var contourArea = contourHeight * contourWidth; // todo Here must be not Area but Arc. But CvInvoke.ArcLength() not work correct.
-            var ray = new Ray(camService.setupPoint, rayPoint, contourArea);
+            var contourArc = CvInvoke.ArcLength(processedContour, true);
+            var ray = new Ray(camService.setupPoint, rayPoint, contourArc);
 
             throwService.SaveRay(ray);
 
-            processedContour = null;
+            processedContour.Clear();
         }
 
         public static PointF FindLinesIntersection(PointF line1Point1,

@@ -141,7 +141,7 @@ namespace DartboardRecognition.Services
             mainWindow.Dispatcher.Invoke(new Action(() => mainWindow.DartboardProjectionImageBox.Source = ToBitmap(DartboardProjectionWorkingFrame)));
         }
 
-        public void DrawProjection()
+        public void ProjectionPrepare()
         {
             // Draw dartboard projection
             DrawCircle(DartboardProjectionFrameBackground, projectionCenterPoint, projectionCoefficent * 7, projectionGridColor, projectionGridThickness);
@@ -185,6 +185,12 @@ namespace DartboardRecognition.Services
             DartboardProjectionWorkingFrame = DartboardProjectionFrameBackground.Clone();
 
             mainWindow.Dispatcher.Invoke(new Action(() => mainWindow.DartboardProjectionImageBox.Source = ToBitmap(DartboardProjectionWorkingFrame)));
+        }
+
+        public void ProjectionClear()
+        {
+            DartboardProjectionWorkingFrame = DartboardProjectionFrameBackground.Clone();
+            mainWindow.Dispatcher.Invoke(new Action(() => mainWindow.DartboardProjectionImageBox.Source = ToBitmap(DartboardProjectionFrameBackground)));
         }
 
         public BitmapImage ToBitmap(IImage image)

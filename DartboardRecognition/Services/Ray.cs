@@ -10,13 +10,13 @@ namespace DartboardRecognition.Services
     {
         public PointF CamPoint { get; }
         public PointF RayPoint { get; }
-        public float ContourArea { get; }
+        public double ContourArc { get; }
 
-        public Ray(PointF camPoint, PointF rayPoint, float contourArea)
+        public Ray(PointF camPoint, PointF rayPoint, double contourArc)
         {
             CamPoint = camPoint;
             RayPoint = rayPoint;
-            ContourArea = contourArea;
+            ContourArc = contourArc;
         }
     }
 }

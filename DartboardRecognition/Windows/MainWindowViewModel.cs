@@ -22,6 +22,7 @@ namespace DartboardRecognition.Windows
         private readonly DrawService drawService;
         private readonly ThrowService throwService;
         private readonly ConfigService configService;
+        private readonly double extractionSleepTime;
 
         public MainWindowViewModel()
         {
@@ -33,12 +34,13 @@ namespace DartboardRecognition.Windows
             drawService = MainWindow.ServiceContainer.Resolve<DrawService>();
             throwService = MainWindow.ServiceContainer.Resolve<ThrowService>();
             configService = MainWindow.ServiceContainer.Resolve<ConfigService>();
-            drawService.DrawProjection();
+            extractionSleepTime = configService.Read<double>("ExtractionSleepTime");
+            drawService.ProjectionPrepare();
         }
 
         private void StartCapturing()
         {
-            drawService.DrawProjection();
+            drawService.ProjectionClear();
             cts = new CancellationTokenSource();
             cancelToken = cts.Token;
             StartDetection();
@@ -93,10 +95,11 @@ namespace DartboardRecognition.Windows
                                  if (response == ResponseType.Extraction)
                                  {
                                      var now = DateTime.Now;
-                                     while (DateTime.Now - now < TimeSpan.FromSeconds(5))
+                                     while (DateTime.Now - now < TimeSpan.FromSeconds(extractionSleepTime)) // todo something with thread
                                      {
                                      }
 
+                                     drawService.ProjectionClear();
                                      DoCaptures();
                                      break;
                                  }
@@ -165,11 +168,11 @@ namespace DartboardRecognition.Windows
         {
             mainWindowView.RuntimeCapturingCheckBox.IsChecked = configService.Read<bool>("RuntimeCapturingCheckBox");
             mainWindowView.WithDetectionCheckBox.IsChecked = configService.Read<bool>("WithDetectionCheckBox");
-            mainWindowView.SetupSlidersCheckBox.IsChecked = configService.Read<bool>("SetupSlidersCheckBox"); ;
-            mainWindowView.Cam1CheckBox.IsChecked = configService.Read<bool>("Cam1CheckBox"); ;
-            mainWindowView.Cam2CheckBox.IsChecked = configService.Read<bool>("Cam2CheckBox"); ;
-            mainWindowView.Cam3CheckBox.IsChecked = configService.Read<bool>("Cam3CheckBox"); ;
-            mainWindowView.Cam4CheckBox.IsChecked = configService.Read<bool>("Cam4CheckBox"); ;
+            mainWindowView.SetupSlidersCheckBox.IsChecked = configService.Read<bool>("SetupSlidersCheckBox");
+            mainWindowView.Cam1CheckBox.IsChecked = configService.Read<bool>("Cam1CheckBox");
+            mainWindowView.Cam2CheckBox.IsChecked = configService.Read<bool>("Cam2CheckBox");
+            mainWindowView.Cam3CheckBox.IsChecked = configService.Read<bool>("Cam3CheckBox");
+            mainWindowView.Cam4CheckBox.IsChecked = configService.Read<bool>("Cam4CheckBox");
         }
 
         public void SaveSettings()

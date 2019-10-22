@@ -56,6 +56,7 @@ namespace DartboardRecognition.Services
         private readonly int movesDart;
         private readonly int movesNoise;
         private readonly int smoothGauss;
+        private readonly double moveDetectedSleepTime;
 
         public CamService(CamWindow camWindow, bool runtimeCapturing, bool withDetection)
         {
@@ -76,6 +77,7 @@ namespace DartboardRecognition.Services
             movesDart = configService.Read<int>("MovesDart");
             movesNoise = configService.Read<int>("MovesNoise");
             smoothGauss = configService.Read<int>("SmoothGauss");
+            moveDetectedSleepTime = configService.Read<double>("MoveDetectedSleepTime");
             toBullAngle = MeasureService.FindAngle(setupPoint, drawService.projectionCenterPoint);
             videoCapture = new VideoCapture(GetCamIndex(camNumber));
             videoCapture.SetCaptureProperty(CapProp.FrameWidth, resolutionWidth);
@@ -192,7 +194,7 @@ namespace DartboardRecognition.Services
             OriginFrame?.Dispose();
             LinedFrame?.Dispose();
         }
-         
+
         public ResponseType Detect()
         {
             if (withDetection)
@@ -207,7 +209,7 @@ namespace DartboardRecognition.Services
                 if (moveDetected)
                 {
                     var now = DateTime.Now;
-                    while (DateTime.Now - now < TimeSpan.FromSeconds(1))
+                    while (DateTime.Now - now < TimeSpan.FromSeconds(moveDetectedSleepTime)) // todo something with thread
                     {
                     }
 
