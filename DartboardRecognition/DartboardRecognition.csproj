@@ -61,6 +61,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Services\DartContour.cs" />
     <Compile Include="Services\Ray.cs" />
     <Compile Include="Services\ResponseType.cs" />
     <Compile Include="Services\ConfigService.cs" />

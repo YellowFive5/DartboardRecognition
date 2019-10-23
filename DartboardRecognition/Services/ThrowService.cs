@@ -98,7 +98,7 @@ namespace DartboardRecognition.Services
                         break;
                     }
 
-                    sector = 11;
+                    sector = 11; // todo works, but not pretty
 
                     radSector += radSectorStep;
                 }

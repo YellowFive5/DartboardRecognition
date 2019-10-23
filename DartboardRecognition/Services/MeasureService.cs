@@ -18,7 +18,7 @@ namespace DartboardRecognition.Services
         private readonly DrawService drawService;
         private readonly ThrowService throwService;
         private readonly ConfigService configService;
-        private VectorOfPoint processedContour = new VectorOfPoint();
+        private DartContour dartContour;
 
         private readonly int minContourArc;
         private readonly double camFovAngle;
@@ -48,26 +48,26 @@ namespace DartboardRecognition.Services
                 return false;
             }
 
-            var dartContour = new VectorOfPoint();
-            var dartContourArea = 0.0;
+            var contour = new VectorOfPoint();
+            var contourArс = 0.0;
 
             for (var i = 0; i < allContours.Size; i++)
             {
                 var tempContour = allContours[i];
-                var tempContourArea = CvInvoke.ArcLength(tempContour, true);
-                if (tempContourArea > minContourArc &&
-                    tempContourArea > dartContourArea)
+                var tempContourArс = CvInvoke.ArcLength(tempContour, true);
+                if (tempContourArс > minContourArc &&
+                    tempContourArс > contourArс)
                 {
-                    dartContourArea = tempContourArea;
-                    dartContour = tempContour;
+                    contourArс = tempContourArс;
+                    contour = tempContour;
                 }
             }
 
-            var found = dartContourArea > 0 && dartContour.Size > 0;
+            var found = contourArс > 0 && contour.Size > 0;
 
             if (found)
             {
-                processedContour.Push(dartContour);
+                dartContour = new DartContour(contour, contourArс);
             }
 
             return found;
@@ -81,7 +81,7 @@ namespace DartboardRecognition.Services
             //                                     (float) camService.roiPosYSlider + (float) (contourMoments.M01 / contourMoments.M00));
 
             // Find contour rectangle
-            var rect = CvInvoke.MinAreaRect(processedContour);
+            var rect = CvInvoke.MinAreaRect(dartContour.ContourPoints);
             var box = CvInvoke.BoxPoints(rect);
 
             var contourBoxPoint1 = new PointF(box[0].X, (float) camService.roiPosYSlider + box[0].Y);
@@ -152,12 +152,9 @@ namespace DartboardRecognition.Services
 
             drawService.ProjectionDrawLine(camService.setupPoint, rayPoint, false);
 
-            var contourArc = CvInvoke.ArcLength(processedContour, true);
-            var ray = new Ray(camService.setupPoint, rayPoint, contourArc);
+            var ray = new Ray(camService.setupPoint, rayPoint, dartContour.Arc);
 
             throwService.SaveRay(ray);
-
-            processedContour.Clear();
         }
 
         public static PointF FindLinesIntersection(PointF line1Point1,
