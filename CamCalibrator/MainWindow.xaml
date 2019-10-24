@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CamCalibrator"
         mc:Ignorable="d"
-        Title="MainWindow"
+        Title="CamCalibrator"
         Height="746.617"
         Width="974.223"
         ResizeMode="NoResize"
