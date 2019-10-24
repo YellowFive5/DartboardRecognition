@@ -9,7 +9,7 @@ namespace CamCalibrator
 {
     public partial class MainWindow
     {
-        private MainWindowViewModel viewModel;
+        private readonly MainWindowViewModel viewModel;
 
         public MainWindow()
         {

@@ -20,7 +20,7 @@ namespace CamCalibrator
 {
     public class MainWindowViewModel
     {
-        private MainWindow view;
+        private readonly MainWindow view;
         private bool isCapturing;
 
         public MainWindowViewModel()
@@ -36,9 +36,26 @@ namespace CamCalibrator
         {
             ToggleControls();
             isCapturing = true;
+            var width = 0;
+            var height = 0;
+            if (view._1920X1080.IsChecked.Value)
+            {
+                width = 1920;
+                height = 1080;
+            }
+            else if (view._1280X720.IsChecked.Value)
+            {
+                width = 1280;
+                height = 720;
+            }
+            else if (view._640X480.IsChecked.Value)
+            {
+                width = 640;
+                height = 480;
+            }
 
             var camId = int.Parse(view.CamNumberBox.Text);
-            Task.Factory.StartNew(() => CaptureWork(camId));
+            Task.Factory.StartNew(() => CaptureWork(camId, width, height));
         }
 
         public void StopCapture()
@@ -52,13 +69,16 @@ namespace CamCalibrator
             view.StartButton.IsEnabled = !view.StartButton.IsEnabled;
             view.StopButton.IsEnabled = !view.StopButton.IsEnabled;
             view.CamNumberBox.IsEnabled = !view.CamNumberBox.IsEnabled;
+            view._1920X1080.IsEnabled = !view._1920X1080.IsEnabled;
+            view._1280X720.IsEnabled = !view._1280X720.IsEnabled;
+            view._640X480.IsEnabled = !view._640X480.IsEnabled;
         }
 
-        private void CaptureWork(int camId)
+        private void CaptureWork(int camId, int width, int height)
         {
             var videoCapture = new VideoCapture(camId);
-            videoCapture.SetCaptureProperty(CapProp.FrameWidth, 1920);
-            videoCapture.SetCaptureProperty(CapProp.FrameHeight, 1080);
+            videoCapture.SetCaptureProperty(CapProp.FrameWidth, width);
+            videoCapture.SetCaptureProperty(CapProp.FrameHeight, height);
 
             var frame = videoCapture.QueryFrame().ToImage<Bgr, byte>();
             BitmapImage imageToSave;
