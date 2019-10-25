@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:CamCalibrator"
         mc:Ignorable="d"
         Title="CamCalibrator"
-        Height="746.617"
+        Height="770.617"
         Width="974.223"
         ResizeMode="NoResize"
         Closing="OnClosing"
@@ -17,13 +17,15 @@
 
     <Grid>
         <Image Name="ImageBox" HorizontalAlignment="Left" Height="546" Margin="10,10,0,0" VerticalAlignment="Top" Width="943"/>
-        <Button Name="StartButton" Content="Start" HorizontalAlignment="Left" Margin="10,640,0,0" VerticalAlignment="Top" Width="96" Height="25" Click="StartButtonClick"/>
-        <Button Name="StopButton" Content="Stop" HorizontalAlignment="Left" Margin="10,670,0,0" VerticalAlignment="Top" Width="96" Height="25" IsEnabled="False" Click="StopButtonClick"/>
+        <Button Name="StartButton" Content="Start" HorizontalAlignment="Left" Margin="10,669,0,0" VerticalAlignment="Top" Width="96" Height="25" Click="StartButtonClick"/>
+        <Button Name="StopButton" Content="Stop" HorizontalAlignment="Left" Margin="10,699,0,0" VerticalAlignment="Top" Width="96" Height="25" IsEnabled="False" Click="StopButtonClick"/>
         <TextBox Name="CamNumberBox" HorizontalAlignment="Left" Height="23" Margin="81,567,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="25" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
         <Label Content="CamIndex" HorizontalAlignment="Left" Margin="10,563,0,0" VerticalAlignment="Top" FontFamily="Agency FB" FontWeight="Bold" FontSize="16" Width="66" Height="28"/>
-        <TextBox Name="CamsTextBox"  HorizontalAlignment="Left" Height="128" Margin="120,567,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="833" IsReadOnly="True" />
+        <TextBox Name="CamsTextBox"  HorizontalAlignment="Left" Height="157" Margin="120,567,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="833" IsReadOnly="True" />
         <RadioButton Name="_1920X1080" Content="1920 x 1080" HorizontalAlignment="Left" Margin="10,591,0,0" VerticalAlignment="Top" Width="96" IsChecked="True"/>
-        <RadioButton Name="_1280X720" Content="1280 x 720" HorizontalAlignment="Left" Margin="10,607,0,0" VerticalAlignment="Top" Width="96"/>
-        <RadioButton Name="_640X480" Content="640 x 480" HorizontalAlignment="Left" Margin="10,623,0,0" VerticalAlignment="Top" Width="96"/>
+        <RadioButton Name="_1600X900" Content="1600 x 900" HorizontalAlignment="Left" Margin="10,606,0,0" VerticalAlignment="Top" Width="96"/>
+        <RadioButton Name="_1360X768" Content="1360 x 768" HorizontalAlignment="Left" Margin="10,621,0,0" VerticalAlignment="Top" Width="96"/>
+        <RadioButton Name="_1280X720" Content="1280 x 720" HorizontalAlignment="Left" Margin="10,636,0,0" VerticalAlignment="Top" Width="96"/>
+        <RadioButton Name="_640X360" Content="640 x 360" HorizontalAlignment="Left" Margin="10,651,0,0" VerticalAlignment="Top" Width="96"/>
     </Grid>
 </Window>

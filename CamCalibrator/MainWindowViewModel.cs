@@ -43,15 +43,25 @@ namespace CamCalibrator
                 width = 1920;
                 height = 1080;
             }
+            else if (view._1600X900.IsChecked.Value)
+            {
+                width = 1600;
+                height = 900;
+            }
+            else if (view._1360X768.IsChecked.Value)
+            {
+                width = 1360;
+                height = 768;
+            }
             else if (view._1280X720.IsChecked.Value)
             {
                 width = 1280;
                 height = 720;
             }
-            else if (view._640X480.IsChecked.Value)
+            else if (view._640X360.IsChecked.Value)
             {
                 width = 640;
-                height = 480;
+                height = 360;
             }
 
             var camId = int.Parse(view.CamNumberBox.Text);
@@ -70,8 +80,10 @@ namespace CamCalibrator
             view.StopButton.IsEnabled = !view.StopButton.IsEnabled;
             view.CamNumberBox.IsEnabled = !view.CamNumberBox.IsEnabled;
             view._1920X1080.IsEnabled = !view._1920X1080.IsEnabled;
+            view._1600X900.IsEnabled = !view._1600X900.IsEnabled;
+            view._1360X768.IsEnabled = !view._1360X768.IsEnabled;
             view._1280X720.IsEnabled = !view._1280X720.IsEnabled;
-            view._640X480.IsEnabled = !view._640X480.IsEnabled;
+            view._640X360.IsEnabled = !view._640X360.IsEnabled;
         }
 
         private void CaptureWork(int camId, int width, int height)
@@ -86,12 +98,12 @@ namespace CamCalibrator
             var horPoint1 = new PointF(0, (float) frame.Height / 2);
             var horPoint2 = new PointF(frame.Width, (float) frame.Height / 2);
             var horLineColor = new Bgr(Color.Red).MCvScalar;
-            var horLineThickness = 5;
+            var horLineThickness = frame.Height / 200;
 
             var verPoint1 = new PointF((float) frame.Width / 2, 0);
             var verPoint2 = new PointF((float) frame.Width / 2, frame.Height);
             var verLineColor = new Bgr(Color.Blue).MCvScalar;
-            var verLineThickness = 5;
+            var verLineThickness = frame.Height / 200;
 
             while (isCapturing)
             {
