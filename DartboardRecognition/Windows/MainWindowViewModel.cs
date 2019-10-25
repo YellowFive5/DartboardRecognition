@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using Autofac;
 using DartboardRecognition.Services;
@@ -153,15 +155,14 @@ namespace DartboardRecognition.Windows
 
         private void ToggleViewControls()
         {
-            mainWindowView.RuntimeCapturingCheckBox.IsEnabled = !mainWindowView.RuntimeCapturingCheckBox.IsEnabled;
-            mainWindowView.WithDetectionCheckBox.IsEnabled = !mainWindowView.WithDetectionCheckBox.IsEnabled;
-            mainWindowView.StartButton.IsEnabled = !mainWindowView.StartButton.IsEnabled;
-            mainWindowView.StopButton.IsEnabled = !mainWindowView.StopButton.IsEnabled;
-            mainWindowView.SetupSlidersCheckBox.IsEnabled = !mainWindowView.SetupSlidersCheckBox.IsEnabled;
-            mainWindowView.Cam1CheckBox.IsEnabled = !mainWindowView.Cam1CheckBox.IsEnabled;
-            mainWindowView.Cam2CheckBox.IsEnabled = !mainWindowView.Cam2CheckBox.IsEnabled;
-            mainWindowView.Cam3CheckBox.IsEnabled = !mainWindowView.Cam3CheckBox.IsEnabled;
-            mainWindowView.Cam4CheckBox.IsEnabled = !mainWindowView.Cam4CheckBox.IsEnabled;
+            var mainContainer = (Panel) mainWindowView.Content;
+            var element = mainContainer.Children;
+            var listElement = element.Cast<FrameworkElement>().ToList();
+            var listControl = listElement.OfType<Control>();
+            foreach (var control in listControl)
+            {
+                control.IsEnabled = !control.IsEnabled;
+            }
         }
 
         public void LoadSettings()
@@ -173,6 +174,17 @@ namespace DartboardRecognition.Windows
             mainWindowView.Cam2CheckBox.IsChecked = configService.Read<bool>("Cam2CheckBox");
             mainWindowView.Cam3CheckBox.IsChecked = configService.Read<bool>("Cam3CheckBox");
             mainWindowView.Cam4CheckBox.IsChecked = configService.Read<bool>("Cam4CheckBox");
+            mainWindowView.CamFovTextBox.Text = configService.Read<string>("CamFovAngle");
+            mainWindowView.CamResolutionWidthTextBox.Text = configService.Read<string>("ResolutionWidth");
+            mainWindowView.CamResolutionHeightTextBox.Text = configService.Read<string>("ResolutionHeight");
+            mainWindowView.MinContourArcTextBox.Text = configService.Read<string>("MinContourArc");
+            mainWindowView.MovesExtractionTextBox.Text = configService.Read<string>("MovesExtraction");
+            mainWindowView.MovesDartTextBox.Text = configService.Read<string>("MovesDart");
+            mainWindowView.MovesNoiseTextBox.Text = configService.Read<string>("MovesNoise");
+            mainWindowView.SmoothGaussTextBox.Text = configService.Read<string>("SmoothGauss");
+            mainWindowView.ProjectionFrameSideTextBox.Text = configService.Read<string>("ProjectionFrameSide");
+            mainWindowView.MoveDetectedSleepTimeTextBox.Text = configService.Read<string>("MoveDetectedSleepTime");
+            mainWindowView.ExtractionSleepTimeTimeTextBox.Text = configService.Read<string>("ExtractionSleepTime");
         }
 
         public void SaveSettings()
@@ -184,6 +196,17 @@ namespace DartboardRecognition.Windows
             configService.Write("Cam2CheckBox", mainWindowView.Cam2CheckBox.IsChecked.Value);
             configService.Write("Cam3CheckBox", mainWindowView.Cam3CheckBox.IsChecked.Value);
             configService.Write("Cam4CheckBox", mainWindowView.Cam4CheckBox.IsChecked.Value);
+            configService.Write("CamFovAngle", mainWindowView.CamFovTextBox.Text);
+            configService.Write("ResolutionWidth", mainWindowView.CamResolutionWidthTextBox.Text);
+            configService.Write("ResolutionHeight", mainWindowView.CamResolutionHeightTextBox.Text);
+            configService.Write("MinContourArc", mainWindowView.MinContourArcTextBox.Text);
+            configService.Write("MovesExtraction", mainWindowView.MovesExtractionTextBox.Text);
+            configService.Write("MovesDart", mainWindowView.MovesDartTextBox.Text);
+            configService.Write("MovesNoise", mainWindowView.MovesNoiseTextBox.Text);
+            configService.Write("SmoothGauss", mainWindowView.SmoothGaussTextBox.Text);
+            configService.Write("ProjectionFrameSide", mainWindowView.ProjectionFrameSideTextBox.Text);
+            configService.Write("MoveDetectedSleepTime", mainWindowView.MoveDetectedSleepTimeTextBox.Text);
+            configService.Write("ExtractionSleepTime", mainWindowView.ExtractionSleepTimeTimeTextBox.Text);
         }
     }
 }

@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:DartboardRecognition"
         xmlns:windows="clr-namespace:DartboardRecognition.Windows"
         mc:Ignorable="d"
         Title="DartboardRecognition"
@@ -21,25 +20,84 @@
                     <Image x:Name="DartboardProjectionImageBox" HorizontalAlignment="Left" VerticalAlignment="Top"
                            Width="318" Height="318" Margin="10,10,0,0" />
                     <TextBox x:Name="PointsBox" HorizontalAlignment="Left" Height="52" TextWrapping="Wrap"
-                             VerticalAlignment="Top" Width="318" Margin="10,333,0,0" IsReadOnly="True"/>
+                             VerticalAlignment="Top" Width="318" Margin="10,333,0,0" IsReadOnly="True" />
                 </Grid>
             </TabItem>
             <TabItem Header="Setup">
                 <Grid>
                     <CheckBox x:Name="RuntimeCapturingCheckBox" Content="Runtime capturing" HorizontalAlignment="Left"
-                              VerticalAlignment="Top" IsChecked="False" Margin="10,95,0,0" />
+                              VerticalAlignment="Top" IsChecked="False" Margin="124,30,0,0" />
                     <CheckBox x:Name="WithDetectionCheckBox" Content="With detection" HorizontalAlignment="Left"
-                              VerticalAlignment="Top" IsChecked="True" Margin="10,138,0,0" />
+                              VerticalAlignment="Top" IsChecked="True" Margin="10,30,0,0" />
                     <CheckBox x:Name="SetupSlidersCheckBox" Content="Show setup sliders" HorizontalAlignment="Left"
-                              VerticalAlignment="Top" IsChecked="False" Margin="10,117,0,0" />
+                              VerticalAlignment="Top" IsChecked="False" Margin="10,50,0,0" />
                     <CheckBox x:Name="Cam1CheckBox" Content="Cam 1" HorizontalAlignment="Left"
                               VerticalAlignment="Top" IsChecked="True" Margin="10,10,0,0" />
                     <CheckBox x:Name="Cam2CheckBox" Content="Cam 2" HorizontalAlignment="Left"
-                              VerticalAlignment="Top" IsChecked="True" Margin="10,30,0,0" />
+                              VerticalAlignment="Top" IsChecked="True" Margin="67,10,0,0" />
                     <CheckBox x:Name="Cam3CheckBox" Content="Cam 3" HorizontalAlignment="Left"
-                              VerticalAlignment="Top" IsChecked="True" Margin="10,52,0,0" />
+                              VerticalAlignment="Top" IsChecked="True" Margin="124,10,0,0"
+                              RenderTransformOrigin="0.527,0.533" />
                     <CheckBox x:Name="Cam4CheckBox" Content="Cam 4" HorizontalAlignment="Left"
-                              VerticalAlignment="Top" IsChecked="True" Margin="10,74,0,0" />
+                              VerticalAlignment="Top" IsChecked="True" Margin="181,10,0,0" />
+
+                    <Label Content="Cam FOV" Margin="66,68,208.4,295.4" HorizontalContentAlignment="Left"
+                           VerticalContentAlignment="Center" Padding="0" />
+                    <TextBox Name="CamFovTextBox" Text="TBD" Height="23" TextWrapping="Wrap" Margin="10,68,274.4,295.4"
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                    <Label Content="Cam resolution width" Margin="66,95,143.4,268.4" HorizontalContentAlignment="Left"
+                           VerticalContentAlignment="Center" Padding="0" />
+                    <TextBox Name="CamResolutionWidthTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
+                             Margin="10,95,274.4,268.4"
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                    <Label Content="Cam resolution height" Margin="66,124,143.4,239.4"
+                           HorizontalContentAlignment="Left"
+                           VerticalContentAlignment="Center" Padding="0" />
+                    <TextBox x:Name="CamResolutionHeightTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
+                             Margin="10,124,274.4,239.4"
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                    <TextBox x:Name="MinContourArcTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
+                             Margin="10,152,274.4,211.4"
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                    <Label Content="Minimal contour arc" Margin="66,152,143.4,211.4" HorizontalContentAlignment="Left"
+                           VerticalContentAlignment="Center" Padding="0" />
+                    <TextBox x:Name="MovesExtractionTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
+                             Margin="10,180,274.4,183.4"
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                    <Label Content="Moves extraction" Margin="66,180,143.4,183.4" HorizontalContentAlignment="Left"
+                           VerticalContentAlignment="Center" Padding="0" />
+                    <TextBox x:Name="MovesDartTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
+                             Margin="10,208,274.4,155.4"
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                    <Label Content="Moves dart" Margin="66,208,143.4,155.4" HorizontalContentAlignment="Left"
+                           VerticalContentAlignment="Center" Padding="0" />
+                    <TextBox x:Name="MovesNoiseTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
+                             Margin="10,236,274.4,127.4"
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                    <Label Content="Moves noise" Margin="66,236,143.4,127.4" HorizontalContentAlignment="Left"
+                           VerticalContentAlignment="Center" Padding="0" />
+                    <TextBox x:Name="SmoothGaussTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
+                             Margin="10,264,274.4,99.4"
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                    <Label Content="Smooth gaussian index" Margin="66,264,143.4,99.4" HorizontalContentAlignment="Left"
+                           VerticalContentAlignment="Center" Padding="0" />
+                    <TextBox x:Name="ProjectionFrameSideTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
+                             Margin="10,292,274.4,71.4"
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                    <Label Content="Projection frame side" Margin="66,292,143.4,71.4" HorizontalContentAlignment="Left"
+                           VerticalContentAlignment="Center" Padding="0" />
+                    <TextBox x:Name="MoveDetectedSleepTimeTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
+                             Margin="10,320,274.4,43.4"
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                    <Label Content="Move detected sleep time" Margin="66,320,133.4,43.4"
+                           HorizontalContentAlignment="Left"
+                           VerticalContentAlignment="Center" Padding="0" />
+                    <TextBox x:Name="ExtractionSleepTimeTimeTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
+                             Margin="10,348,274.4,15.4"
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                    <Label Content="Extraction sleep time" Margin="66,348,133.4,15.4" HorizontalContentAlignment="Left"
+                           VerticalContentAlignment="Center" Padding="0" />
+                    <Button Click="SaveSettingsButtonClick" Content="Save settings" Margin="244,354,10.4,10.4" />
                 </Grid>
             </TabItem>
         </TabControl>
@@ -47,6 +105,5 @@
                 VerticalAlignment="Top" />
         <Button x:Name="StopButton" Content="Stop" Click="StopButtonClick" Height="39" IsEnabled="False"
                 Margin="174,423,10.4,0" VerticalAlignment="Top" />
-
     </Grid>
 </Window>

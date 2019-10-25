@@ -55,5 +55,10 @@ namespace DartboardRecognition.Windows
             viewModel.OnStopButtonClicked();
             viewModel.SaveSettings();
         }
+
+        private void SaveSettingsButtonClick(object sender, RoutedEventArgs e)
+        {
+            viewModel.SaveSettings();
+        }
     }
 }
