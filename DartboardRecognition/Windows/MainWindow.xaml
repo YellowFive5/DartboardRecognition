@@ -6,7 +6,7 @@
         xmlns:windows="clr-namespace:DartboardRecognition.Windows"
         mc:Ignorable="d"
         Title="DartboardRecognition"
-        Height="508.867"
+        Height="489.667"
         Width="357.133"
         ResizeMode="NoResize"
         Closing="OnClosing">
@@ -14,13 +14,17 @@
         <windows:MainWindowViewModel />
     </Window.DataContext>
     <Grid>
-        <TabControl HorizontalAlignment="Left" Height="414" VerticalAlignment="Top" Width="344">
+        <TabControl Name="TabControl" HorizontalAlignment="Left" Height="458" VerticalAlignment="Top" Width="344">
             <TabItem Header="Projection">
                 <Grid>
                     <Image x:Name="DartboardProjectionImageBox" HorizontalAlignment="Left" VerticalAlignment="Top"
                            Width="318" Height="318" Margin="10,10,0,0" />
                     <TextBox x:Name="PointsBox" HorizontalAlignment="Left" Height="52" TextWrapping="Wrap"
                              VerticalAlignment="Top" Width="318" Margin="10,333,0,0" IsReadOnly="True" />
+                    <Button x:Name="StartButton" Content="Start" Click="StartButtonClick"  Height="32"
+                            VerticalAlignment="Top" Margin="10,390,173.4,0" />
+                    <Button x:Name="StopButton" Content="Stop" Click="StopButtonClick" Height="32" IsEnabled="False"
+                             VerticalAlignment="Top" Margin="170,390,10.4,0" />
                 </Grid>
             </TabItem>
             <TabItem Header="Setup">
@@ -97,13 +101,9 @@
                              HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
                     <Label Content="Extraction sleep time" Margin="66,348,133.4,15.4" HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
-                    <Button Click="SaveSettingsButtonClick" Content="Save settings" Margin="244,354,10.4,10.4" />
+                    <Button Click="SaveSettingsButtonClick" Content="Save settings" Margin="244,396,10.4,10.6" />
                 </Grid>
             </TabItem>
         </TabControl>
-        <Button x:Name="StartButton" Content="Start" Click="StartButtonClick" Margin="13,423,181.4,0" Height="39"
-                VerticalAlignment="Top" />
-        <Button x:Name="StopButton" Content="Stop" Click="StopButtonClick" Height="39" IsEnabled="False"
-                Margin="174,423,10.4,0" VerticalAlignment="Top" />
     </Grid>
 </Window>

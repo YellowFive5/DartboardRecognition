@@ -155,14 +155,13 @@ namespace DartboardRecognition.Windows
 
         private void ToggleViewControls()
         {
-            var mainContainer = (Panel) mainWindowView.Content;
-            var element = mainContainer.Children;
-            var listElement = element.Cast<FrameworkElement>().ToList();
-            var listControl = listElement.OfType<Control>();
-            foreach (var control in listControl)
+            foreach (TabItem tabItem in mainWindowView.TabControl.Items)
             {
-                control.IsEnabled = !control.IsEnabled;
+                tabItem.IsEnabled = !tabItem.IsEnabled;
             }
+
+            mainWindowView.StartButton.IsEnabled = !mainWindowView.StartButton.IsEnabled;
+            mainWindowView.StopButton.IsEnabled = !mainWindowView.StopButton.IsEnabled;
         }
 
         public void LoadSettings()
