@@ -88,7 +88,8 @@ namespace CamCalibrator
 
         private void CaptureWork(int camId, int width, int height)
         {
-            var videoCapture = new VideoCapture(camId);
+            var videoCapture = new VideoCapture(camId, VideoCapture.API.DShow);
+
             videoCapture.SetCaptureProperty(CapProp.FrameWidth, width);
             videoCapture.SetCaptureProperty(CapProp.FrameHeight, height);
 
