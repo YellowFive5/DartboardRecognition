@@ -20,7 +20,7 @@ namespace DartboardRecognition.Windows
             InitializeComponent();
             if (withSetupSliders)
             {
-                Height = 707;
+                Height = 640;
             }
 
             this.camNumber = camNumber;

@@ -32,11 +32,8 @@ namespace DartboardRecognition.Windows
         {
             var camNumberStr = camWindowView.camNumber.ToString();
 
-            camWindowView.TresholdMinSlider.Value = configService.Read<double>($"Cam{camNumberStr}TresholdMinSlider");
-            camWindowView.TresholdMaxSlider.Value = configService.Read<double>($"Cam{camNumberStr}TresholdMaxSlider");
-            camWindowView.RoiPosXSlider.Value = configService.Read<double>($"Cam{camNumberStr}RoiPosXSlider");
+            camWindowView.TresholdSlider.Value = configService.Read<double>($"Cam{camNumberStr}TresholdSlider");
             camWindowView.RoiPosYSlider.Value = configService.Read<double>($"Cam{camNumberStr}RoiPosYSlider");
-            camWindowView.RoiWidthSlider.Value = configService.Read<double>($"Cam{camNumberStr}RoiWidthSlider");
             camWindowView.RoiHeightSlider.Value = configService.Read<double>($"Cam{camNumberStr}RoiHeightSlider");
             camWindowView.SurfaceSlider.Value = configService.Read<double>($"Cam{camNumberStr}SurfaceSlider");
             camWindowView.SurfaceCenterSlider.Value = configService.Read<double>($"Cam{camNumberStr}SurfaceCenterSlider");
@@ -48,11 +45,8 @@ namespace DartboardRecognition.Windows
         {
             var camNumberStr = camWindowView.camNumber.ToString();
 
-            configService.Write($"Cam{camNumberStr}TresholdMinSlider", camWindowView.TresholdMinSlider.Value);
-            configService.Write($"Cam{camNumberStr}TresholdMaxSlider", camWindowView.TresholdMaxSlider.Value);
-            configService.Write($"Cam{camNumberStr}RoiPosXSlider", camWindowView.RoiPosXSlider.Value);
+            configService.Write($"Cam{camNumberStr}TresholdSlider", camWindowView.TresholdSlider.Value);
             configService.Write($"Cam{camNumberStr}RoiPosYSlider", camWindowView.RoiPosYSlider.Value);
-            configService.Write($"Cam{camNumberStr}RoiWidthSlider", camWindowView.RoiWidthSlider.Value);
             configService.Write($"Cam{camNumberStr}RoiHeightSlider", camWindowView.RoiHeightSlider.Value);
             configService.Write($"Cam{camNumberStr}SurfaceSlider", camWindowView.SurfaceSlider.Value);
             configService.Write($"Cam{camNumberStr}SurfaceCenterSlider", camWindowView.SurfaceCenterSlider.Value);

@@ -3,11 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:DartboardRecognition"
         xmlns:windows="clr-namespace:DartboardRecognition.Windows"
         mc:Ignorable="d"
         Title="CamWindow"
-        Height="463.594"
+        Height="464"
         Width="592.4"
         ResizeMode="NoResize"
         Closing="OnClosing">
@@ -15,29 +14,40 @@
         <windows:CamWindowViewModel />
     </Window.DataContext>
     <Grid>
-        <Slider x:Name="TresholdMinSlider"  HorizontalAlignment="Left" Margin="4,438,0,0" VerticalAlignment="Top" Width="487" Maximum="255" Value="197"/>
-        <Slider x:Name="TresholdMaxSlider" HorizontalAlignment="Left" Margin="4,461,0,0" VerticalAlignment="Top" Width="487" Maximum="255" Value="255"/>
-        <Slider x:Name="RoiPosXSlider" HorizontalAlignment="Left" Margin="4,487,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="488" Maximum="5000" Value="0"/>
-        <Slider x:Name="RoiPosYSlider" HorizontalAlignment="Left" Margin="4,510,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="488" Maximum="5000" Value="357"/>
-        <Slider x:Name="RoiWidthSlider"  HorizontalAlignment="Left" Margin="4,534,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="488" Maximum="5000" Value="3671"/>
-        <Slider x:Name="RoiHeightSlider"  HorizontalAlignment="Left" Margin="4,557,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="488" Maximum="5000" Value="133"/>
-        <Slider x:Name="SurfaceSlider"  HorizontalAlignment="Left" Margin="4,580,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="488" Maximum="5000" Value="536"/>
-        <Slider x:Name="SurfaceCenterSlider"  HorizontalAlignment="Left" Margin="4,603,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="488" Maximum="2000" Value="536"/>
-        <Slider x:Name="SurfaceLeftSlider"  HorizontalAlignment="Left" Margin="4,626,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="488" Maximum="2000" Value="536"/>
-        <Slider x:Name="SurfaceRightSlider"  HorizontalAlignment="Left" Margin="4,649,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.557" Width="488" Maximum="2000" Value="536"/>
+        <Slider x:Name="TresholdSlider" HorizontalAlignment="Left" Margin="4,438,0,0" VerticalAlignment="Top"
+                Width="487" Maximum="255" Value="197" />
+        <Slider x:Name="RoiPosYSlider" HorizontalAlignment="Left" Margin="4,461,0,0" VerticalAlignment="Top"
+                RenderTransformOrigin="0.667,0.557" Width="488" Maximum="1000" Value="357" />
+        <Slider x:Name="RoiHeightSlider" HorizontalAlignment="Left" Margin="4,482,0,0" VerticalAlignment="Top"
+                RenderTransformOrigin="0.667,0.557" Width="488" Maximum="1000" Value="133" />
+        <Slider x:Name="SurfaceSlider" HorizontalAlignment="Left" Margin="4,505,0,0" VerticalAlignment="Top"
+                RenderTransformOrigin="0.667,0.557" Width="488" Maximum="1000" Value="536" />
+        <Slider x:Name="SurfaceCenterSlider" HorizontalAlignment="Left" Margin="4,528,0,0" VerticalAlignment="Top"
+                RenderTransformOrigin="0.667,0.557" Width="488" Maximum="1000" Value="536" />
+        <Slider x:Name="SurfaceLeftSlider" HorizontalAlignment="Left" Margin="4,551,0,0" VerticalAlignment="Top"
+                RenderTransformOrigin="0.667,0.557" Width="488" Maximum="1000" Value="536" />
+        <Slider x:Name="SurfaceRightSlider" HorizontalAlignment="Left" Margin="4,574,0,0" VerticalAlignment="Top"
+                RenderTransformOrigin="0.667,0.557" Width="488" Maximum="1500" Value="536" />
 
-        <Image x:Name="ImageBox" HorizontalAlignment="Left" Height="319" Margin="8,8,0,0" VerticalAlignment="Top" Width="568" />
-        <Image x:Name="ImageBoxRoi" HorizontalAlignment="Left" Height="48" Margin="8,330,0,0" VerticalAlignment="Top" Width="568" />
-        <Image x:Name="ImageBoxRoiLastThrow" HorizontalAlignment="Left" Height="48" Margin="8,380,0,0" VerticalAlignment="Top" Width="568" />
-        <Label Content="Treshold min" HorizontalAlignment="Left" Margin="492,433,0,0" VerticalAlignment="Top" Width="84" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" RenderTransformOrigin="0.594,0.181"/>
-        <Label Content="Treshold min" Margin="492,456,0,0" VerticalAlignment="Top" Width="84" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" RenderTransformOrigin="0.594,0.181" HorizontalAlignment="Left"/>
-        <Label Content="ROI X" HorizontalAlignment="Left" Margin="492,482,0,0" VerticalAlignment="Top" Width="84" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" RenderTransformOrigin="0.594,0.181"/>
-        <Label Content="ROI Y" HorizontalAlignment="Left" Margin="492,505,0,0" VerticalAlignment="Top" Width="84" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" RenderTransformOrigin="0.594,0.181"/>
-        <Label Content="ROI width" HorizontalAlignment="Left" Margin="492,529,0,0" VerticalAlignment="Top" Width="84" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" RenderTransformOrigin="0.594,0.181"/>
-        <Label Content="ROI height" HorizontalAlignment="Left" Margin="492,552,0,0" VerticalAlignment="Top" Width="84" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" RenderTransformOrigin="0.594,0.181"/>
-        <Label Content="Surface Y" HorizontalAlignment="Left" Margin="492,574,0,0" VerticalAlignment="Top" Width="84" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" RenderTransformOrigin="0.594,0.181"/>
-        <Label Content="Surface center" HorizontalAlignment="Left" Margin="492,598,0,0" VerticalAlignment="Top" Width="84" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" RenderTransformOrigin="0.594,0.181"/>
-        <Label Content="Surface left" HorizontalAlignment="Left" Margin="492,621,0,0" VerticalAlignment="Top" Width="84" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" RenderTransformOrigin="0.594,0.181"/>
-        <Label Content="Surface right" HorizontalAlignment="Left" Margin="492,644,0,0" VerticalAlignment="Top" Width="84" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" RenderTransformOrigin="0.594,0.181"/>
+        <Image x:Name="ImageBox" HorizontalAlignment="Left" Height="319" Margin="8,8,0,0" VerticalAlignment="Top"
+               Width="568" />
+        <Image x:Name="ImageBoxRoi" HorizontalAlignment="Left" Height="48" Margin="8,330,0,0" VerticalAlignment="Top"
+               Width="568" />
+        <Image x:Name="ImageBoxRoiLastThrow" HorizontalAlignment="Left" Height="48" Margin="8,380,0,0"
+               VerticalAlignment="Top" Width="568" />
+        <Label Content="Treshold" HorizontalAlignment="Left" Margin="492,433,0,0" VerticalAlignment="Top"
+               Width="84" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" RenderTransformOrigin="0.594,0.181" />
+        <Label Content="ROI Y" HorizontalAlignment="Left" Margin="492,456,0,0" VerticalAlignment="Top" Width="84"
+               FontFamily="Agency FB" FontSize="14" FontWeight="Bold" RenderTransformOrigin="0.594,0.181" />
+        <Label Content="ROI height" HorizontalAlignment="Left" Margin="492,477,0,0" VerticalAlignment="Top" Width="84"
+               FontFamily="Agency FB" FontSize="14" FontWeight="Bold" RenderTransformOrigin="0.594,0.181" />
+        <Label Content="Surface Y" HorizontalAlignment="Left" Margin="492,499,0,0" VerticalAlignment="Top" Width="84"
+               FontFamily="Agency FB" FontSize="14" FontWeight="Bold" RenderTransformOrigin="0.594,0.181" />
+        <Label Content="Surface center" HorizontalAlignment="Left" Margin="492,523,0,0" VerticalAlignment="Top"
+               Width="84" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" RenderTransformOrigin="0.594,0.181" />
+        <Label Content="Surface left" HorizontalAlignment="Left" Margin="492,546,0,0" VerticalAlignment="Top"
+               Width="84" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" RenderTransformOrigin="0.594,0.181" />
+        <Label Content="Surface right" HorizontalAlignment="Left" Margin="492,569,0,0" VerticalAlignment="Top"
+               Width="84" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" RenderTransformOrigin="0.594,0.181" />
     </Grid>
 </Window>

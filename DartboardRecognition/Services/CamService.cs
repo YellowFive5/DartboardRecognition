@@ -29,11 +29,8 @@ namespace DartboardRecognition.Services
         public PointF surfaceLeftPoint2;
         public PointF surfaceRightPoint1;
         public PointF surfaceRightPoint2;
-        public double tresholdMinSlider;
-        public double tresholdMaxSlider;
-        public double roiPosXSlider;
+        public double tresholdSlider;
         public double roiPosYSlider;
-        public double roiWidthSlider;
         public double roiHeightSlider;
         public double surfaceSlider;
         public double surfaceCenterSlider;
@@ -79,7 +76,7 @@ namespace DartboardRecognition.Services
             smoothGauss = configService.Read<int>("SmoothGauss");
             moveDetectedSleepTime = configService.Read<double>("MoveDetectedSleepTime");
             toBullAngle = MeasureService.FindAngle(setupPoint, drawService.projectionCenterPoint);
-            videoCapture = new VideoCapture(GetCamIndex(camNumber));
+            videoCapture = new VideoCapture(GetCamIndex(camNumber), VideoCapture.API.DShow);
             videoCapture.SetCaptureProperty(CapProp.FrameWidth, resolutionWidth);
             videoCapture.SetCaptureProperty(CapProp.FrameHeight, resolutionHeight);
             GetSlidersData();
@@ -95,11 +92,8 @@ namespace DartboardRecognition.Services
 
         private void GetSlidersData()
         {
-            camWindow.Dispatcher.Invoke(new Action(() => tresholdMinSlider = camWindow.TresholdMinSlider.Value));
-            camWindow.Dispatcher.Invoke(new Action(() => tresholdMaxSlider = camWindow.TresholdMaxSlider.Value));
-            camWindow.Dispatcher.Invoke(new Action(() => roiPosXSlider = camWindow.RoiPosXSlider.Value));
+            camWindow.Dispatcher.Invoke(new Action(() => tresholdSlider = camWindow.TresholdSlider.Value));
             camWindow.Dispatcher.Invoke(new Action(() => roiPosYSlider = camWindow.RoiPosYSlider.Value));
-            camWindow.Dispatcher.Invoke(new Action(() => roiWidthSlider = camWindow.RoiWidthSlider.Value));
             camWindow.Dispatcher.Invoke(new Action(() => roiHeightSlider = camWindow.RoiHeightSlider.Value));
             camWindow.Dispatcher.Invoke(new Action(() => surfaceSlider = camWindow.SurfaceSlider.Value));
             camWindow.Dispatcher.Invoke(new Action(() => surfaceCenterSlider = camWindow.SurfaceCenterSlider.Value));
@@ -113,9 +107,9 @@ namespace DartboardRecognition.Services
 
             LinedFrame = OriginFrame?.Clone();
 
-            roiRectangle = new Rectangle((int) roiPosXSlider,
+            roiRectangle = new Rectangle(0,
                                          (int) roiPosYSlider,
-                                         (int) roiWidthSlider,
+                                         resolutionWidth,
                                          (int) roiHeightSlider);
 
             drawService.DrawRectangle(LinedFrame,
@@ -176,8 +170,8 @@ namespace DartboardRecognition.Services
 
             RoiFrame.ROI = roiRectangle;
             RoiFrame._SmoothGaussian(smoothGauss);
-            RoiFrame._ThresholdBinary(new Gray(tresholdMinSlider),
-                                      new Gray(tresholdMaxSlider));
+            RoiFrame._ThresholdBinary(new Gray(tresholdSlider),
+                                      new Gray(255));
         }
 
         public void RefreshImageBoxes()
@@ -262,8 +256,8 @@ namespace DartboardRecognition.Services
             var newImage = videoCapture.QueryFrame().ToImage<Gray, byte>().Not();
             newImage.ROI = roiRectangle;
             newImage._SmoothGaussian(smoothGauss);
-            newImage._ThresholdBinary(new Gray(tresholdMinSlider),
-                                      new Gray(tresholdMaxSlider));
+            newImage._ThresholdBinary(new Gray(tresholdSlider),
+                                      new Gray(255));
 
             var diffImage = oldImage.Data != null
                                 ? oldImage.AbsDiff(newImage)
