@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using Autofac;
@@ -184,6 +183,18 @@ namespace DartboardRecognition.Windows
             mainWindowView.ProjectionFrameSideTextBox.Text = configService.Read<string>("ProjectionFrameSide");
             mainWindowView.MoveDetectedSleepTimeTextBox.Text = configService.Read<string>("MoveDetectedSleepTime");
             mainWindowView.ExtractionSleepTimeTimeTextBox.Text = configService.Read<string>("ExtractionSleepTime");
+            mainWindowView.Cam1IdTextBox.Text = configService.Read<string>("Cam1Id");
+            mainWindowView.Cam1XTextBox.Text = configService.Read<string>("Cam1X");
+            mainWindowView.Cam1YTextBox.Text = configService.Read<string>("Cam1Y");
+            mainWindowView.Cam2IdTextBox.Text = configService.Read<string>("Cam2Id");
+            mainWindowView.Cam2XTextBox.Text = configService.Read<string>("Cam2X");
+            mainWindowView.Cam2YTextBox.Text = configService.Read<string>("Cam2Y");
+            mainWindowView.Cam3IdTextBox.Text = configService.Read<string>("Cam3Id");
+            mainWindowView.Cam3XTextBox.Text = configService.Read<string>("Cam3X");
+            mainWindowView.Cam3YTextBox.Text = configService.Read<string>("Cam3Y");
+            mainWindowView.Cam4IdTextBox.Text = configService.Read<string>("Cam4Id");
+            mainWindowView.Cam4XTextBox.Text = configService.Read<string>("Cam4X");
+            mainWindowView.Cam4YTextBox.Text = configService.Read<string>("Cam4Y");
         }
 
         public void SaveSettings()
@@ -206,6 +217,18 @@ namespace DartboardRecognition.Windows
             configService.Write("ProjectionFrameSide", mainWindowView.ProjectionFrameSideTextBox.Text);
             configService.Write("MoveDetectedSleepTime", mainWindowView.MoveDetectedSleepTimeTextBox.Text);
             configService.Write("ExtractionSleepTime", mainWindowView.ExtractionSleepTimeTimeTextBox.Text);
+            configService.Write("Cam1Id", mainWindowView.Cam1IdTextBox.Text);
+            configService.Write("Cam1X", mainWindowView.Cam1XTextBox.Text);
+            configService.Write("Cam1Y", mainWindowView.Cam1YTextBox.Text);
+            configService.Write("Cam2Id", mainWindowView.Cam2IdTextBox.Text);
+            configService.Write("Cam2X", mainWindowView.Cam2XTextBox.Text);
+            configService.Write("Cam2Y", mainWindowView.Cam2YTextBox.Text);
+            configService.Write("Cam3Id", mainWindowView.Cam3IdTextBox.Text);
+            configService.Write("Cam3X", mainWindowView.Cam3XTextBox.Text);
+            configService.Write("Cam3Y", mainWindowView.Cam3YTextBox.Text);
+            configService.Write("Cam4Id", mainWindowView.Cam4IdTextBox.Text);
+            configService.Write("Cam4X", mainWindowView.Cam4XTextBox.Text);
+            configService.Write("Cam4Y", mainWindowView.Cam4YTextBox.Text);
         }
     }
 }
