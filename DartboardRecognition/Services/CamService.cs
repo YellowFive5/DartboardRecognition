@@ -3,6 +3,7 @@
 using System;
 using System.Drawing;
 using System.Linq;
+using System.Threading;
 using System.Windows.Media.Imaging;
 using Autofac;
 using DartboardRecognition.Windows;
@@ -160,7 +161,7 @@ namespace DartboardRecognition.Services
 
         public void DoCapture()
         {
-            // RoiFrame?.Dispose(); todo check and delete
+            RoiFrame?.Dispose();
 
             GetSlidersData();
             DrawSetupLines();
@@ -193,7 +194,7 @@ namespace DartboardRecognition.Services
         {
             if (withDetection)
             {
-                var zeroImage = RoiFrame;
+                var zeroImage = RoiFrame.Clone();
                 var diffImage = CaptureAndDiff(zeroImage);
                 var moves = diffImage.CountNonzero()[0];
                 diffImage.Dispose();
@@ -202,10 +203,7 @@ namespace DartboardRecognition.Services
 
                 if (moveDetected)
                 {
-                    var now = DateTime.Now;
-                    while (DateTime.Now - now < TimeSpan.FromSeconds(moveDetectedSleepTime)) // todo something with thread
-                    {
-                    }
+                    Thread.Sleep(TimeSpan.FromSeconds(moveDetectedSleepTime));
 
                     diffImage = CaptureAndDiff(zeroImage);
                     zeroImage.Dispose();
@@ -243,7 +241,7 @@ namespace DartboardRecognition.Services
 
         public void FindThrow()
         {
-            var zeroImage = RoiFrame;
+            var zeroImage = RoiFrame.Clone();
             var diffImage = CaptureAndDiff(zeroImage);
             RoiLastThrowFrame = diffImage.Clone();
             diffImage.Dispose();
@@ -259,9 +257,7 @@ namespace DartboardRecognition.Services
             newImage._ThresholdBinary(new Gray(tresholdSlider),
                                       new Gray(255));
 
-            var diffImage = oldImage.Data != null
-                                ? oldImage.AbsDiff(newImage)
-                                : new Image<Gray, byte>(newImage.Width, newImage.Height, new Gray(255)); // todo check this
+            var diffImage = oldImage.AbsDiff(newImage);
             newImage.Dispose();
 
             return diffImage;

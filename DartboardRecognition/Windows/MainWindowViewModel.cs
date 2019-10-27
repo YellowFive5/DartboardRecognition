@@ -95,10 +95,7 @@ namespace DartboardRecognition.Windows
 
                                  if (response == ResponseType.Extraction)
                                  {
-                                     var now = DateTime.Now;
-                                     while (DateTime.Now - now < TimeSpan.FromSeconds(extractionSleepTime)) // todo something with thread
-                                     {
-                                     }
+                                     Thread.Sleep(TimeSpan.FromSeconds(extractionSleepTime));
 
                                      drawService.ProjectionClear();
                                      DoCaptures();
