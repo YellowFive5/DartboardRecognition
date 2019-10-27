@@ -1,7 +1,9 @@
 ﻿#region Usings
 
 using System.ComponentModel;
+using Autofac;
 using DartboardRecognition.Services;
+using NLog;
 
 #endregion
 
@@ -11,6 +13,7 @@ namespace DartboardRecognition.Windows
     {
         public readonly int camNumber;
         private readonly CamWindowViewModel viewModel;
+        private readonly Logger logger;
 
         public CamWindow(int camNumber,
                          bool runtimeCapturing,
@@ -18,6 +21,8 @@ namespace DartboardRecognition.Windows
                          bool withSetupSliders)
         {
             InitializeComponent();
+            logger = MainWindow.ServiceContainer.Resolve<Logger>();
+
             if (withSetupSliders)
             {
                 Height = 640;

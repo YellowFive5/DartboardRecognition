@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using NLog;
 
 #endregion
 
@@ -11,11 +12,13 @@ namespace DartboardRecognition.Services
     public class ThrowService
     {
         private readonly DrawService drawService;
+        private readonly Logger logger;
         private readonly List<Ray> rays;
         private readonly Queue<Throw> throwsCollection;
 
-        public ThrowService(DrawService drawService)
+        public ThrowService(DrawService drawService, Logger logger)
         {
+            this.logger = logger;
             this.drawService = drawService;
             rays = new List<Ray>();
             throwsCollection = new Queue<Throw>();
@@ -23,8 +26,12 @@ namespace DartboardRecognition.Services
 
         public void CalculateAndSaveThrow()
         {
+            logger.Debug($"Calculate throw start");
+
             if (rays.Count < 2)
             {
+                logger.Debug($"Rays count < 2. Calculate throw end.");
+
                 rays.Clear();
                 return;
             }
@@ -32,6 +39,8 @@ namespace DartboardRecognition.Services
             var firstBestRay = rays.OrderByDescending(i => i.ContourArc).ElementAt(0);
             var secondBestRay = rays.OrderByDescending(i => i.ContourArc).ElementAt(1);
             rays.Clear();
+
+            logger.Debug($"Best rays: '{firstBestRay}' and '{secondBestRay}'");
 
             var poi = MeasureService.FindLinesIntersection(firstBestRay.CamPoint,
                                                            firstBestRay.RayPoint,
@@ -44,6 +53,8 @@ namespace DartboardRecognition.Services
             drawService.ProjectionDrawLine(secondBestRay.CamPoint, secondBestRay.RayPoint, false);
             drawService.ProjectionDrawThrow(poi, false);
             drawService.PrintThrow(anotherThrow);
+
+            logger.Debug($"Calculate throw end. Throw:{anotherThrow}");
         }
 
         private Throw PrepareThrowData(PointF poi)

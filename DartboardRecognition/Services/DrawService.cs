@@ -10,6 +10,7 @@ using DartboardRecognition.Windows;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
+using NLog;
 using Point = System.Drawing.Point;
 
 #endregion
@@ -20,6 +21,7 @@ namespace DartboardRecognition.Services
     {
         private readonly MainWindow mainWindow;
         private readonly ConfigService configService;
+        private readonly Logger logger;
         public Bgr camRoiRectColor = new Bgr(Color.LawnGreen);
         public readonly int camRoiRectThickness = 5;
         public Bgr camSurfaceLineColor = new Bgr(Color.Red);
@@ -51,10 +53,11 @@ namespace DartboardRecognition.Services
         private Image<Bgr, byte> DartboardProjectionFrameBackground { get; }
         private Image<Bgr, byte> DartboardProjectionWorkingFrame { get; set; }
 
-        public DrawService(MainWindow mainWindow, ConfigService configService)
+        public DrawService(MainWindow mainWindow, ConfigService configService, Logger logger)
         {
             this.mainWindow = mainWindow;
             this.configService = configService;
+            this.logger = logger;
             projectionFrameSide = this.configService.Read<int>("ProjectionFrameSide");
             DartboardProjectionFrameBackground = new Image<Bgr, byte>(projectionFrameSide,
                                                                       projectionFrameSide);

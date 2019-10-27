@@ -7,6 +7,7 @@ using DartboardRecognition.Windows;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Util;
+using NLog;
 
 #endregion
 
@@ -18,6 +19,7 @@ namespace DartboardRecognition.Services
         private readonly DrawService drawService;
         private readonly ThrowService throwService;
         private readonly ConfigService configService;
+        private readonly Logger logger;
         private DartContour dartContour;
 
         private readonly int minContourArc;
@@ -26,6 +28,7 @@ namespace DartboardRecognition.Services
         public MeasureService(CamService camService)
         {
             this.camService = camService;
+            logger = MainWindow.ServiceContainer.Resolve<Logger>();
             drawService = MainWindow.ServiceContainer.Resolve<DrawService>();
             throwService = MainWindow.ServiceContainer.Resolve<ThrowService>();
             configService = MainWindow.ServiceContainer.Resolve<ConfigService>();
@@ -35,6 +38,8 @@ namespace DartboardRecognition.Services
 
         public bool FindDartContour()
         {
+            logger.Debug($"Find dartContour for cam_{camService.camNumber} start");
+
             var allContours = new VectorOfVectorOfPoint();
             var matHierarсhy = new Mat();
             CvInvoke.FindContours(camService.RoiLastThrowFrame,
@@ -70,11 +75,13 @@ namespace DartboardRecognition.Services
                 dartContour = new DartContour(contour, contourArс);
             }
 
+            logger.Debug($"Find dartContour for cam_{camService.camNumber} end. Found:{found}. Contour arc:{contourArс}");
             return found;
         }
 
         public void ProcessDartContour()
         {
+            logger.Debug($"Process dartContour for cam_{camService.camNumber} start");
             // Moments and centerpoint
             // var contourMoments = CvInvoke.Moments(processedContour);
             // var contourCenterPoint = new PointF((float) (contourMoments.M10 / contourMoments.M00),
@@ -152,9 +159,11 @@ namespace DartboardRecognition.Services
 
             drawService.ProjectionDrawLine(camService.setupPoint, rayPoint, false);
 
-            var ray = new Ray(camService.setupPoint, rayPoint, dartContour.Arc);
+            var ray = new Ray(camService.camNumber, camService.setupPoint, rayPoint, dartContour.Arc);
 
             throwService.SaveRay(ray);
+
+            logger.Debug($"Process dartContour for cam_{camService.camNumber} end. Ray saved:{ray}");
         }
 
         public static PointF FindLinesIntersection(PointF line1Point1,

@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using Autofac;
 using DartboardRecognition.Services;
+using NLog;
 
 #endregion
 
@@ -17,6 +18,7 @@ namespace DartboardRecognition.Windows
     public class MainWindowViewModel
     {
         private readonly MainWindow mainWindowView;
+        private Logger logger;
         private CancellationToken cancelToken;
         private CancellationTokenSource cts;
         private List<CamWindow> cams;
@@ -36,6 +38,7 @@ namespace DartboardRecognition.Windows
             throwService = MainWindow.ServiceContainer.Resolve<ThrowService>();
             configService = MainWindow.ServiceContainer.Resolve<ConfigService>();
             extractionSleepTime = configService.Read<double>("ExtractionSleepTime");
+            logger = MainWindow.ServiceContainer.Resolve<Logger>();
             drawService.ProjectionPrepare();
         }
 
@@ -74,6 +77,8 @@ namespace DartboardRecognition.Windows
                 cams.Add(new CamWindow(4, runtimeCapturing, withDetection, withSetupSliders));
             }
 
+            logger.Debug($"Detection for {cams.Count} cams start");
+
             DoCaptures();
 
             Task.Run(() =>
@@ -84,12 +89,16 @@ namespace DartboardRecognition.Windows
                          {
                              foreach (var cam in cams)
                              {
+                                 logger.Debug($"Cam_{cam.camNumber} detection start");
+
                                  var response = cam.Detect();
 
                                  if (response == ResponseType.Trow)
                                  {
                                      cam.ProcessContour();
                                      FindThrowFromRemainingCams(cam);
+
+                                     logger.Debug($"Cam_{cam.camNumber} detection end with response type '{ResponseType.Trow}'");
                                      break;
                                  }
 
@@ -99,10 +108,16 @@ namespace DartboardRecognition.Windows
 
                                      drawService.ProjectionClear();
                                      DoCaptures();
+
+                                     logger.Debug($"Cam_{cam.camNumber} detection end with response type '{ResponseType.Extraction}'");
                                      break;
                                  }
+
+                                 logger.Debug($"Cam_{cam.camNumber} detection end with response type '{ResponseType.Nothing}'");
                              }
                          }
+
+                         logger.Debug($"Detection for {cams.Count} cams end. Cancellation requested");
 
                          foreach (var cam in cams)
                          {
@@ -113,6 +128,8 @@ namespace DartboardRecognition.Windows
 
         private void FindThrowFromRemainingCams(CamWindow succeededCam)
         {
+            logger.Debug($"Finding throws from remaining cams start. Succeeded cam: {succeededCam.camNumber}");
+
             foreach (var cam in cams.Where(cam => cam != succeededCam))
             {
                 cam.FindThrow();
@@ -120,6 +137,8 @@ namespace DartboardRecognition.Windows
             }
 
             throwService.CalculateAndSaveThrow();
+
+            logger.Debug($"Finding throws from remaining cams end");
         }
 
         private void DoCaptures()
@@ -162,6 +181,8 @@ namespace DartboardRecognition.Windows
 
         public void LoadSettings()
         {
+            logger.Debug("Load settings start");
+
             mainWindowView.RuntimeCapturingCheckBox.IsChecked = configService.Read<bool>("RuntimeCapturingCheckBox");
             mainWindowView.WithDetectionCheckBox.IsChecked = configService.Read<bool>("WithDetectionCheckBox");
             mainWindowView.SetupSlidersCheckBox.IsChecked = configService.Read<bool>("SetupSlidersCheckBox");
@@ -192,10 +213,14 @@ namespace DartboardRecognition.Windows
             mainWindowView.Cam4IdTextBox.Text = configService.Read<string>("Cam4Id");
             mainWindowView.Cam4XTextBox.Text = configService.Read<string>("Cam4X");
             mainWindowView.Cam4YTextBox.Text = configService.Read<string>("Cam4Y");
+
+            logger.Debug("Load settings end");
         }
 
         public void SaveSettings()
         {
+            logger.Debug("Save settings start");
+
             configService.Write("RuntimeCapturingCheckBox", mainWindowView.RuntimeCapturingCheckBox.IsChecked.Value);
             configService.Write("WithDetectionCheckBox", mainWindowView.WithDetectionCheckBox.IsChecked.Value);
             configService.Write("SetupSlidersCheckBox", mainWindowView.SetupSlidersCheckBox.IsChecked.Value);
@@ -226,6 +251,8 @@ namespace DartboardRecognition.Windows
             configService.Write("Cam4Id", mainWindowView.Cam4IdTextBox.Text);
             configService.Write("Cam4X", mainWindowView.Cam4XTextBox.Text);
             configService.Write("Cam4Y", mainWindowView.Cam4YTextBox.Text);
+
+            logger.Debug("Save settings end");
         }
     }
 }

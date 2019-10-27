@@ -2,6 +2,7 @@
 
 using Autofac;
 using DartboardRecognition.Services;
+using NLog;
 
 #endregion
 
@@ -13,6 +14,7 @@ namespace DartboardRecognition.Windows
         private readonly MeasureService measureService;
         private readonly ConfigService configService;
         private readonly CamService camService;
+        private readonly Logger logger;
 
         public CamWindowViewModel()
         {
@@ -26,6 +28,7 @@ namespace DartboardRecognition.Windows
             camService = new CamService(camWindowView, runtimeCapturing, withDetection);
             measureService = new MeasureService(camService);
             configService = MainWindow.ServiceContainer.Resolve<ConfigService>();
+            logger = MainWindow.ServiceContainer.Resolve<Logger>();
         }
 
         public void LoadSettings()

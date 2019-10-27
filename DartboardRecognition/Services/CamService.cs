@@ -11,6 +11,7 @@ using DirectShowLib;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
+using NLog;
 
 #endregion
 
@@ -22,6 +23,7 @@ namespace DartboardRecognition.Services
         private readonly DrawService drawService;
         public readonly VideoCapture videoCapture;
         private readonly ConfigService configService;
+        private readonly Logger logger;
         public PointF surfacePoint1;
         public PointF surfacePoint2;
         public PointF surfaceCenterPoint1;
@@ -61,6 +63,7 @@ namespace DartboardRecognition.Services
             this.camWindow = camWindow;
             this.runtimeCapturing = runtimeCapturing;
             this.withDetection = withDetection;
+            logger = MainWindow.ServiceContainer.Resolve<Logger>();
             drawService = MainWindow.ServiceContainer.Resolve<DrawService>();
             configService = MainWindow.ServiceContainer.Resolve<ConfigService>();
             surfacePoint1 = new PointF();
@@ -161,6 +164,8 @@ namespace DartboardRecognition.Services
 
         public void DoCapture()
         {
+            logger.Debug($"Doing capture for cam_{camNumber} start");
+
             RoiFrame?.Dispose();
 
             GetSlidersData();
@@ -173,10 +178,14 @@ namespace DartboardRecognition.Services
             RoiFrame._SmoothGaussian(smoothGauss);
             RoiFrame._ThresholdBinary(new Gray(tresholdSlider),
                                       new Gray(255));
+
+            logger.Debug($"Doing capture for cam_{camNumber} end");
         }
 
         public void RefreshImageBoxes()
         {
+            logger.Debug($"Refreshing imageboxes for cam_{camNumber} start");
+
             camWindow.Dispatcher.Invoke(new Action(() => camWindow.ImageBox.Source = LinedFrame?.Data != null
                                                                                          ? drawService.ToBitmap(LinedFrame)
                                                                                          : new BitmapImage()));
@@ -188,6 +197,8 @@ namespace DartboardRecognition.Services
                                                                                                      : new BitmapImage()));
             OriginFrame?.Dispose();
             LinedFrame?.Dispose();
+
+            logger.Debug($"Refreshing imageboxes for cam_{camNumber} end");
         }
 
         public ResponseType Detect()
@@ -197,9 +208,11 @@ namespace DartboardRecognition.Services
                 var zeroImage = RoiFrame.Clone();
                 var diffImage = CaptureAndDiff(zeroImage);
                 var moves = diffImage.CountNonzero()[0];
+                logger.Debug($"Moves:{moves}");
                 diffImage.Dispose();
 
                 var moveDetected = moves > movesNoise;
+                logger.Debug($"Move detected:{moveDetected}");
 
                 if (moveDetected)
                 {
@@ -208,12 +221,17 @@ namespace DartboardRecognition.Services
                     diffImage = CaptureAndDiff(zeroImage);
                     zeroImage.Dispose();
                     moves = diffImage.CountNonzero()[0];
+                    logger.Debug($"Moves:{moves}");
 
                     var extractProcess = moves > movesExtraction;
+                    logger.Debug($"Extract process:{extractProcess}");
+
                     var throwDetected = !extractProcess && moves > movesDart;
+                    logger.Debug($"Throw detected:{throwDetected}");
 
                     if (extractProcess)
                     {
+                        logger.Debug($"Return response type:{ResponseType.Extraction}");
                         return ResponseType.Extraction;
                     }
 
@@ -225,6 +243,7 @@ namespace DartboardRecognition.Services
                         DoCapture();
                         RefreshImageBoxes();
 
+                        logger.Debug($"Return response type:{ResponseType.Trow}");
                         return ResponseType.Trow;
                     }
                 }
@@ -236,30 +255,37 @@ namespace DartboardRecognition.Services
                 RefreshImageBoxes();
             }
 
+            logger.Debug($"Return response type:{ResponseType.Nothing}");
             return ResponseType.Nothing;
         }
 
         public void FindThrow()
         {
+            logger.Debug($"Find throw for cam_{camNumber} start");
+
             var zeroImage = RoiFrame.Clone();
             var diffImage = CaptureAndDiff(zeroImage);
             RoiLastThrowFrame = diffImage.Clone();
             diffImage.Dispose();
             DoCapture();
             RefreshImageBoxes();
+
+            logger.Debug($"Find throw for cam_{camNumber} end");
         }
 
         private Image<Gray, byte> CaptureAndDiff(Image<Gray, byte> oldImage)
         {
+            logger.Debug($"Capture and diff for cam_{camNumber} start");
+
             var newImage = videoCapture.QueryFrame().ToImage<Gray, byte>().Not();
             newImage.ROI = roiRectangle;
             newImage._SmoothGaussian(smoothGauss);
             newImage._ThresholdBinary(new Gray(tresholdSlider),
                                       new Gray(255));
-
             var diffImage = oldImage.AbsDiff(newImage);
             newImage.Dispose();
 
+            logger.Debug($"Capture and diff for cam_{camNumber} end");
             return diffImage;
         }
     }

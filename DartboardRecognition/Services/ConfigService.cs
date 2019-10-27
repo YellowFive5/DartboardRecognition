@@ -3,6 +3,7 @@
 using System;
 using System.Configuration;
 using System.Xml;
+using NLog;
 
 #endregion
 
@@ -12,9 +13,11 @@ namespace DartboardRecognition.Services
     {
         private readonly object locker;
         private readonly XmlDocument appConfig;
+        private readonly Logger logger;
 
-        public ConfigService()
+        public ConfigService(Logger logger)
         {
+            this.logger = logger;
             locker = new object();
             appConfig = new XmlDocument();
             appConfig.Load(AppDomain.CurrentDomain.SetupInformation.ConfigurationFile);
