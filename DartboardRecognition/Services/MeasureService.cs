@@ -48,11 +48,6 @@ namespace DartboardRecognition.Services
                                   RetrType.External,
                                   ChainApproxMethod.ChainApproxNone);
 
-            if (allContours.Size <= 0)
-            {
-                return false;
-            }
-
             var contour = new VectorOfPoint();
             var contourArс = 0.0;
 
@@ -68,7 +63,7 @@ namespace DartboardRecognition.Services
                 }
             }
 
-            var found = contourArс > 0 && contour.Size > 0;
+            var found = contourArс > 0;
 
             if (found)
             {

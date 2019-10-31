@@ -18,7 +18,7 @@ namespace DartboardRecognition.Windows
     public class MainWindowViewModel
     {
         private readonly MainWindow mainWindowView;
-        private Logger logger;
+        private readonly Logger logger;
         private CancellationToken cancelToken;
         private CancellationTokenSource cts;
         private List<CamWindow> cams;
@@ -42,16 +42,12 @@ namespace DartboardRecognition.Windows
             drawService.ProjectionPrepare();
         }
 
-        private void StartCapturing()
+        private void StartDetection()
         {
             drawService.ProjectionClear();
             cts = new CancellationTokenSource();
             cancelToken = cts.Token;
-            StartDetection();
-        }
 
-        private void StartDetection()
-        {
             var runtimeCapturing = mainWindowView.RuntimeCapturingCheckBox.IsChecked.Value;
             var withDetection = mainWindowView.WithDetectionCheckBox.IsChecked.Value;
             var withSetupSliders = mainWindowView.SetupSlidersCheckBox.IsChecked.Value;
@@ -77,13 +73,13 @@ namespace DartboardRecognition.Windows
                 cams.Add(new CamWindow(4, runtimeCapturing, withDetection, withSetupSliders));
             }
 
-            logger.Debug($"Detection for {cams.Count} cams start");
-
-            DoCaptures();
+            logger.Info($"Detection for {cams.Count} cams start");
 
             Task.Run(() =>
                      {
                          Thread.CurrentThread.Name = $"Recognition_workerThread";
+
+                         ClearAllCamsImageBoxes();
 
                          while (!cancelToken.IsCancellationRequested)
                          {
@@ -91,33 +87,41 @@ namespace DartboardRecognition.Windows
                              {
                                  logger.Debug($"Cam_{cam.camNumber} detection start");
 
-                                 var response = cam.Detect();
+                                 var response = cam.DetectMove();
 
-                                 if (response == ResponseType.Trow)
+                                 if (response == ResponseType.Move)
                                  {
-                                     cam.ProcessContour();
-                                     FindThrowFromRemainingCams(cam);
+                                     response = cam.DetectThrow();
 
-                                     logger.Debug($"Cam_{cam.camNumber} detection end with response type '{ResponseType.Trow}'");
-                                     break;
+                                     if (response == ResponseType.Trow)
+                                     {
+                                         cam.FindAndProcessDartContour();
+
+                                         FindThrowOnRemainingCams(cam);
+
+                                         logger.Debug($"Cam_{cam.camNumber} detection end with response type '{ResponseType.Trow}'");
+                                         break;
+                                     }
+
+                                     if (response == ResponseType.Extraction)
+                                     {
+                                         Thread.Sleep(TimeSpan.FromSeconds(extractionSleepTime));
+
+                                         drawService.ProjectionClear();
+                                         ClearAllCamsImageBoxes();
+
+                                         logger.Debug($"Cam_{cam.camNumber} detection end with response type '{ResponseType.Extraction}'");
+                                         break;
+                                     }
                                  }
 
-                                 if (response == ResponseType.Extraction)
-                                 {
-                                     Thread.Sleep(TimeSpan.FromSeconds(extractionSleepTime));
-
-                                     drawService.ProjectionClear();
-                                     DoCaptures();
-
-                                     logger.Debug($"Cam_{cam.camNumber} detection end with response type '{ResponseType.Extraction}'");
-                                     break;
-                                 }
+                                 Thread.Sleep(TimeSpan.FromSeconds(0.7));
 
                                  logger.Debug($"Cam_{cam.camNumber} detection end with response type '{ResponseType.Nothing}'");
                              }
                          }
 
-                         logger.Debug($"Detection for {cams.Count} cams end. Cancellation requested");
+                         logger.Info($"Detection for {cams.Count} cams end. Cancellation requested");
 
                          foreach (var cam in cams)
                          {
@@ -126,26 +130,26 @@ namespace DartboardRecognition.Windows
                      });
         }
 
-        private void FindThrowFromRemainingCams(CamWindow succeededCam)
+        private void FindThrowOnRemainingCams(CamWindow succeededCam)
         {
-            logger.Debug($"Finding throws from remaining cams start. Succeeded cam: {succeededCam.camNumber}");
+            logger.Info($"Finding throws from remaining cams start. Succeeded cam: {succeededCam.camNumber}");
 
             foreach (var cam in cams.Where(cam => cam != succeededCam))
             {
                 cam.FindThrow();
-                cam.ProcessContour();
+                cam.FindAndProcessDartContour();
             }
 
             throwService.CalculateAndSaveThrow();
 
-            logger.Debug($"Finding throws from remaining cams end");
+            logger.Info($"Finding throws from remaining cams end");
         }
 
-        private void DoCaptures()
+        private void ClearAllCamsImageBoxes()
         {
             foreach (var cam in cams)
             {
-                cam.DoCapture();
+                cam.ClearImageBoxes();
             }
         }
 
@@ -158,7 +162,7 @@ namespace DartboardRecognition.Windows
         public void OnStartButtonClicked()
         {
             ToggleViewControls();
-            StartCapturing();
+            StartDetection();
         }
 
         public void OnStopButtonClicked()

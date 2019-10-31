@@ -45,14 +45,14 @@ namespace DartboardRecognition.Windows
             viewModel.SaveSettings();
         }
 
-        public ResponseType Detect()
+        public ResponseType DetectMove()
         {
-            return viewModel.Detect();
+            return viewModel.DetectMove();
         }
 
-        public void ProcessContour()
+        public ResponseType DetectThrow()
         {
-            viewModel.ProcessContour();
+            return viewModel.DetectThrow();
         }
 
         public void FindThrow()
@@ -60,9 +60,14 @@ namespace DartboardRecognition.Windows
             viewModel.FindThrow();
         }
 
-        public void DoCapture()
+        public void FindAndProcessDartContour()
         {
-            viewModel.DoCapture();
+            viewModel.FindAndProcessDartContour();
+        }
+
+        public void ClearImageBoxes()
+        {
+            viewModel.ClearImageBoxes();
         }
     }
 }

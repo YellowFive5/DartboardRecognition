@@ -3,6 +3,7 @@
     public enum ResponseType
     {
         Nothing,
+        Move,
         Trow,
         Extraction
     }

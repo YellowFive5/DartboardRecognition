@@ -48,6 +48,7 @@ namespace DartboardRecognition.Services
         private Image<Bgr, byte> OriginFrame { get; set; }
         private Image<Bgr, byte> LinedFrame { get; set; }
         private Image<Gray, byte> RoiFrame { get; set; }
+        private Image<Gray, byte> RoiFrameBackground { get; set; }
         public Image<Gray, byte> RoiLastThrowFrame { get; private set; }
 
         private readonly int resolutionWidth;
@@ -84,6 +85,7 @@ namespace DartboardRecognition.Services
             videoCapture.SetCaptureProperty(CapProp.FrameWidth, resolutionWidth);
             videoCapture.SetCaptureProperty(CapProp.FrameHeight, resolutionHeight);
             GetSlidersData();
+            RefreshImageBoxes();
         }
 
         private int GetCamIndex(int camNumber)
@@ -107,7 +109,7 @@ namespace DartboardRecognition.Services
 
         private void DrawSetupLines()
         {
-            OriginFrame = videoCapture.QueryFrame()?.ToImage<Bgr, byte>();
+            OriginFrame = videoCapture.QueryFrame().ToImage<Bgr, byte>();
 
             LinedFrame = OriginFrame?.Clone();
 
@@ -162,11 +164,16 @@ namespace DartboardRecognition.Services
                                  drawService.camSurfaceLineThickness);
         }
 
-        public void DoCapture()
+        private void ThresholdRoi(Image<Gray, byte> roiFrame)
+        {
+            roiFrame.ROI = roiRectangle;
+            roiFrame._SmoothGaussian(smoothGauss);
+            CvInvoke.Threshold(roiFrame, roiFrame, tresholdSlider, 255, ThresholdType.Binary);
+        }
+
+        public void DoCapture(bool withRoiBackgroundRefresh = false)
         {
             logger.Debug($"Doing capture for cam_{camNumber} start");
-
-            RoiFrame?.Dispose();
 
             GetSlidersData();
             DrawSetupLines();
@@ -174,10 +181,13 @@ namespace DartboardRecognition.Services
             RoiFrame = OriginFrame.Clone().Convert<Gray, byte>().Not();
             OriginFrame.Dispose();
 
-            RoiFrame.ROI = roiRectangle;
-            RoiFrame._SmoothGaussian(smoothGauss);
-            RoiFrame._ThresholdBinary(new Gray(tresholdSlider),
-                                      new Gray(255));
+            ThresholdRoi(RoiFrame);
+
+            if (withRoiBackgroundRefresh)
+            {
+                RoiFrameBackground = RoiFrame.Clone();
+                RoiLastThrowFrame = RoiFrame.Clone();
+            }
 
             logger.Debug($"Doing capture for cam_{camNumber} end");
         }
@@ -201,58 +211,54 @@ namespace DartboardRecognition.Services
             logger.Debug($"Refreshing imageboxes for cam_{camNumber} end");
         }
 
-        public ResponseType Detect()
+        public ResponseType DetectMove()
         {
+            Thread.Sleep(TimeSpan.FromSeconds(moveDetectedSleepTime));
+
+            DoCapture();
+
             if (withDetection)
             {
-                var zeroImage = RoiFrame.Clone();
-                var diffImage = CaptureAndDiff(zeroImage);
+                var diffImage = CaptureAndDiff();
                 var moves = diffImage.CountNonzero()[0];
-                logger.Debug($"Moves:{moves}");
                 diffImage.Dispose();
 
-                var moveDetected = moves > movesNoise;
-                logger.Debug($"Move detected:{moveDetected}");
-
-                if (moveDetected)
+                if (moves > movesNoise)
                 {
-                    Thread.Sleep(TimeSpan.FromSeconds(moveDetectedSleepTime));
-
-                    diffImage = CaptureAndDiff(zeroImage);
-                    zeroImage.Dispose();
-                    moves = diffImage.CountNonzero()[0];
-                    logger.Debug($"Moves:{moves}");
-
-                    var extractProcess = moves > movesExtraction;
-                    logger.Debug($"Extract process:{extractProcess}");
-
-                    var throwDetected = !extractProcess && moves > movesDart;
-                    logger.Debug($"Throw detected:{throwDetected}");
-
-                    if (extractProcess)
-                    {
-                        logger.Debug($"Return response type:{ResponseType.Extraction}");
-                        return ResponseType.Extraction;
-                    }
-
-                    if (throwDetected)
-                    {
-                        RoiLastThrowFrame = diffImage.Clone();
-                        diffImage.Dispose();
-
-                        DoCapture();
-                        RefreshImageBoxes();
-
-                        logger.Debug($"Return response type:{ResponseType.Trow}");
-                        return ResponseType.Trow;
-                    }
+                    return ResponseType.Move;
                 }
             }
 
             if (runtimeCapturing)
             {
-                DoCapture();
                 RefreshImageBoxes();
+            }
+
+            return ResponseType.Nothing;
+        }
+
+        public ResponseType DetectThrow()
+        {
+            var diffImage = CaptureAndDiff();
+            var moves = diffImage.CountNonzero()[0];
+            logger.Debug($"Moves:{moves}");
+
+            var extractProcess = moves > movesExtraction;
+            var throwDetected = !extractProcess && moves > movesDart;
+            var somethingHappened = extractProcess || throwDetected;
+
+            if (somethingHappened)
+            {
+                if (throwDetected)
+                {
+                    RefreshImages(diffImage);
+
+                    logger.Debug($"Return response type:{ResponseType.Trow}");
+                    return ResponseType.Trow;
+                }
+
+                logger.Debug($"Return response type:{ResponseType.Extraction}");
+                return ResponseType.Extraction;
             }
 
             logger.Debug($"Return response type:{ResponseType.Nothing}");
@@ -263,26 +269,29 @@ namespace DartboardRecognition.Services
         {
             logger.Debug($"Find throw for cam_{camNumber} start");
 
-            var zeroImage = RoiFrame.Clone();
-            var diffImage = CaptureAndDiff(zeroImage);
-            RoiLastThrowFrame = diffImage.Clone();
-            diffImage.Dispose();
-            DoCapture();
-            RefreshImageBoxes();
+            var diffImage = CaptureAndDiff();
+            RefreshImages(diffImage);
 
             logger.Debug($"Find throw for cam_{camNumber} end");
         }
 
-        private Image<Gray, byte> CaptureAndDiff(Image<Gray, byte> oldImage)
+        private void RefreshImages(Image<Gray, byte> diffImage)
+        {
+            RoiFrameBackground = RoiFrame.Clone();
+            RoiLastThrowFrame = diffImage.Clone();
+            diffImage.Dispose();
+
+            DoCapture();
+            RefreshImageBoxes();
+        }
+
+        private Image<Gray, byte> CaptureAndDiff()
         {
             logger.Debug($"Capture and diff for cam_{camNumber} start");
 
             var newImage = videoCapture.QueryFrame().ToImage<Gray, byte>().Not();
-            newImage.ROI = roiRectangle;
-            newImage._SmoothGaussian(smoothGauss);
-            newImage._ThresholdBinary(new Gray(tresholdSlider),
-                                      new Gray(255));
-            var diffImage = oldImage.AbsDiff(newImage);
+            ThresholdRoi(newImage);
+            var diffImage = RoiFrameBackground.AbsDiff(newImage);
             newImage.Dispose();
 
             logger.Debug($"Capture and diff for cam_{camNumber} end");

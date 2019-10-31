@@ -19,8 +19,8 @@ namespace DartboardRecognition.Windows
 
         public MainWindow()
         {
-            logger.Debug("\n");
-            logger.Debug("App start");
+            logger.Info("\n");
+            logger.Info("App start");
 
             InitializeComponent();
             RegisterContainer();

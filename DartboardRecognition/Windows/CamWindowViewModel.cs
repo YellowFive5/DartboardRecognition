@@ -57,15 +57,14 @@ namespace DartboardRecognition.Windows
             configService.Write($"Cam{camNumberStr}SurfaceRightSlider", camWindowView.SurfaceRightSlider.Value);
         }
 
-        public void DoCapture()
+        public ResponseType DetectMove()
         {
-            camService.DoCapture();
-            camService.RefreshImageBoxes();
+            return camService.DetectMove();
         }
 
-        public ResponseType Detect()
+        public ResponseType DetectThrow()
         {
-            return camService.Detect();
+            return camService.DetectThrow();
         }
 
         public void FindThrow()
@@ -73,13 +72,19 @@ namespace DartboardRecognition.Windows
             camService.FindThrow();
         }
 
-        public void ProcessContour()
+        public void FindAndProcessDartContour()
         {
             var found = measureService.FindDartContour();
             if (found)
             {
                 measureService.ProcessDartContour();
             }
+        }
+
+        public void ClearImageBoxes()
+        {
+            camService.DoCapture(true);
+            camService.RefreshImageBoxes();
         }
 
         public void OnClosing()

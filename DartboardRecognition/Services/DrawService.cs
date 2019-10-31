@@ -211,7 +211,7 @@ namespace DartboardRecognition.Services
             return imageToSave;
         }
 
-        private void SaveToFile(BitmapSource image, string path = null)
+        public void SaveToFile(BitmapSource image, string path = null)
         {
             var pathString = path ?? "image.png";
             BitmapEncoder encoder = new PngBitmapEncoder();

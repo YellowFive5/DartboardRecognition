@@ -36,11 +36,16 @@ namespace DartboardRecognition.Services
                 return;
             }
 
+            foreach (var ray in rays)
+            {
+                logger.Info($"Ray:'{ray}'");
+            }
+
             var firstBestRay = rays.OrderByDescending(i => i.ContourArc).ElementAt(0);
             var secondBestRay = rays.OrderByDescending(i => i.ContourArc).ElementAt(1);
             rays.Clear();
 
-            logger.Debug($"Best rays: '{firstBestRay}' and '{secondBestRay}'");
+            logger.Info($"Best rays:'{firstBestRay}' and '{secondBestRay}'");
 
             var poi = MeasureService.FindLinesIntersection(firstBestRay.CamPoint,
                                                            firstBestRay.RayPoint,
@@ -54,7 +59,8 @@ namespace DartboardRecognition.Services
             drawService.ProjectionDrawThrow(poi, false);
             drawService.PrintThrow(anotherThrow);
 
-            logger.Debug($"Calculate throw end. Throw:{anotherThrow}");
+            logger.Info($"Throw:{anotherThrow}");
+            logger.Debug($"Calculate throw end.");
         }
 
         private Throw PrepareThrowData(PointF poi)
