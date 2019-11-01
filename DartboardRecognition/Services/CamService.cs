@@ -59,14 +59,14 @@ namespace DartboardRecognition.Services
         private readonly int smoothGauss;
         private readonly double moveDetectedSleepTime;
 
-        public CamService(CamWindow camWindow, bool runtimeCapturing, bool withDetection)
+        public CamService(CamWindow camWindow)
         {
             this.camWindow = camWindow;
-            this.runtimeCapturing = runtimeCapturing;
-            this.withDetection = withDetection;
             logger = MainWindow.ServiceContainer.Resolve<Logger>();
             drawService = MainWindow.ServiceContainer.Resolve<DrawService>();
             configService = MainWindow.ServiceContainer.Resolve<ConfigService>();
+            runtimeCapturing = configService.Read<bool>("RuntimeCapturingCheckBox");
+            withDetection = configService.Read<bool>("WithDetectionCheckBox"); ;
             surfacePoint1 = new PointF();
             surfacePoint2 = new PointF();
             camNumber = camWindow.camNumber;

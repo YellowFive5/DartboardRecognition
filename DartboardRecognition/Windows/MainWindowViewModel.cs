@@ -46,34 +46,30 @@ namespace DartboardRecognition.Windows
         {
             extractionSleepTime = configService.Read<double>("ExtractionSleepTime");
             thresholdSleepTime = configService.Read<double>("ThresholdSleepTime");
-
+            var runtimeCapturing = mainWindowView.RuntimeCapturingCheckBox.IsChecked.Value;
             drawService.ProjectionClear();
             cts = new CancellationTokenSource();
             cancelToken = cts.Token;
 
-            var runtimeCapturing = mainWindowView.RuntimeCapturingCheckBox.IsChecked.Value;
-            var withDetection = mainWindowView.WithDetectionCheckBox.IsChecked.Value;
-            var withSetupSliders = mainWindowView.SetupSlidersCheckBox.IsChecked.Value;
-
             cams = new List<CamWindow>();
             if (mainWindowView.Cam1CheckBox.IsChecked.Value)
             {
-                cams.Add(new CamWindow(1, runtimeCapturing, withDetection, withSetupSliders));
+                cams.Add(new CamWindow(1));
             }
 
             if (mainWindowView.Cam2CheckBox.IsChecked.Value)
             {
-                cams.Add(new CamWindow(2, runtimeCapturing, withDetection, withSetupSliders));
+                cams.Add(new CamWindow(2));
             }
 
             if (mainWindowView.Cam3CheckBox.IsChecked.Value)
             {
-                cams.Add(new CamWindow(3, runtimeCapturing, withDetection, withSetupSliders));
+                cams.Add(new CamWindow(3));
             }
 
             if (mainWindowView.Cam4CheckBox.IsChecked.Value)
             {
-                cams.Add(new CamWindow(4, runtimeCapturing, withDetection, withSetupSliders));
+                cams.Add(new CamWindow(4));
             }
 
             logger.Info($"Detection for {cams.Count} cams start");
@@ -118,7 +114,10 @@ namespace DartboardRecognition.Windows
                                      }
                                  }
 
-                                 Thread.Sleep(TimeSpan.FromSeconds(thresholdSleepTime));
+                                 if (!runtimeCapturing)
+                                 {
+                                     Thread.Sleep(TimeSpan.FromSeconds(thresholdSleepTime));
+                                 }
 
                                  logger.Debug($"Cam_{cam.camNumber} detection end with response type '{ResponseType.Nothing}'");
                              }

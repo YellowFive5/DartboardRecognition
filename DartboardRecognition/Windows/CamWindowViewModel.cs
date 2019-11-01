@@ -20,12 +20,10 @@ namespace DartboardRecognition.Windows
         {
         }
 
-        public CamWindowViewModel(CamWindow camWindowView,
-                                  bool runtimeCapturing,
-                                  bool withDetection)
+        public CamWindowViewModel(CamWindow camWindowView)
         {
             this.camWindowView = camWindowView;
-            camService = new CamService(camWindowView, runtimeCapturing, withDetection);
+            camService = new CamService(camWindowView);
             measureService = new MeasureService(camService);
             configService = MainWindow.ServiceContainer.Resolve<ConfigService>();
             logger = MainWindow.ServiceContainer.Resolve<Logger>();

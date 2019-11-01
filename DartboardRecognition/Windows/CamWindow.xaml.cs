@@ -14,15 +14,14 @@ namespace DartboardRecognition.Windows
         public readonly int camNumber;
         private readonly CamWindowViewModel viewModel;
         private readonly Logger logger;
-
-        public CamWindow(int camNumber,
-                         bool runtimeCapturing,
-                         bool withDetection,
-                         bool withSetupSliders)
+        private readonly ConfigService configService;
+        public CamWindow(int camNumber)
         {
             InitializeComponent();
             logger = MainWindow.ServiceContainer.Resolve<Logger>();
+            configService = MainWindow.ServiceContainer.Resolve<ConfigService>();
 
+            var withSetupSliders = configService.Read<bool>("SetupSlidersCheckBox");
             if (withSetupSliders)
             {
                 Height = 640;
@@ -31,7 +30,7 @@ namespace DartboardRecognition.Windows
             this.camNumber = camNumber;
             Title = $"Cam {camNumber.ToString()}";
 
-            viewModel = new CamWindowViewModel(this, runtimeCapturing, withDetection);
+            viewModel = new CamWindowViewModel(this);
             DataContext = viewModel;
 
             viewModel.LoadSettings();
