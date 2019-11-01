@@ -165,6 +165,12 @@
                              HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
                     <Label Content="Y" Margin="279,90,44.4,316.6" HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
+                    <TextBox x:Name="ThresholdSleepTimeTimeTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
+                        Margin="157,276,152.4,130.6"
+                        HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                    <Label Content="Threshold sleep time" Margin="190,275,35.4,131.6"
+                        HorizontalContentAlignment="Left"
+                        VerticalContentAlignment="Center" Padding="0" />
                 </Grid>
             </TabItem>
         </TabControl>

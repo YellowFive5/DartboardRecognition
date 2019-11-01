@@ -42,6 +42,8 @@ namespace DartboardRecognition.Windows
             camWindowView.SurfaceCenterSlider.Value = configService.Read<double>($"Cam{camNumberStr}SurfaceCenterSlider");
             camWindowView.SurfaceLeftSlider.Value = configService.Read<double>($"Cam{camNumberStr}SurfaceLeftSlider");
             camWindowView.SurfaceRightSlider.Value = configService.Read<double>($"Cam{camNumberStr}SurfaceRightSlider");
+            camWindowView.Left = configService.Read<double>($"Cam{camNumberStr}WindowPositionLeft");
+            camWindowView.Top = configService.Read<double>($"Cam{camNumberStr}WindowPositionTop");
         }
 
         public void SaveSettings()
@@ -55,6 +57,8 @@ namespace DartboardRecognition.Windows
             configService.Write($"Cam{camNumberStr}SurfaceCenterSlider", camWindowView.SurfaceCenterSlider.Value);
             configService.Write($"Cam{camNumberStr}SurfaceLeftSlider", camWindowView.SurfaceLeftSlider.Value);
             configService.Write($"Cam{camNumberStr}SurfaceRightSlider", camWindowView.SurfaceRightSlider.Value);
+            configService.Write($"Cam{camNumberStr}WindowPositionLeft", camWindowView.Left);
+            configService.Write($"Cam{camNumberStr}WindowPositionTop", camWindowView.Top);
         }
 
         public ResponseType DetectMove()

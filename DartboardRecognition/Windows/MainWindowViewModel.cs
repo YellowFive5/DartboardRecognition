@@ -25,7 +25,8 @@ namespace DartboardRecognition.Windows
         private readonly DrawService drawService;
         private readonly ThrowService throwService;
         private readonly ConfigService configService;
-        private readonly double extractionSleepTime;
+        private double extractionSleepTime;
+        private double thresholdSleepTime;
 
         public MainWindowViewModel()
         {
@@ -37,13 +38,15 @@ namespace DartboardRecognition.Windows
             drawService = MainWindow.ServiceContainer.Resolve<DrawService>();
             throwService = MainWindow.ServiceContainer.Resolve<ThrowService>();
             configService = MainWindow.ServiceContainer.Resolve<ConfigService>();
-            extractionSleepTime = configService.Read<double>("ExtractionSleepTime");
             logger = MainWindow.ServiceContainer.Resolve<Logger>();
             drawService.ProjectionPrepare();
         }
 
         private void StartDetection()
         {
+            extractionSleepTime = configService.Read<double>("ExtractionSleepTime");
+            thresholdSleepTime = configService.Read<double>("ThresholdSleepTime");
+
             drawService.ProjectionClear();
             cts = new CancellationTokenSource();
             cancelToken = cts.Token;
@@ -115,7 +118,7 @@ namespace DartboardRecognition.Windows
                                      }
                                  }
 
-                                 Thread.Sleep(TimeSpan.FromSeconds(0.7));
+                                 Thread.Sleep(TimeSpan.FromSeconds(thresholdSleepTime));
 
                                  logger.Debug($"Cam_{cam.camNumber} detection end with response type '{ResponseType.Nothing}'");
                              }
@@ -187,6 +190,8 @@ namespace DartboardRecognition.Windows
         {
             logger.Debug("Load settings start");
 
+            mainWindowView.Left = configService.Read<double>("MainWindowPositionLeft");
+            mainWindowView.Top = configService.Read<double>("MainWindowPositionTop");
             mainWindowView.RuntimeCapturingCheckBox.IsChecked = configService.Read<bool>("RuntimeCapturingCheckBox");
             mainWindowView.WithDetectionCheckBox.IsChecked = configService.Read<bool>("WithDetectionCheckBox");
             mainWindowView.SetupSlidersCheckBox.IsChecked = configService.Read<bool>("SetupSlidersCheckBox");
@@ -205,6 +210,7 @@ namespace DartboardRecognition.Windows
             mainWindowView.ProjectionFrameSideTextBox.Text = configService.Read<string>("ProjectionFrameSide");
             mainWindowView.MoveDetectedSleepTimeTextBox.Text = configService.Read<string>("MoveDetectedSleepTime");
             mainWindowView.ExtractionSleepTimeTimeTextBox.Text = configService.Read<string>("ExtractionSleepTime");
+            mainWindowView.ThresholdSleepTimeTimeTextBox.Text = configService.Read<string>("ThresholdSleepTime");
             mainWindowView.Cam1IdTextBox.Text = configService.Read<string>("Cam1Id");
             mainWindowView.Cam1XTextBox.Text = configService.Read<string>("Cam1X");
             mainWindowView.Cam1YTextBox.Text = configService.Read<string>("Cam1Y");
@@ -225,6 +231,8 @@ namespace DartboardRecognition.Windows
         {
             logger.Debug("Save settings start");
 
+            configService.Write("MainWindowPositionLeft", mainWindowView.Left);
+            configService.Write("MainWindowPositionTop", mainWindowView.Top);
             configService.Write("RuntimeCapturingCheckBox", mainWindowView.RuntimeCapturingCheckBox.IsChecked.Value);
             configService.Write("WithDetectionCheckBox", mainWindowView.WithDetectionCheckBox.IsChecked.Value);
             configService.Write("SetupSlidersCheckBox", mainWindowView.SetupSlidersCheckBox.IsChecked.Value);
@@ -243,6 +251,7 @@ namespace DartboardRecognition.Windows
             configService.Write("ProjectionFrameSide", mainWindowView.ProjectionFrameSideTextBox.Text);
             configService.Write("MoveDetectedSleepTime", mainWindowView.MoveDetectedSleepTimeTextBox.Text);
             configService.Write("ExtractionSleepTime", mainWindowView.ExtractionSleepTimeTimeTextBox.Text);
+            configService.Write("ThresholdSleepTime", mainWindowView.ThresholdSleepTimeTimeTextBox.Text);
             configService.Write("Cam1Id", mainWindowView.Cam1IdTextBox.Text);
             configService.Write("Cam1X", mainWindowView.Cam1XTextBox.Text);
             configService.Write("Cam1Y", mainWindowView.Cam1YTextBox.Text);

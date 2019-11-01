@@ -213,8 +213,6 @@ namespace DartboardRecognition.Services
 
         public ResponseType DetectMove()
         {
-            Thread.Sleep(TimeSpan.FromSeconds(moveDetectedSleepTime));
-
             DoCapture();
 
             if (withDetection)
@@ -239,24 +237,25 @@ namespace DartboardRecognition.Services
 
         public ResponseType DetectThrow()
         {
+            Thread.Sleep(TimeSpan.FromSeconds(moveDetectedSleepTime));
+
             var diffImage = CaptureAndDiff();
             var moves = diffImage.CountNonzero()[0];
             logger.Debug($"Moves:{moves}");
 
             var extractProcess = moves > movesExtraction;
             var throwDetected = !extractProcess && moves > movesDart;
-            var somethingHappened = extractProcess || throwDetected;
 
-            if (somethingHappened)
+            if (throwDetected)
             {
-                if (throwDetected)
-                {
-                    RefreshImages(diffImage);
+                RefreshImages(diffImage);
 
-                    logger.Debug($"Return response type:{ResponseType.Trow}");
-                    return ResponseType.Trow;
-                }
+                logger.Debug($"Return response type:{ResponseType.Trow}");
+                return ResponseType.Trow;
+            }
 
+            if (extractProcess)
+            {
                 logger.Debug($"Return response type:{ResponseType.Extraction}");
                 return ResponseType.Extraction;
             }
