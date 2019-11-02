@@ -9,6 +9,9 @@
 * Now it is just debug-version of stand, but after all work complete and setup, it will be pretty-good made:
 
 ![debug-stand](https://user-images.githubusercontent.com/42347722/65386080-a1476680-dd3f-11e9-8bd3-38284bfed99a.jpg)
+![model](https://user-images.githubusercontent.com/42347722/68069982-f8961900-fd78-11e9-9a5a-fb41a3806eb7.png)
+![model](https://user-images.githubusercontent.com/42347722/68069995-1794ab00-fd79-11e9-9542-80249c80e0f7.png)
+![model](https://user-images.githubusercontent.com/42347722/68069999-22e7d680-fd79-11e9-8698-0ee855457c36.png)
 
 * I use 4 camera modules (OV2710 2MP 1080P HD 100 degree distortionless) on self-made handy standings:
 
