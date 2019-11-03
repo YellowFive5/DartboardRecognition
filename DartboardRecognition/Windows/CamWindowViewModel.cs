@@ -86,7 +86,6 @@ namespace DartboardRecognition.Windows
         public void ClearImageBoxes()
         {
             camService.DoCapture(true);
-            camService.RefreshImageBoxes();
         }
 
         public void OnClosing()

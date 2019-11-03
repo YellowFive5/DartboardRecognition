@@ -98,7 +98,7 @@ namespace DartboardRecognition.Windows
 
                                          FindThrowOnRemainingCams(cam);
 
-                                         logger.Debug($"Cam_{cam.camNumber} detection end with response type '{ResponseType.Trow}'");
+                                         logger.Debug($"Cam_{cam.camNumber} detection end with response type '{ResponseType.Trow}'. Cycle break");
                                          break;
                                      }
 
@@ -109,7 +109,7 @@ namespace DartboardRecognition.Windows
                                          drawService.ProjectionClear();
                                          ClearAllCamsImageBoxes();
 
-                                         logger.Debug($"Cam_{cam.camNumber} detection end with response type '{ResponseType.Extraction}'");
+                                         logger.Debug($"Cam_{cam.camNumber} detection end with response type '{ResponseType.Extraction}'. Cycle break");
                                          break;
                                      }
                                  }
@@ -149,10 +149,14 @@ namespace DartboardRecognition.Windows
 
         private void ClearAllCamsImageBoxes()
         {
+            logger.Debug($"Clear all cams imageboxes start");
+
             foreach (var cam in cams)
             {
                 cam.ClearImageBoxes();
             }
+
+            logger.Debug($"Clear all cams imageboxes end");
         }
 
         private void StopCapturing()

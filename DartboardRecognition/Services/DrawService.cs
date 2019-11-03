@@ -194,6 +194,7 @@ namespace DartboardRecognition.Services
         {
             DartboardProjectionWorkingFrame = DartboardProjectionFrameBackground.Clone();
             mainWindow.Dispatcher.Invoke(new Action(() => mainWindow.DartboardProjectionImageBox.Source = ToBitmap(DartboardProjectionFrameBackground)));
+            mainWindow.Dispatcher.Invoke(new Action(() => mainWindow.PointsBox.Text = string.Empty));
         }
 
         public BitmapImage ToBitmap(IImage image)

@@ -66,7 +66,8 @@ namespace DartboardRecognition.Services
             drawService = MainWindow.ServiceContainer.Resolve<DrawService>();
             configService = MainWindow.ServiceContainer.Resolve<ConfigService>();
             runtimeCapturing = configService.Read<bool>("RuntimeCapturingCheckBox");
-            withDetection = configService.Read<bool>("WithDetectionCheckBox"); ;
+            withDetection = configService.Read<bool>("WithDetectionCheckBox");
+            ;
             surfacePoint1 = new PointF();
             surfacePoint2 = new PointF();
             camNumber = camWindow.camNumber;
@@ -110,8 +111,7 @@ namespace DartboardRecognition.Services
         private void DrawSetupLines()
         {
             OriginFrame = videoCapture.QueryFrame().ToImage<Bgr, byte>();
-
-            LinedFrame = OriginFrame?.Clone();
+            LinedFrame = OriginFrame.Clone();
 
             roiRectangle = new Rectangle(0,
                                          (int) roiPosYSlider,
@@ -173,26 +173,31 @@ namespace DartboardRecognition.Services
 
         public void DoCapture(bool withRoiBackgroundRefresh = false)
         {
-            logger.Debug($"Doing capture for cam_{camNumber} start");
+            logger.Debug($"Doing capture for cam_{camNumber} start. RoiBackgroundRefresh = {withRoiBackgroundRefresh}");
 
             GetSlidersData();
             DrawSetupLines();
 
             RoiFrame = OriginFrame.Clone().Convert<Gray, byte>().Not();
             OriginFrame.Dispose();
-
             ThresholdRoi(RoiFrame);
 
             if (withRoiBackgroundRefresh)
             {
+                OriginFrame = videoCapture.QueryFrame().ToImage<Bgr, byte>(); // todo. Don't know why, but necessary for Extraction process
+                RoiFrame = OriginFrame.Clone().Convert<Gray, byte>().Not();
+                OriginFrame.Dispose();
+                ThresholdRoi(RoiFrame);
+
                 RoiFrameBackground = RoiFrame.Clone();
                 RoiLastThrowFrame = RoiFrame.Clone();
+                RefreshImageBoxes();
             }
 
             logger.Debug($"Doing capture for cam_{camNumber} end");
         }
 
-        public void RefreshImageBoxes()
+        private void RefreshImageBoxes()
         {
             logger.Debug($"Refreshing imageboxes for cam_{camNumber} start");
 
@@ -205,14 +210,13 @@ namespace DartboardRecognition.Services
             camWindow.Dispatcher.Invoke(new Action(() => camWindow.ImageBoxRoiLastThrow.Source = RoiLastThrowFrame?.Data != null
                                                                                                      ? drawService.ToBitmap(RoiLastThrowFrame)
                                                                                                      : new BitmapImage()));
-            OriginFrame?.Dispose();
-            LinedFrame?.Dispose();
-
             logger.Debug($"Refreshing imageboxes for cam_{camNumber} end");
         }
 
         public ResponseType DetectMove()
         {
+            var response = ResponseType.Nothing;
+
             DoCapture();
 
             if (withDetection)
@@ -221,9 +225,11 @@ namespace DartboardRecognition.Services
                 var moves = diffImage.CountNonzero()[0];
                 diffImage.Dispose();
 
+                logger.Debug($"Moves is '{moves}'");
+
                 if (moves > movesNoise)
                 {
-                    return ResponseType.Move;
+                    response = ResponseType.Move;
                 }
             }
 
@@ -232,16 +238,19 @@ namespace DartboardRecognition.Services
                 RefreshImageBoxes();
             }
 
-            return ResponseType.Nothing;
+            logger.Debug($"Response is '{response}'");
+            return response;
         }
 
         public ResponseType DetectThrow()
         {
+            var response = ResponseType.Nothing;
+
             Thread.Sleep(TimeSpan.FromSeconds(moveDetectedSleepTime));
 
             var diffImage = CaptureAndDiff();
             var moves = diffImage.CountNonzero()[0];
-            logger.Debug($"Moves:{moves}");
+            logger.Debug($"Moves is '{moves}'");
 
             var extractProcess = moves > movesExtraction;
             var throwDetected = !extractProcess && moves > movesDart;
@@ -249,19 +258,16 @@ namespace DartboardRecognition.Services
             if (throwDetected)
             {
                 RefreshImages(diffImage);
-
-                logger.Debug($"Return response type:{ResponseType.Trow}");
-                return ResponseType.Trow;
+                response = ResponseType.Trow;
             }
 
             if (extractProcess)
             {
-                logger.Debug($"Return response type:{ResponseType.Extraction}");
-                return ResponseType.Extraction;
+                response = ResponseType.Extraction;
             }
 
-            logger.Debug($"Return response type:{ResponseType.Nothing}");
-            return ResponseType.Nothing;
+            logger.Debug($"Response is '{response}'");
+            return response;
         }
 
         public void FindThrow()
@@ -276,12 +282,16 @@ namespace DartboardRecognition.Services
 
         private void RefreshImages(Image<Gray, byte> diffImage)
         {
+            logger.Debug($"Refreshing images for cam_{camNumber} start");
+
             RoiFrameBackground = RoiFrame.Clone();
             RoiLastThrowFrame = diffImage.Clone();
             diffImage.Dispose();
 
             DoCapture();
             RefreshImageBoxes();
+
+            logger.Debug($"Refreshing images for cam_{camNumber} end");
         }
 
         private Image<Gray, byte> CaptureAndDiff()
