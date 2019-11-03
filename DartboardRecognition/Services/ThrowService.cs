@@ -75,32 +75,35 @@ namespace DartboardRecognition.Services
             var angle = MeasureService.FindAngle(drawService.projectionCenterPoint, poi);
             var distance = MeasureService.FindDistance(drawService.projectionCenterPoint, poi);
             var sector = 0;
-            var multiplier = 1;
+            var type = ThrowType.Single;
 
             if (distance >= drawService.projectionCoefficent * 95 &&
                 distance <= drawService.projectionCoefficent * 105)
             {
-                multiplier = 3;
+                type = ThrowType.Tremble;
             }
             else if (distance >= drawService.projectionCoefficent * 160 &&
                      distance <= drawService.projectionCoefficent * 170)
             {
-                multiplier = 2;
+                type = ThrowType.Double;
             }
 
             // Find sector
             if (distance <= drawService.projectionCoefficent * 7)
             {
                 sector = 50;
+                type = ThrowType.Bull;
             }
             else if (distance > drawService.projectionCoefficent * 7 &&
                      distance <= drawService.projectionCoefficent * 17)
             {
                 sector = 25;
+                type = ThrowType._25;
             }
             else if (distance > drawService.projectionCoefficent * 170)
             {
                 sector = 0;
+                type = ThrowType.Zero;
             }
             else
             {
@@ -115,13 +118,13 @@ namespace DartboardRecognition.Services
                         break;
                     }
 
-                    sector = 11; // todo works, but not pretty
+                    sector = 11; // todo - works, but not pretty
 
                     radSector += radSectorStep;
                 }
             }
 
-            return new Throw(poi, sector, multiplier, drawService.projectionFrameSide);
+            return new Throw(poi, sector, type, drawService.projectionFrameSide);
         }
 
         public void SaveRay(Ray ray)

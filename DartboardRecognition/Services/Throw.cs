@@ -1,56 +1,65 @@
 ﻿#region Usings
 
+using System;
 using System.Drawing;
 
 #endregion
 
 namespace DartboardRecognition.Services
 {
+    public enum ThrowType
+    {
+        Zero,
+        Single,
+        Double,
+        Tremble,
+        _25,
+        Bull
+    }
+
     public class Throw
     {
         public PointF Poi { get; }
-        public int ProjectionResolution { get; }
+        public ThrowType Type { get; }
+        public int TotalPoints { get; }
         public int Sector { get; }
         public int Multiplier { get; }
-        public int TotalPoints { get; }
-        public bool IsBull { get; }
-        public bool Is25 { get; }
-        public bool IsZero { get; }
-        public bool IsSingle { get; }
-        public bool IsDouble { get; }
-        public bool IsTremble { get; }
+        public int ProjectionResolution { get; }
 
-        public Throw(PointF poi, int sector, int multiplier, int projectionSide)
+        public Throw(PointF poi, int sector, ThrowType type, int projectionSide)
         {
+            ProjectionResolution = projectionSide;
             Poi = poi;
             Sector = sector;
-            Multiplier = multiplier;
-            ProjectionResolution = projectionSide;
-            TotalPoints = sector * multiplier;
-            switch (multiplier)
+            Type = type;
+            switch (type)
             {
-                case 1:
-                    IsSingle = true;
+                case ThrowType.Zero:
+                    Multiplier = 0;
+                    TotalPoints = 0;
                     break;
-                case 2:
-                    IsDouble = true;
+                case ThrowType.Single:
+                    Multiplier = 1;
+                    TotalPoints = sector * Multiplier;
                     break;
-                case 3:
-                    IsTremble = true;
+                case ThrowType.Double:
+                    Multiplier = 2;
+                    TotalPoints = sector * Multiplier;
                     break;
-            }
-
-            switch (sector)
-            {
-                case 25:
-                    Is25 = true;
+                case ThrowType.Tremble:
+                    Multiplier = 3;
+                    TotalPoints = sector * Multiplier;
                     break;
-                case 50:
-                    IsBull = true;
+                case ThrowType._25:
+                    Multiplier = 2;
+                    TotalPoints = 25;
                     break;
-                case 0:
-                    IsZero = true;
+                case ThrowType.Bull:
+                    Multiplier = 3;
+                    TotalPoints = 50;
                     break;
+                default:
+                    throw new Exception("Unknown ThrowType");
             }
         }
 
