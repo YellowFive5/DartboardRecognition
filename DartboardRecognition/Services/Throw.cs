@@ -65,7 +65,24 @@ namespace DartboardRecognition.Services
 
         public override string ToString()
         {
-            return $"{Multiplier} x {Sector} = {TotalPoints}";
+            string str;
+            switch (Type)
+            {
+                case ThrowType.Bull:
+                    str = "Bull";
+                    break;
+                case ThrowType._25:
+                    str = "25";
+                    break;
+                case ThrowType.Zero:
+                    str = "0";
+                    break;
+                default:
+                    str = $"{Multiplier} x {Sector} = {TotalPoints}";
+                    break;
+            }
+
+            return str;
         }
     }
 }
