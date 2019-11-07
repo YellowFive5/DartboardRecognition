@@ -1,6 +1,7 @@
 ﻿#region Usings
 
 using System.ComponentModel;
+using System.Windows;
 using Autofac;
 using DartboardRecognition.Services;
 using NLog;
@@ -22,9 +23,9 @@ namespace DartboardRecognition.Windows
             configService = MainWindow.ServiceContainer.Resolve<ConfigService>();
 
             var withSetupSliders = configService.Read<bool>("SetupSlidersCheckBox");
-            if (withSetupSliders)
+            if (!withSetupSliders)
             {
-                Height = 640;
+                Height = 464;
             }
 
             this.camNumber = camNumber;
@@ -67,6 +68,11 @@ namespace DartboardRecognition.Windows
         public void ClearImageBoxes()
         {
             viewModel.ClearImageBoxes();
+        }
+
+        private void CalibrateCamSetupPoint(object sender, RoutedEventArgs e)
+        {
+            viewModel.CalibrateCamSetupPoint();
         }
     }
 }

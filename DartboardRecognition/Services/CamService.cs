@@ -67,13 +67,11 @@ namespace DartboardRecognition.Services
             configService = MainWindow.ServiceContainer.Resolve<ConfigService>();
             runtimeCapturing = configService.Read<bool>("RuntimeCapturingCheckBox");
             withDetection = configService.Read<bool>("WithDetectionCheckBox");
-            ;
             surfacePoint1 = new PointF();
             surfacePoint2 = new PointF();
             camNumber = camWindow.camNumber;
-            var projectionCoefficient = (2200 - drawService.projectionFrameSide) / 2;
-            setupPoint = new PointF(configService.Read<float>($"Cam{camNumber}X") - projectionCoefficient,
-                                    configService.Read<float>($"Cam{camNumber}Y") - projectionCoefficient);
+            setupPoint = new PointF(configService.Read<float>($"Cam{camNumber}X"),
+                                    configService.Read<float>($"Cam{camNumber}Y"));
             resolutionWidth = configService.Read<int>("ResolutionWidth");
             resolutionHeight = configService.Read<int>("ResolutionHeight");
             movesExtraction = configService.Read<int>("MovesExtraction");
@@ -305,6 +303,39 @@ namespace DartboardRecognition.Services
 
             logger.Debug($"Capture and diff for cam_{camNumber} end");
             return diffImage;
+        }
+
+        public void CalibrateCamSetupPoint()
+        {
+            var radSectorStep = 0.314159;
+            var toCamPixels = 1020 * 32 / 34;
+            var calibratedCamSetupPoint = new PointF();
+            var i = 1;
+            switch (camNumber)
+            {
+                case 1:
+                    i = 2;
+                    break;
+                case 2:
+                    i = 4;
+                    break;
+                case 3:
+                    i = 6;
+                    break;
+                case 4:
+                    i = 8;
+                    break;
+            }
+
+            calibratedCamSetupPoint.X = (int) (drawService.projectionCenterPoint.X + Math.Cos(-3.14159 + i * radSectorStep) * toCamPixels);
+            calibratedCamSetupPoint.Y = (int) (drawService.projectionCenterPoint.Y + Math.Sin(-3.14159 + i * radSectorStep) * toCamPixels);
+
+            camWindow.XTextBox.Text = calibratedCamSetupPoint.X.ToString();
+            camWindow.YTextBox.Text = calibratedCamSetupPoint.Y.ToString();
+
+            configService.Write($"Cam{camNumber}X", calibratedCamSetupPoint.X);
+            configService.Write($"Cam{camNumber}Y", calibratedCamSetupPoint.Y);
+            setupPoint = calibratedCamSetupPoint;
         }
     }
 }

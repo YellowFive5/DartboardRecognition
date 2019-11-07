@@ -14,7 +14,7 @@
         <windows:MainWindowViewModel />
     </Window.DataContext>
     <Grid>
-        <TabControl Name="TabControl" HorizontalAlignment="Left" Height="458" VerticalAlignment="Top" Width="344">
+        <TabControl Name="TabControl" HorizontalAlignment="Left" Height="458" VerticalAlignment="Top" Width="344" SelectionChanged="OnTabSelectionChanged">
             <TabItem Header="Projection">
                 <Grid>
                     <Image x:Name="DartboardProjectionImageBox" HorizontalAlignment="Left" VerticalAlignment="Top"
@@ -27,7 +27,7 @@
                             VerticalAlignment="Top" Margin="170,390,10.4,0" />
                 </Grid>
             </TabItem>
-            <TabItem Header="Setup">
+            <TabItem Name="SettingsTabItem"  Header="Setup">
                 <Grid>
                     <CheckBox x:Name="RuntimeCapturingCheckBox" Content="Runtime capturing" HorizontalAlignment="Left"
                               VerticalAlignment="Top" IsChecked="False" Margin="105,117,0,0" />
@@ -104,7 +104,6 @@
                     <Label Content="Extraction sleep time" Margin="40,275,185.4,131.6"
                            HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
-                    <Button Click="SaveSettingsButtonClick" Content="Save settings" Margin="244,396,10.4,9.6" />
                     <TextBox x:Name="Cam1IdTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
                              Margin="62,5,213.4,401.6"
                              HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
@@ -112,12 +111,14 @@
                            VerticalContentAlignment="Center" Padding="0" />
                     <TextBox x:Name="Cam1XTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
                              Margin="150,6,136.4,400.6"
-                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
+                             IsReadOnly="True" />
                     <Label Content="X" Margin="207,6,116.4,400.6" HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
                     <TextBox x:Name="Cam1YTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
                              Margin="222,6,64.4,400.6"
-                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
+                             IsReadOnly="True" />
                     <Label Content="Y" Margin="279,6,44.4,400.6" HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
                     <TextBox x:Name="Cam2IdTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
@@ -129,10 +130,12 @@
                            VerticalContentAlignment="Center" Padding="0" />
                     <TextBox x:Name="Cam2XTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
                              Margin="150,32,136.4,374.6"
-                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
+                             IsReadOnly="True" />
                     <TextBox x:Name="Cam2YTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
                              Margin="222,32,64.4,374.6"
-                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
+                             IsReadOnly="True" />
                     <Label Content="Y" Margin="279,33,44.4,373.6" HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
                     <TextBox x:Name="Cam3IdTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
@@ -142,12 +145,12 @@
                            VerticalContentAlignment="Center" Padding="0" />
                     <TextBox x:Name="Cam3XTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
                              Margin="150,60,136.4,346.6"
-                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" IsReadOnly="True" />
                     <Label Content="X" Margin="207,61,116.4,345.6" HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
                     <TextBox x:Name="Cam3YTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
                              Margin="222,60,64.4,346.6"
-                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" IsReadOnly="True" />
                     <Label Content="Y" Margin="279,62,44.4,344.6" HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
                     <TextBox x:Name="Cam4IdTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
@@ -157,20 +160,20 @@
                            VerticalContentAlignment="Center" Padding="0" />
                     <TextBox x:Name="Cam4XTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
                              Margin="150,88,136.4,318.6"
-                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" IsReadOnly="True" />
                     <Label Content="X" Margin="207,89,116.4,317.6" HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
                     <TextBox x:Name="Cam4YTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
                              Margin="222,88,64.4,318.6"
-                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" IsReadOnly="True" />
                     <Label Content="Y" Margin="279,90,44.4,316.6" HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
                     <TextBox x:Name="ThresholdSleepTimeTimeTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
-                        Margin="157,276,152.4,130.6"
-                        HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                             Margin="157,276,152.4,130.6"
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
                     <Label Content="Threshold sleep time" Margin="190,275,35.4,131.6"
-                        HorizontalContentAlignment="Left"
-                        VerticalContentAlignment="Center" Padding="0" />
+                           HorizontalContentAlignment="Left"
+                           VerticalContentAlignment="Center" Padding="0" />
                 </Grid>
             </TabItem>
         </TabControl>

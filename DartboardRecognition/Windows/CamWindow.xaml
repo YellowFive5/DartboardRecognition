@@ -6,7 +6,7 @@
         xmlns:windows="clr-namespace:DartboardRecognition.Windows"
         mc:Ignorable="d"
         Title="CamWindow"
-        Height="464"
+        Height="665.6"
         Width="592.4"
         ResizeMode="NoResize"
         Closing="OnClosing">
@@ -49,5 +49,13 @@
                Width="84" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" RenderTransformOrigin="0.594,0.181" />
         <Label Content="Surface right" HorizontalAlignment="Left" Margin="492,569,0,0" VerticalAlignment="Top"
                Width="84" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" RenderTransformOrigin="0.594,0.181" />
+        <Button Name="CalibrateButton" Content="Calibrate X/Y" HorizontalAlignment="Left" Margin="498,601,0,0"
+                VerticalAlignment="Top" Width="78" Click="CalibrateCamSetupPoint" />
+        <TextBox Name="YTextBox" HorizontalAlignment="Left" Height="23" Margin="449,599,0,0" TextWrapping="Wrap"
+                 Text="-" VerticalAlignment="Top" Width="38" />
+        <TextBox Name="XTextBox" HorizontalAlignment="Left" Height="23" Margin="397,599,0,0" TextWrapping="Wrap"
+                 Text="-" VerticalAlignment="Top" Width="38" />
+        <Label Content="X:" HorizontalAlignment="Left" Margin="378,597,0,0" VerticalAlignment="Top" Width="19" />
+        <Label Content="Y:" HorizontalAlignment="Left" Margin="433,597,0,0" VerticalAlignment="Top" Width="20" />
     </Grid>
 </Window>

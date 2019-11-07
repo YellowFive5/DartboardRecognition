@@ -2,6 +2,7 @@
 
 using System.ComponentModel;
 using System.Windows;
+using System.Windows.Controls;
 using Autofac;
 using DartboardRecognition.Services;
 using NLog;
@@ -73,11 +74,14 @@ namespace DartboardRecognition.Windows
             viewModel.SaveSettings();
         }
 
-        private void SaveSettingsButtonClick(object sender, RoutedEventArgs e)
+        private void OnTabSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            logger.Debug("MainWindow saveSettings button clicked");
-
             viewModel.SaveSettings();
+
+            if (SettingsTabItem.IsSelected)
+            {
+                viewModel.LoadSettings();
+            }
         }
     }
 }

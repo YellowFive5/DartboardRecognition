@@ -256,17 +256,9 @@ namespace DartboardRecognition.Windows
             configService.Write("ExtractionSleepTime", mainWindowView.ExtractionSleepTimeTimeTextBox.Text);
             configService.Write("ThresholdSleepTime", mainWindowView.ThresholdSleepTimeTimeTextBox.Text);
             configService.Write("Cam1Id", mainWindowView.Cam1IdTextBox.Text);
-            configService.Write("Cam1X", mainWindowView.Cam1XTextBox.Text);
-            configService.Write("Cam1Y", mainWindowView.Cam1YTextBox.Text);
             configService.Write("Cam2Id", mainWindowView.Cam2IdTextBox.Text);
-            configService.Write("Cam2X", mainWindowView.Cam2XTextBox.Text);
-            configService.Write("Cam2Y", mainWindowView.Cam2YTextBox.Text);
             configService.Write("Cam3Id", mainWindowView.Cam3IdTextBox.Text);
-            configService.Write("Cam3X", mainWindowView.Cam3XTextBox.Text);
-            configService.Write("Cam3Y", mainWindowView.Cam3YTextBox.Text);
             configService.Write("Cam4Id", mainWindowView.Cam4IdTextBox.Text);
-            configService.Write("Cam4X", mainWindowView.Cam4XTextBox.Text);
-            configService.Write("Cam4Y", mainWindowView.Cam4YTextBox.Text);
 
             logger.Debug("Save settings end");
         }
