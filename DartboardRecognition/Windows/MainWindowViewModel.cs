@@ -210,7 +210,6 @@ namespace DartboardRecognition.Windows
             mainWindowView.MovesDartTextBox.Text = configService.Read<string>("MovesDart");
             mainWindowView.MovesNoiseTextBox.Text = configService.Read<string>("MovesNoise");
             mainWindowView.SmoothGaussTextBox.Text = configService.Read<string>("SmoothGauss");
-            mainWindowView.ProjectionFrameSideTextBox.Text = configService.Read<string>("ProjectionFrameSide");
             mainWindowView.MoveDetectedSleepTimeTextBox.Text = configService.Read<string>("MoveDetectedSleepTime");
             mainWindowView.ExtractionSleepTimeTimeTextBox.Text = configService.Read<string>("ExtractionSleepTime");
             mainWindowView.ThresholdSleepTimeTimeTextBox.Text = configService.Read<string>("ThresholdSleepTime");
@@ -255,7 +254,6 @@ namespace DartboardRecognition.Windows
             configService.Write("MovesDart", mainWindowView.MovesDartTextBox.Text);
             configService.Write("MovesNoise", mainWindowView.MovesNoiseTextBox.Text);
             configService.Write("SmoothGauss", mainWindowView.SmoothGaussTextBox.Text);
-            configService.Write("ProjectionFrameSide", mainWindowView.ProjectionFrameSideTextBox.Text);
             configService.Write("MoveDetectedSleepTime", mainWindowView.MoveDetectedSleepTimeTextBox.Text);
             configService.Write("ExtractionSleepTime", mainWindowView.ExtractionSleepTimeTimeTextBox.Text);
             configService.Write("ThresholdSleepTime", mainWindowView.ThresholdSleepTimeTimeTextBox.Text);

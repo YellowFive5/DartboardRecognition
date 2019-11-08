@@ -309,9 +309,11 @@ namespace DartboardRecognition.Services
 
         public void CalibrateCamSetupPoint()
         {
-            var radSectorStep = 0.314159;
-            var toCamPixels = 1020 * toCamDistance / 34;
-            var calibratedCamSetupPoint = new PointF();
+            const double startRadSector = -3.14159;
+            const double radSectorStep = 0.314159;
+            const int dartboardDiameterInPixels = 1020;
+            const int dartboardDiameterInCm = 34;
+            var toCamPixels = dartboardDiameterInPixels * toCamDistance / dartboardDiameterInCm;
             var i = 1;
             switch (camNumber)
             {
@@ -329,14 +331,18 @@ namespace DartboardRecognition.Services
                     break;
             }
 
-            calibratedCamSetupPoint.X = (int) (drawService.projectionCenterPoint.X + Math.Cos(-3.14159 + i * radSectorStep) * toCamPixels);
-            calibratedCamSetupPoint.Y = (int) (drawService.projectionCenterPoint.Y + Math.Sin(-3.14159 + i * radSectorStep) * toCamPixels);
+            var calibratedCamSetupPoint = new PointF
+                                          {
+                                              X = (int) (drawService.projectionCenterPoint.X + Math.Cos(startRadSector + i * radSectorStep) * toCamPixels),
+                                              Y = (int) (drawService.projectionCenterPoint.Y + Math.Sin(startRadSector + i * radSectorStep) * toCamPixels)
+                                          };
 
             camWindow.XTextBox.Text = calibratedCamSetupPoint.X.ToString();
             camWindow.YTextBox.Text = calibratedCamSetupPoint.Y.ToString();
 
             configService.Write($"Cam{camNumber}X", calibratedCamSetupPoint.X);
             configService.Write($"Cam{camNumber}Y", calibratedCamSetupPoint.Y);
+
             setupPoint = calibratedCamSetupPoint;
         }
     }

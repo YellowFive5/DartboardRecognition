@@ -87,12 +87,6 @@
                     <Label Content="Smooth gaussian index" Margin="177,219,35.4,187.6"
                            HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
-                    <TextBox x:Name="ProjectionFrameSideTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
-                             Margin="121,137,163.4,269.6"
-                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
-                    <Label Content="Projection frame side" Margin="177,137,45.4,269.6"
-                           HorizontalContentAlignment="Left"
-                           VerticalContentAlignment="Center" Padding="0" />
                     <TextBox x:Name="MoveDetectedSleepTimeTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
                              Margin="7,247,302.4,159.6"
                              HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />

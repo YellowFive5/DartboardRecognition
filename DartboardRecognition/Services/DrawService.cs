@@ -58,7 +58,7 @@ namespace DartboardRecognition.Services
             this.mainWindow = mainWindow;
             this.configService = configService;
             this.logger = logger;
-            projectionFrameSide = this.configService.Read<int>("ProjectionFrameSide");
+            projectionFrameSide = 1300;
             DartboardProjectionFrameBackground = new Image<Bgr, byte>(projectionFrameSide,
                                                                       projectionFrameSide);
             projectionCenterPoint = new PointF((float) DartboardProjectionFrameBackground.Width / 2,
