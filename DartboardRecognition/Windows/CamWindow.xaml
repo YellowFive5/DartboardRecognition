@@ -52,9 +52,9 @@
         <Button Name="CalibrateButton" Content="Calibrate X/Y" HorizontalAlignment="Left" Margin="498,601,0,0"
                 VerticalAlignment="Top" Width="78" Click="CalibrateCamSetupPoint" />
         <TextBox Name="YTextBox" HorizontalAlignment="Left" Height="23" Margin="449,599,0,0" TextWrapping="Wrap"
-                 Text="-" VerticalAlignment="Top" Width="38" />
+                 Text="-" VerticalAlignment="Top" Width="38" IsReadOnly="True" />
         <TextBox Name="XTextBox" HorizontalAlignment="Left" Height="23" Margin="397,599,0,0" TextWrapping="Wrap"
-                 Text="-" VerticalAlignment="Top" Width="38" />
+                 Text="-" VerticalAlignment="Top" Width="38" IsReadOnly="True" />
         <Label Content="X:" HorizontalAlignment="Left" Margin="378,597,0,0" VerticalAlignment="Top" Width="19" />
         <Label Content="Y:" HorizontalAlignment="Left" Margin="433,597,0,0" VerticalAlignment="Top" Width="20" />
     </Grid>

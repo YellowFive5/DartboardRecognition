@@ -226,6 +226,10 @@ namespace DartboardRecognition.Windows
             mainWindowView.Cam4IdTextBox.Text = configService.Read<string>("Cam4Id");
             mainWindowView.Cam4XTextBox.Text = configService.Read<string>("Cam4X");
             mainWindowView.Cam4YTextBox.Text = configService.Read<string>("Cam4Y");
+            mainWindowView.ToCam1Distance.Text = configService.Read<string>("ToCam1Distance");
+            mainWindowView.ToCam2Distance.Text = configService.Read<string>("ToCam2Distance");
+            mainWindowView.ToCam3Distance.Text = configService.Read<string>("ToCam3Distance");
+            mainWindowView.ToCam4Distance.Text = configService.Read<string>("ToCam4Distance");
 
             logger.Debug("Load settings end");
         }
@@ -259,6 +263,10 @@ namespace DartboardRecognition.Windows
             configService.Write("Cam2Id", mainWindowView.Cam2IdTextBox.Text);
             configService.Write("Cam3Id", mainWindowView.Cam3IdTextBox.Text);
             configService.Write("Cam4Id", mainWindowView.Cam4IdTextBox.Text);
+            configService.Write("ToCam1Distance", mainWindowView.ToCam1Distance.Text);
+            configService.Write("ToCam2Distance", mainWindowView.ToCam2Distance.Text);
+            configService.Write("ToCam3Distance", mainWindowView.ToCam3Distance.Text);
+            configService.Write("ToCam4Distance", mainWindowView.ToCam4Distance.Text);
 
             logger.Debug("Save settings end");
         }

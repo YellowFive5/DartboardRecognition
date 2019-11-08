@@ -45,6 +45,7 @@ namespace DartboardRecognition.Services
         private Rectangle roiRectangle;
         private readonly bool runtimeCapturing;
         private readonly bool withDetection;
+        private readonly double toCamDistance;
         private Image<Bgr, byte> OriginFrame { get; set; }
         private Image<Bgr, byte> LinedFrame { get; set; }
         private Image<Gray, byte> RoiFrame { get; set; }
@@ -79,6 +80,7 @@ namespace DartboardRecognition.Services
             movesNoise = configService.Read<int>("MovesNoise");
             smoothGauss = configService.Read<int>("SmoothGauss");
             moveDetectedSleepTime = configService.Read<double>("MoveDetectedSleepTime");
+            toCamDistance = configService.Read<double>($"ToCam{camNumber}Distance");
             toBullAngle = MeasureService.FindAngle(setupPoint, drawService.projectionCenterPoint);
             videoCapture = new VideoCapture(GetCamIndex(camNumber), VideoCapture.API.DShow);
             videoCapture.SetCaptureProperty(CapProp.FrameWidth, resolutionWidth);
@@ -308,7 +310,7 @@ namespace DartboardRecognition.Services
         public void CalibrateCamSetupPoint()
         {
             var radSectorStep = 0.314159;
-            var toCamPixels = 1020 * 32 / 34;
+            var toCamPixels = 1020 * toCamDistance / 34;
             var calibratedCamSetupPoint = new PointF();
             var i = 1;
             switch (camNumber)
