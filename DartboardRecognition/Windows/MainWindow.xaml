@@ -31,94 +31,111 @@
             <TabItem Name="SettingsTabItem" Header="Setup">
                 <Grid>
                     <CheckBox x:Name="RuntimeCapturingCheckBox" Content="Runtime capturing" HorizontalAlignment="Left"
-                              VerticalAlignment="Top" IsChecked="False" Margin="105,117,0,0" />
+                              VerticalAlignment="Top" IsChecked="False" Margin="105,117,0,0"
+                              ToolTip="Enables runtime image capturing. Use it to setup camera with 'Show setup sliders' check box" />
                     <CheckBox x:Name="WithDetectionCheckBox" Content="With detection" HorizontalAlignment="Left"
-                              VerticalAlignment="Top" IsChecked="True" Margin="6,117,0,0" />
+                              VerticalAlignment="Top" IsChecked="True" Margin="6,117,0,0"
+                              ToolTip="Use it for detection process after all setup complete" />
                     <CheckBox x:Name="SetupSlidersCheckBox" Content="Show setup sliders" HorizontalAlignment="Left"
-                              VerticalAlignment="Top" IsChecked="False" Margin="222,118,-0.6,0" />
+                              VerticalAlignment="Top" IsChecked="False" Margin="222,118,-0.6,0"
+                              ToolTip="Shows setup sliders on cam window" />
                     <CheckBox x:Name="Cam1CheckBox" Content="Cam 1" HorizontalAlignment="Left"
-                              VerticalAlignment="Top" IsChecked="True" Margin="6,10,0,0" />
+                              VerticalAlignment="Top" IsChecked="True" Margin="6,10,0,0" ToolTip="Enable/disable Cam 1" />
                     <CheckBox x:Name="Cam2CheckBox" Content="Cam 2" HorizontalAlignment="Left"
-                              VerticalAlignment="Top" IsChecked="True" Margin="6,37,0,0" />
+                              VerticalAlignment="Top" IsChecked="True" Margin="6,37,0,0" ToolTip="Enable/disable Cam 2" />
                     <CheckBox x:Name="Cam3CheckBox" Content="Cam 3" HorizontalAlignment="Left"
                               VerticalAlignment="Top" IsChecked="True" Margin="6,65,0,0"
-                              RenderTransformOrigin="0.527,0.533" />
+                              RenderTransformOrigin="0.527,0.533" ToolTip="Enable/disable Cam 3" />
                     <CheckBox x:Name="Cam4CheckBox" Content="Cam 4" HorizontalAlignment="Left"
-                              VerticalAlignment="Top" IsChecked="True" Margin="6,92,0,0" />
+                              VerticalAlignment="Top" IsChecked="True" Margin="6,92,0,0" ToolTip="Enable/disable Cam 4" />
 
                     <Label Content="Cam FOV" Margin="63,137,211.4,271.6" HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
                     <TextBox Name="CamFovTextBox" Text="TBD" Height="23" TextWrapping="Wrap" Margin="7,136,277.4,270.6"
-                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
+                             ToolTip="Cam horizontal field of view" />
                     <Label Content="Cam resolution width" Margin="63,163,159.4,244.6" HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
                     <TextBox Name="CamResolutionWidthTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
                              Margin="7,163,277.4,243.6"
-                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
+                             ToolTip="Cam horizontal resolution. For now 1280 max available" />
                     <Label Content="height" Margin="235,163,65.4,244.6"
                            HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
                     <TextBox x:Name="CamResolutionHeightTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
                              Margin="179,163,105.4,243.6"
-                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
+                             ToolTip="Cam vertical resolution. For now 720 max available" />
                     <TextBox x:Name="MinContourArcTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
                              Margin="7,191,277.4,215.6"
-                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
+                             ToolTip="Minimal dart contour arc on image to be detected. Default value is '150' " />
                     <Label Content="Minimal contour arc" Margin="63,191,156.4,215.6" HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
                     <TextBox x:Name="MovesExtractionTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
                              Margin="179,191,105.4,215.6"
-                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
+                             ToolTip="Value of moves, indicating that you extract darts from dartboard after throws. Default value is '8000'" />
                     <Label Content="Moves extraction" Margin="235,191,10.4,215.6" HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
                     <TextBox x:Name="MovesDartTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
                              Margin="7,219,277.4,187.6"
-                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
+                             ToolTip="Value of moves, indicating that another throw is done. Default value is '800'" />
                     <Label Content="Moves dart" Margin="63,219,211.4,187.6" HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
                     <TextBox x:Name="MovesNoiseTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
                              Margin="183,247,109.4,159.6"
-                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
+                             ToolTip="Value of noise moves. Default value is '150'" />
                     <Label Content="Moves noise" Margin="233,247,35.4,159.6" HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
                     <TextBox x:Name="SmoothGaussTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
                              Margin="142,219,166.4,187.6"
-                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
+                             ToolTip="Gaussian smooth of ROI image. Default value is '5'" />
                     <Label Content="Smooth gaussian index" Margin="177,219,35.4,187.6"
                            HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
                     <TextBox x:Name="MoveDetectedSleepTimeTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
                              Margin="7,247,302.4,159.6"
-                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
+                             ToolTip="After move detected threshold sleep time in seconds. Default value is '0,7'" />
                     <Label Content="Move detected sleep time" Margin="40,247,159.4,159.6"
                            HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
                     <TextBox x:Name="ExtractionSleepTimeTimeTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
                              Margin="7,275,302.4,131.6"
-                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
+                             ToolTip="Threshold sleep time in seconds for darts extraction from dartboard process. Default value is '4'" />
                     <Label Content="Extraction sleep time" Margin="40,275,185.4,131.6"
                            HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
                     <TextBox x:Name="Cam1IdTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
                              Margin="62,5,213.4,401.6"
-                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
+                             ToolTip="Cam 1 ID. Use CamCalibrator to find it" />
                     <Label Content="Id" Margin="130,5,193.4,401.6" HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
                     <TextBox x:Name="Cam1XTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
                              Margin="220,5,82.4,401.6"
                              HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
-                             IsReadOnly="True" />
+                             IsReadOnly="True"
+                             ToolTip="Cam 1 X.Setup point on projection image. Use 'Calibrate' button on Cam window to setup" />
                     <Label Content="X" Margin="261,6,62.4,400.6" HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
                     <TextBox x:Name="Cam1YTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
                              Margin="279,5,21.4,401.6"
                              HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
-                             IsReadOnly="True" />
+                             IsReadOnly="True"
+                             ToolTip="Cam 1 Y.Setup point on projection image. Use 'Calibrate' button on Cam window to setup" />
                     <Label Content="Y" Margin="322,4,1.4,402.6" HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
                     <TextBox x:Name="Cam2IdTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
                              Margin="62,33,213.4,373.6"
-                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
+                             ToolTip="Cam 2 ID. Use CamCalibrator to find it" />
                     <Label Content="Id" Margin="130,33,193.4,373.6" HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
                     <Label Content="X" Margin="261,33,62.4,373.6" HorizontalContentAlignment="Left"
@@ -126,61 +143,74 @@
                     <TextBox x:Name="Cam2XTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
                              Margin="220,33,82.4,373.6"
                              HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
-                             IsReadOnly="True" />
+                             IsReadOnly="True"
+                             ToolTip="Cam 2 X.Setup point on projection image. Use 'Calibrate' button on Cam window to setup" />
                     <TextBox x:Name="Cam2YTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
                              Margin="279,33,21.4,373.6"
                              HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
-                             IsReadOnly="True" />
+                             IsReadOnly="True"
+                             ToolTip="Cam 2 Y.Setup point on projection image. Use 'Calibrate' button on Cam window to setup" />
                     <Label Content="Y" Margin="322,31,1.4,375.6" HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
                     <TextBox x:Name="Cam3IdTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
                              Margin="62,61,213.4,345.6"
-                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
+                             ToolTip="Cam 3 ID. Use CamCalibrator to find it" />
                     <Label Content="Id" Margin="130,62,193.4,344.6" HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
                     <TextBox x:Name="Cam3XTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
                              Margin="220,61,82.4,345.6"
-                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" IsReadOnly="True" />
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" IsReadOnly="True"
+                             ToolTip="Cam 3 X.Setup point on projection image. Use 'Calibrate' button on Cam window to setup" />
                     <Label Content="X" Margin="261,61,62.4,345.6" HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
                     <TextBox x:Name="Cam3YTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
                              Margin="279,61,21.4,345.6"
-                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" IsReadOnly="True" />
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" IsReadOnly="True"
+                             ToolTip="Cam 3 Y.Setup point on projection image. Use 'Calibrate' button on Cam window to setup" />
                     <Label Content="Y" Margin="322,60,1.4,346.6" HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
                     <TextBox x:Name="Cam4IdTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
                              Margin="62,89,213.4,317.6"
-                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
+                             ToolTip="Cam 4 ID. Use CamCalibrator to find it" />
                     <Label Content="Id" Margin="131,89,192.4,317.6" HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
                     <TextBox x:Name="Cam4XTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
                              Margin="220,89,82.4,317.6"
-                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" IsReadOnly="True" />
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" IsReadOnly="True"
+                             ToolTip="Cam 4 X.Setup point on projection image. Use 'Calibrate' button on Cam window to setup" />
                     <Label Content="X" Margin="261,89,62.4,317.6" HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
                     <TextBox x:Name="Cam4YTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
                              Margin="279,90,21.4,316.6"
-                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" IsReadOnly="True" />
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" IsReadOnly="True"
+                             ToolTip="Cam 4 Y.Setup point on projection image. Use 'Calibrate' button on Cam window to setup" />
                     <Label Content="Y" Margin="322,88,1.4,318.6" HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
                     <TextBox x:Name="ThresholdSleepTimeTimeTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
                              Margin="157,276,152.4,130.6"
-                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
+                             ToolTip="Threshold sleep time between cams work in seconds. Default value is '0,5'" />
                     <Label Content="Threshold sleep time" Margin="190,275,35.4,131.6"
                            HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
                     <TextBox x:Name="ToCam4Distance" Text="TBD" Height="23" TextWrapping="Wrap"
                              Margin="146,89,156.4,317.6"
-                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
+                             ToolTip="Distance from Cam 4 to bull in cm" />
                     <TextBox x:Name="ToCam3Distance" Text="TBD" Height="23" TextWrapping="Wrap"
                              Margin="146,61,156.4,345.6"
-                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
+                             ToolTip="Distance from Cam 3 to bull in cm" />
                     <TextBox x:Name="ToCam2Distance" Text="TBD" Height="23" TextWrapping="Wrap"
                              Margin="146,33,156.4,373.6"
-                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
+                             ToolTip="Distance from Cam 2 to bull in cm" />
                     <TextBox x:Name="ToCam1Distance" Text="TBD" Height="23" TextWrapping="Wrap"
                              Margin="146,5,156.4,401.6"
-                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+                             HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
+                             ToolTip="Distance from Cam 1 to bull in cm" />
                     <Label Content="cm" Margin="184,5,136.4,401.6" HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
                     <Label Content="cm" Margin="183,33,136.4,373.6" HorizontalContentAlignment="Left"
