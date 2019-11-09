@@ -59,7 +59,7 @@ I use 4 camera modules (OV2710, 2MP 1080P HD, 85 HFOW, distortionless) on self-m
 ![Скриншот 2019-11-09 18 53 04](https://user-images.githubusercontent.com/42347722/68531389-dffea380-0322-11ea-871f-99bd382fa156.png)
 * All settings saves to DartboardRecognition.exe.config
 
-* Then check this boxes:
+* Then check this boxes:                                                     
 ![Скриншот 2019-11-09 18 53 05](https://user-images.githubusercontent.com/42347722/68531477-88146c80-0323-11ea-8acb-8a324c6f1742.png)
 * Go to 'Projection' tab and hit 'Start'. Cam window will open and you will be able to setup last things:
 * Threshold image. Move 'Threshold' slider to setup threshold.
@@ -71,6 +71,7 @@ I use 4 camera modules (OV2710, 2MP 1080P HD, 85 HFOW, distortionless) on self-m
 * Do this instuctions with all of cams
 * Hit 'Stop' button
 * On 'Setup' tab check 'With detection' and uncheck 'Runtime capturing' and 'Show setup sliders'
+![Скриншот 2019-11-09 19 20 56](https://user-images.githubusercontent.com/42347722/68531888-50f48a00-0328-11ea-85a7-7dad8c2570d1.png)
 * All setup done, you can hit 'Start' and throw darts.
 ![Скриншот 2019-11-09 19 26 52](https://user-images.githubusercontent.com/42347722/68531772-13433180-0327-11ea-892c-0d8b42ad3c08.png)
 
