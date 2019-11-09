@@ -27,18 +27,14 @@ namespace DartboardRecognition.Services
         public PointF surfacePoint1;
         public PointF surfacePoint2;
         public PointF surfaceCenterPoint1;
-        public PointF surfaceCenterPoint2;
+        private PointF surfaceCenterPoint2;
         public PointF surfaceLeftPoint1;
-        public PointF surfaceLeftPoint2;
         public PointF surfaceRightPoint1;
-        public PointF surfaceRightPoint2;
-        public double tresholdSlider;
+        private double tresholdSlider;
         public double roiPosYSlider;
-        public double roiHeightSlider;
-        public double surfaceSlider;
-        public double surfaceCenterSlider;
-        public double surfaceLeftSlider;
-        public double surfaceRightSlider;
+        private double roiHeightSlider;
+        private double surfaceSlider;
+        private double surfaceCenterSlider;
         public PointF setupPoint;
         public readonly double toBullAngle;
         public readonly int camNumber;
@@ -104,8 +100,6 @@ namespace DartboardRecognition.Services
             camWindow.Dispatcher.Invoke(new Action(() => roiHeightSlider = camWindow.RoiHeightSlider.Value));
             camWindow.Dispatcher.Invoke(new Action(() => surfaceSlider = camWindow.SurfaceSlider.Value));
             camWindow.Dispatcher.Invoke(new Action(() => surfaceCenterSlider = camWindow.SurfaceCenterSlider.Value));
-            camWindow.Dispatcher.Invoke(new Action(() => surfaceLeftSlider = camWindow.SurfaceLeftSlider.Value));
-            camWindow.Dispatcher.Invoke(new Action(() => surfaceRightSlider = camWindow.SurfaceRightSlider.Value));
         }
 
         private void DrawSetupLines()
@@ -143,25 +137,11 @@ namespace DartboardRecognition.Services
                                  drawService.camSurfaceLineColor.MCvScalar,
                                  drawService.camSurfaceLineThickness);
 
-            surfaceLeftPoint1 = new PointF((float) surfaceLeftSlider,
+            surfaceLeftPoint1 = new PointF((float) surfaceCenterSlider - LinedFrame.Cols / 3,
                                            (float) surfaceSlider);
-            surfaceLeftPoint2 = new PointF(surfaceLeftPoint1.X,
-                                           surfaceLeftPoint1.Y - 50);
-            drawService.DrawLine(LinedFrame,
-                                 surfaceLeftPoint1,
-                                 surfaceLeftPoint2,
-                                 drawService.camSurfaceLineColor.MCvScalar,
-                                 drawService.camSurfaceLineThickness);
 
-            surfaceRightPoint1 = new PointF((float) surfaceRightSlider,
+            surfaceRightPoint1 = new PointF((float) surfaceCenterSlider + LinedFrame.Cols / 3,
                                             (float) surfaceSlider);
-            surfaceRightPoint2 = new PointF(surfaceRightPoint1.X,
-                                            surfaceRightPoint1.Y - 50);
-            drawService.DrawLine(LinedFrame,
-                                 surfaceRightPoint1,
-                                 surfaceRightPoint2,
-                                 drawService.camSurfaceLineColor.MCvScalar,
-                                 drawService.camSurfaceLineThickness);
         }
 
         private void ThresholdRoi(Image<Gray, byte> roiFrame)

@@ -6,7 +6,7 @@
         xmlns:windows="clr-namespace:DartboardRecognition.Windows"
         mc:Ignorable="d"
         Title="CamWindow"
-        Height="665.6"
+        Height="615.2"
         Width="592.4"
         ResizeMode="NoResize"
         Closing="OnClosing">
@@ -24,10 +24,6 @@
                 RenderTransformOrigin="0.667,0.557" Width="488" Maximum="1000" Value="536" />
         <Slider x:Name="SurfaceCenterSlider" HorizontalAlignment="Left" Margin="4,528,0,0" VerticalAlignment="Top"
                 RenderTransformOrigin="0.667,0.557" Width="488" Maximum="1000" Value="536" />
-        <Slider x:Name="SurfaceLeftSlider" HorizontalAlignment="Left" Margin="4,551,0,0" VerticalAlignment="Top"
-                RenderTransformOrigin="0.667,0.557" Width="488" Maximum="1000" Value="536" />
-        <Slider x:Name="SurfaceRightSlider" HorizontalAlignment="Left" Margin="4,574,0,0" VerticalAlignment="Top"
-                RenderTransformOrigin="0.667,0.557" Width="488" Maximum="1500" Value="536" />
 
         <Image x:Name="ImageBox" HorizontalAlignment="Left" Height="319" Margin="8,8,0,0" VerticalAlignment="Top"
                Width="568" />
@@ -45,17 +41,13 @@
                FontFamily="Agency FB" FontSize="14" FontWeight="Bold" RenderTransformOrigin="0.594,0.181" />
         <Label Content="Surface center" HorizontalAlignment="Left" Margin="492,523,0,0" VerticalAlignment="Top"
                Width="84" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" RenderTransformOrigin="0.594,0.181" />
-        <Label Content="Surface left" HorizontalAlignment="Left" Margin="492,546,0,0" VerticalAlignment="Top"
-               Width="84" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" RenderTransformOrigin="0.594,0.181" />
-        <Label Content="Surface right" HorizontalAlignment="Left" Margin="492,569,0,0" VerticalAlignment="Top"
-               Width="84" FontFamily="Agency FB" FontSize="14" FontWeight="Bold" RenderTransformOrigin="0.594,0.181" />
-        <Button Name="CalibrateButton" Content="Calibrate X/Y" HorizontalAlignment="Left" Margin="498,601,0,0"
+        <Button Name="CalibrateButton" Content="Calibrate X/Y" HorizontalAlignment="Left" Margin="496,555,0,0"
                 VerticalAlignment="Top" Width="78" Click="CalibrateCamSetupPoint" />
-        <TextBox Name="YTextBox" HorizontalAlignment="Left" Height="23" Margin="449,599,0,0" TextWrapping="Wrap"
+        <TextBox Name="YTextBox" HorizontalAlignment="Left" Height="23" Margin="447,553,0,0" TextWrapping="Wrap"
                  Text="-" VerticalAlignment="Top" Width="38" IsReadOnly="True" />
-        <TextBox Name="XTextBox" HorizontalAlignment="Left" Height="23" Margin="397,599,0,0" TextWrapping="Wrap"
+        <TextBox Name="XTextBox" HorizontalAlignment="Left" Height="23" Margin="395,553,0,0" TextWrapping="Wrap"
                  Text="-" VerticalAlignment="Top" Width="38" IsReadOnly="True" />
-        <Label Content="X:" HorizontalAlignment="Left" Margin="378,597,0,0" VerticalAlignment="Top" Width="19" />
-        <Label Content="Y:" HorizontalAlignment="Left" Margin="433,597,0,0" VerticalAlignment="Top" Width="20" />
+        <Label Content="X:" HorizontalAlignment="Left" Margin="376,551,0,0" VerticalAlignment="Top" Width="19" />
+        <Label Content="Y:" HorizontalAlignment="Left" Margin="431,551,0,0" VerticalAlignment="Top" Width="20" />
     </Grid>
 </Window>

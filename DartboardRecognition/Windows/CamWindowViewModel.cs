@@ -38,8 +38,6 @@ namespace DartboardRecognition.Windows
             camWindowView.RoiHeightSlider.Value = configService.Read<double>($"Cam{camNumberStr}RoiHeightSlider");
             camWindowView.SurfaceSlider.Value = configService.Read<double>($"Cam{camNumberStr}SurfaceSlider");
             camWindowView.SurfaceCenterSlider.Value = configService.Read<double>($"Cam{camNumberStr}SurfaceCenterSlider");
-            camWindowView.SurfaceLeftSlider.Value = configService.Read<double>($"Cam{camNumberStr}SurfaceLeftSlider");
-            camWindowView.SurfaceRightSlider.Value = configService.Read<double>($"Cam{camNumberStr}SurfaceRightSlider");
             camWindowView.Left = configService.Read<double>($"Cam{camNumberStr}WindowPositionLeft");
             camWindowView.Top = configService.Read<double>($"Cam{camNumberStr}WindowPositionTop");
             camWindowView.XTextBox.Text = configService.Read<double>($"Cam{camNumberStr}X").ToString();
@@ -55,8 +53,6 @@ namespace DartboardRecognition.Windows
             configService.Write($"Cam{camNumberStr}RoiHeightSlider", camWindowView.RoiHeightSlider.Value);
             configService.Write($"Cam{camNumberStr}SurfaceSlider", camWindowView.SurfaceSlider.Value);
             configService.Write($"Cam{camNumberStr}SurfaceCenterSlider", camWindowView.SurfaceCenterSlider.Value);
-            configService.Write($"Cam{camNumberStr}SurfaceLeftSlider", camWindowView.SurfaceLeftSlider.Value);
-            configService.Write($"Cam{camNumberStr}SurfaceRightSlider", camWindowView.SurfaceRightSlider.Value);
             configService.Write($"Cam{camNumberStr}WindowPositionLeft", camWindowView.Left);
             configService.Write($"Cam{camNumberStr}WindowPositionTop", camWindowView.Top);
             configService.Write($"Cam{camNumberStr}X", camWindowView.XTextBox.Text);

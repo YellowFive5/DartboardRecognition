@@ -16,6 +16,7 @@ namespace DartboardRecognition.Windows
         private readonly CamWindowViewModel viewModel;
         private readonly Logger logger;
         private readonly ConfigService configService;
+
         public CamWindow(int camNumber)
         {
             InitializeComponent();
