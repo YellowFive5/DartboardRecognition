@@ -27,6 +27,7 @@ namespace DartboardRecognition.Windows
         private readonly ConfigService configService;
         private double extractionSleepTime;
         private double thresholdSleepTime;
+        private double moveDetectedSleepTime;
 
         public MainWindowViewModel()
         {
@@ -46,6 +47,7 @@ namespace DartboardRecognition.Windows
         {
             extractionSleepTime = configService.Read<double>("ExtractionSleepTime");
             thresholdSleepTime = configService.Read<double>("ThresholdSleepTime");
+            moveDetectedSleepTime = configService.Read<double>("MoveDetectedSleepTime");
             var runtimeCapturing = mainWindowView.RuntimeCapturingCheckBox.IsChecked.Value;
             drawService.ProjectionClear();
             cts = new CancellationTokenSource();
@@ -90,6 +92,7 @@ namespace DartboardRecognition.Windows
 
                                  if (response == ResponseType.Move)
                                  {
+                                     Thread.Sleep(TimeSpan.FromSeconds(moveDetectedSleepTime));
                                      response = cam.DetectThrow();
 
                                      if (response == ResponseType.Trow)

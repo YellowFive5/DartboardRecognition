@@ -3,7 +3,6 @@
 using System;
 using System.Drawing;
 using System.Linq;
-using System.Threading;
 using System.Windows.Media.Imaging;
 using Autofac;
 using DartboardRecognition.Windows;
@@ -54,7 +53,6 @@ namespace DartboardRecognition.Services
         private readonly int movesDart;
         private readonly int movesNoise;
         private readonly int smoothGauss;
-        private readonly double moveDetectedSleepTime;
 
         public CamService(CamWindow camWindow)
         {
@@ -75,7 +73,6 @@ namespace DartboardRecognition.Services
             movesDart = configService.Read<int>("MovesDart");
             movesNoise = configService.Read<int>("MovesNoise");
             smoothGauss = configService.Read<int>("SmoothGauss");
-            moveDetectedSleepTime = configService.Read<double>("MoveDetectedSleepTime");
             toCamDistance = configService.Read<double>($"ToCam{camNumber}Distance");
             toBullAngle = MeasureService.FindAngle(setupPoint, drawService.projectionCenterPoint);
             videoCapture = new VideoCapture(GetCamIndex(camNumber), VideoCapture.API.DShow);
@@ -158,17 +155,11 @@ namespace DartboardRecognition.Services
             GetSlidersData();
             DrawSetupLines();
 
-            RoiFrame = OriginFrame.Clone().Convert<Gray, byte>().Not();
-            OriginFrame.Dispose();
-            ThresholdRoi(RoiFrame);
-
             if (withRoiBackgroundRefresh)
             {
-                OriginFrame = videoCapture.QueryFrame().ToImage<Bgr, byte>(); // todo. Don't know why, but necessary for Extraction process
+                OriginFrame = videoCapture.QueryFrame().ToImage<Bgr, byte>();
                 RoiFrame = OriginFrame.Clone().Convert<Gray, byte>().Not();
-                OriginFrame.Dispose();
                 ThresholdRoi(RoiFrame);
-
                 RoiFrameBackground = RoiFrame.Clone();
                 RoiLastThrowFrame = RoiFrame.Clone();
                 RefreshImageBoxes();
@@ -197,13 +188,10 @@ namespace DartboardRecognition.Services
         {
             var response = ResponseType.Nothing;
 
-            DoCapture();
-
             if (withDetection)
             {
                 var diffImage = CaptureAndDiff();
                 var moves = diffImage.CountNonzero()[0];
-                diffImage.Dispose();
 
                 logger.Debug($"Moves is '{moves}'");
 
@@ -215,6 +203,7 @@ namespace DartboardRecognition.Services
 
             if (runtimeCapturing)
             {
+                DoCapture(true);
                 RefreshImageBoxes();
             }
 
@@ -225,19 +214,19 @@ namespace DartboardRecognition.Services
         public ResponseType DetectThrow()
         {
             var response = ResponseType.Nothing;
-
-            Thread.Sleep(TimeSpan.FromSeconds(moveDetectedSleepTime));
-
             var diffImage = CaptureAndDiff();
             var moves = diffImage.CountNonzero()[0];
             logger.Debug($"Moves is '{moves}'");
-
             var extractProcess = moves > movesExtraction;
             var throwDetected = !extractProcess && moves > movesDart;
 
             if (throwDetected)
             {
+                OriginFrame = videoCapture.QueryFrame().ToImage<Bgr, byte>();
+                RoiFrame = OriginFrame.Clone().Convert<Gray, byte>().Not();
+                ThresholdRoi(RoiFrame);
                 RefreshImages(diffImage);
+
                 response = ResponseType.Trow;
             }
 
@@ -254,6 +243,9 @@ namespace DartboardRecognition.Services
         {
             logger.Debug($"Find throw for cam_{camNumber} start");
 
+            OriginFrame = videoCapture.QueryFrame().ToImage<Bgr, byte>();
+            RoiFrame = OriginFrame.Clone().Convert<Gray, byte>().Not();
+            ThresholdRoi(RoiFrame);
             var diffImage = CaptureAndDiff();
             RefreshImages(diffImage);
 
@@ -266,8 +258,6 @@ namespace DartboardRecognition.Services
 
             RoiFrameBackground = RoiFrame.Clone();
             RoiLastThrowFrame = diffImage.Clone();
-            diffImage.Dispose();
-
             DoCapture();
             RefreshImageBoxes();
 
@@ -281,7 +271,6 @@ namespace DartboardRecognition.Services
             var newImage = videoCapture.QueryFrame().ToImage<Gray, byte>().Not();
             ThresholdRoi(newImage);
             var diffImage = RoiFrameBackground.AbsDiff(newImage);
-            newImage.Dispose();
 
             logger.Debug($"Capture and diff for cam_{camNumber} end");
             return diffImage;

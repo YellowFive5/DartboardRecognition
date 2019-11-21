@@ -152,7 +152,7 @@ namespace DartboardRecognition.Services
             rayPoint.X = (float) (camService.setupPoint.X + Math.Cos(angle) * 2000);
             rayPoint.Y = (float) (camService.setupPoint.Y + Math.Sin(angle) * 2000);
 
-            drawService.ProjectionDrawLine(camService.setupPoint, rayPoint, false);
+            drawService.ProjectionDrawLine(camService.setupPoint, rayPoint);
 
             var ray = new Ray(camService.camNumber, camService.setupPoint, rayPoint, dartContour.Arc);
 
