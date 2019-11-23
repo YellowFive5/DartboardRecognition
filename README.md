@@ -4,7 +4,7 @@
 * C# / .NET / EMGU.CV 
 * Under heavy development now
 * Main community, united this idea is [here](https://www.facebook.com/groups/281778298914107/)
-* Version 1.0 released
+* Version [1.1 released](https://github.com/YellowFive5/DartboardRecognition/releases)
 
 ## Stand details
 * Now it is just debug-version of stand, but after all work complete and setup, it will be pretty-good made:
