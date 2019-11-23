@@ -71,7 +71,7 @@
                     <TextBox x:Name="MinContourArcTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
                              Margin="7,191,277.4,215.6"
                              HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
-                             ToolTip="Minimal dart contour arc on image to be detected. Default value is '150' " />
+                             ToolTip="Minimal dart contour arc on image to be detected. Default value is '120' " />
                     <Label Content="Minimal contour arc" Margin="63,191,156.4,215.6" HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
                     <TextBox x:Name="MovesExtractionTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
@@ -83,14 +83,14 @@
                     <TextBox x:Name="MovesDartTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
                              Margin="7,219,277.4,187.6"
                              HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
-                             ToolTip="Value of moves, indicating that another throw is done. Default value is '800'" />
+                             ToolTip="Value of moves, indicating that another throw is done. Default value is '600'" />
                     <Label Content="Moves dart" Margin="63,219,211.4,187.6" HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
                     <TextBox x:Name="MovesNoiseTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
-                             Margin="183,247,109.4,159.6"
+                             Margin="197,247,95.4,159.6"
                              HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
                              ToolTip="Value of noise moves. Default value is '150'" />
-                    <Label Content="Moves noise" Margin="233,247,35.4,159.6" HorizontalContentAlignment="Left"
+                    <Label Content="Moves noise" Margin="246,247,22.4,159.6" HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
                     <TextBox x:Name="SmoothGaussTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
                              Margin="142,219,166.4,187.6"
@@ -100,10 +100,10 @@
                            HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
                     <TextBox x:Name="MoveDetectedSleepTimeTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
-                             Margin="7,247,302.4,159.6"
+                             Margin="7,247,290.4,159.6"
                              HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
-                             ToolTip="After move detected threshold sleep time in seconds. Default value is '0,7'" />
-                    <Label Content="Move detected sleep time" Margin="40,247,159.4,159.6"
+                             ToolTip="After move detected threshold sleep time in seconds. Default value is '0,25'" />
+                    <Label Content="Move detected sleep time" Margin="53,247,146.4,159.6"
                            HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
                     <TextBox x:Name="ExtractionSleepTimeTimeTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
@@ -190,10 +190,10 @@
                     <Label Content="Y" Margin="322,88,1.4,318.6" HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
                     <TextBox x:Name="ThresholdSleepTimeTimeTextBox" Text="TBD" Height="23" TextWrapping="Wrap"
-                             Margin="157,276,152.4,130.6"
+                             Margin="157,276,134.4,130.6"
                              HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
-                             ToolTip="Threshold sleep time between cams work in seconds. Default value is '0,5'" />
-                    <Label Content="Threshold sleep time" Margin="190,275,35.4,131.6"
+                             ToolTip="Threshold sleep time between cams work in seconds. Default value is '0,125'" />
+                    <Label Content="Threshold sleep time" Margin="209,276,16.4,130.6"
                            HorizontalContentAlignment="Left"
                            VerticalContentAlignment="Center" Padding="0" />
                     <TextBox x:Name="ToCam4Distance" Text="TBD" Height="23" TextWrapping="Wrap"

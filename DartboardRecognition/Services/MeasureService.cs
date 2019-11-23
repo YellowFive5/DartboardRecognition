@@ -6,6 +6,7 @@ using Autofac;
 using DartboardRecognition.Windows;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
+using Emgu.CV.Structure;
 using Emgu.CV.Util;
 using NLog;
 
@@ -152,7 +153,7 @@ namespace DartboardRecognition.Services
             rayPoint.X = (float) (camService.setupPoint.X + Math.Cos(angle) * 2000);
             rayPoint.Y = (float) (camService.setupPoint.Y + Math.Sin(angle) * 2000);
 
-            drawService.ProjectionDrawLine(camService.setupPoint, rayPoint);
+            drawService.ProjectionDrawLine(camService.setupPoint, rayPoint, new Bgr(Color.DodgerBlue).MCvScalar);
 
             var ray = new Ray(camService.camNumber, camService.setupPoint, rayPoint, dartContour.Arc);
 

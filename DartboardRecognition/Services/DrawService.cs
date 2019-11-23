@@ -132,14 +132,14 @@ namespace DartboardRecognition.Services
             mainWindow.Dispatcher.Invoke(new Action(() => mainWindow.DartboardProjectionImageBox.Source = ToBitmap(DartboardProjectionWorkingFrame)));
         }
 
-        public void ProjectionDrawLine(PointF point1, PointF point2, bool exclusiveDraw = true)
+        public void ProjectionDrawLine(PointF point1, PointF point2, MCvScalar color, bool clearBeforeDraw = true)
         {
-            if (exclusiveDraw)
+            if (clearBeforeDraw)
             {
                 DartboardProjectionWorkingFrame = DartboardProjectionFrameBackground.Clone();
             }
 
-            DrawLine(DartboardProjectionWorkingFrame, point1, point2, projectionRayColor, poiThickness);
+            DrawLine(DartboardProjectionWorkingFrame, point1, point2, color, poiThickness);
 
             mainWindow.Dispatcher.Invoke(new Action(() => mainWindow.DartboardProjectionImageBox.Source = ToBitmap(DartboardProjectionWorkingFrame)));
         }

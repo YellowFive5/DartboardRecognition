@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using Emgu.CV.Structure;
 using NLog;
 
 #endregion
@@ -54,8 +55,8 @@ namespace DartboardRecognition.Services
             var anotherThrow = PrepareThrowData(poi);
             throwsCollection.Enqueue(anotherThrow);
 
-            drawService.ProjectionDrawLine(firstBestRay.CamPoint, firstBestRay.RayPoint, true);
-            drawService.ProjectionDrawLine(secondBestRay.CamPoint, secondBestRay.RayPoint, false);
+            drawService.ProjectionDrawLine(firstBestRay.CamPoint, firstBestRay.RayPoint, new Bgr(Color.Aqua).MCvScalar, true);
+            drawService.ProjectionDrawLine(secondBestRay.CamPoint, secondBestRay.RayPoint, new Bgr(Color.Aqua).MCvScalar, false);
             drawService.ProjectionDrawThrow(poi, false);
             drawService.PrintThrow(anotherThrow);
 
