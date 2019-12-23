@@ -5,6 +5,7 @@
 * Under heavy development now
 * Main community, united this idea is [here](https://www.facebook.com/groups/281778298914107/)
 * Version [1.1 released](https://github.com/YellowFive5/DartboardRecognition/releases)
+* Seems that last version of Emgu CV NuGet package have some breaking changes - downgrade to 4.1.0.3420 version
 
 ## Stand details
 * Now it is just debug-version of stand, but after all work complete and setup, it will be pretty-good made:
