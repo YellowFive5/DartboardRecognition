@@ -12,7 +12,6 @@ using DirectShowLib;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
-using Color = System.Drawing.Color;
 
 #endregion
 
