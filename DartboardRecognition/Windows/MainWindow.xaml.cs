@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using Autofac;
 using DartboardRecognition.Services;
 using NLog;
+using NLog.Web;
 using IContainer = Autofac.IContainer;
 
 #endregion
@@ -15,7 +16,7 @@ namespace DartboardRecognition.Windows
     public partial class MainWindow
     {
         private readonly MainWindowViewModel viewModel;
-        private readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private readonly Logger logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
         public static IContainer ServiceContainer { get; private set; }
 
         public MainWindow()

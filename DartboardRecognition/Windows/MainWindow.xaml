@@ -21,7 +21,8 @@
                     <Image x:Name="DartboardProjectionImageBox" HorizontalAlignment="Left" VerticalAlignment="Top"
                            Width="318" Height="318" Margin="10,10,0,0" />
                     <TextBox x:Name="PointsBox" HorizontalAlignment="Left" Height="52" TextWrapping="Wrap"
-                             VerticalAlignment="Top" Width="318" Margin="10,333,0,0" IsReadOnly="True" FontWeight="Bold"
+                             VerticalAlignment="Top" Width="318" Margin="10,333,0,0" IsReadOnly="True"
+                             FontWeight="Bold"
                              FontSize="30" />
                     <Button x:Name="StartButton" Content="Start" Click="StartButtonClick" Height="32"
                             VerticalAlignment="Top" Margin="10,390,173.4,0" />

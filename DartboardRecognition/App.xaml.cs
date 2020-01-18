@@ -1,6 +1,4 @@
-﻿using System.Windows;
-
-namespace DartboardRecognition
+﻿namespace DartboardRecognition
 {
     /// <summary>
     /// Interaction logic for App.xaml

@@ -1,8 +1,10 @@
 ﻿#region Usings
 
 using System;
-using System.Configuration;
-using System.Xml;
+using System.Globalization;
+using System.IO;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json.Linq;
 using NLog;
 
 #endregion
@@ -12,40 +14,31 @@ namespace DartboardRecognition.Services
     public class ConfigService
     {
         private readonly object locker;
-        private readonly XmlDocument appConfig;
         private readonly Logger logger;
+        private readonly IConfigurationRoot appSettings;
+        private readonly string appSettingsJsonFilePath = Path.Combine(AppContext.BaseDirectory, "appsettings.json");
 
         public ConfigService(Logger logger)
         {
             this.logger = logger;
             locker = new object();
-            appConfig = new XmlDocument();
-            appConfig.Load(AppDomain.CurrentDomain.SetupInformation.ConfigurationFile);
+            appSettings = new ConfigurationBuilder()
+                          .SetBasePath(Directory.GetCurrentDirectory())
+                          .AddJsonFile("appsettings.json", true, true)
+                          .Build();
         }
 
         public void Write(string key, object value)
         {
             lock (locker)
             {
-                if (appConfig.DocumentElement != null)
-                {
-                    foreach (XmlElement element in appConfig.DocumentElement)
-                    {
-                        if (element.Name.Equals("appSettings"))
-                        {
-                            foreach (XmlNode node in element.ChildNodes)
-                            {
-                                if (node.Attributes != null && node.Attributes[0].Value.Equals(key))
-                                {
-                                    node.Attributes[1].Value = value.ToString();
-                                }
-                            }
-                        }
-                    }
-                }
+                var json = File.ReadAllText(appSettingsJsonFilePath);
+                var jObject = JObject.Parse(json);
+                var appSettingsNode = (JObject) jObject["AppSettings"];
+                appSettingsNode[key] = string.Format(CultureInfo.InvariantCulture, "{0}", value);
+                var outputText = Newtonsoft.Json.JsonConvert.SerializeObject(jObject, Newtonsoft.Json.Formatting.Indented);
 
-                appConfig.Save(AppDomain.CurrentDomain.SetupInformation.ConfigurationFile);
-                ConfigurationManager.RefreshSection("appSettings");
+                File.WriteAllText(appSettingsJsonFilePath, outputText);
             }
         }
 
@@ -53,27 +46,28 @@ namespace DartboardRecognition.Services
         {
             lock (locker)
             {
-                object value;
+                appSettings.Reload();
 
+                object value;
                 if (typeof(T) == typeof(double))
                 {
-                    value = double.Parse(ConfigurationManager.AppSettings[$"{key}"]);
+                    value = double.Parse(appSettings.GetSection($"AppSettings:{key}").Value, CultureInfo.InvariantCulture);
                 }
                 else if (typeof(T) == typeof(float))
                 {
-                    value = float.Parse(ConfigurationManager.AppSettings[$"{key}"]);
+                    value = float.Parse(appSettings.GetSection($"AppSettings:{key}").Value, CultureInfo.InvariantCulture);
                 }
                 else if (typeof(T) == typeof(int))
                 {
-                    value = int.Parse(ConfigurationManager.AppSettings[$"{key}"]);
+                    value = int.Parse(appSettings.GetSection($"AppSettings:{key}").Value);
                 }
                 else if (typeof(T) == typeof(bool))
                 {
-                    value = bool.Parse(ConfigurationManager.AppSettings[$"{key}"]);
+                    value = bool.Parse(appSettings.GetSection($"AppSettings:{key}").Value);
                 }
                 else if (typeof(T) == typeof(string))
                 {
-                    value = ConfigurationManager.AppSettings[$"{key}"];
+                    value = appSettings.GetSection($"AppSettings:{key}").Value;
                 }
                 else
                 {
