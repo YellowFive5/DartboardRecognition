@@ -4,8 +4,10 @@
 * C# / .NET / EMGU.CV 
 * Under heavy development now
 * Main community, united this idea is [here](https://www.facebook.com/groups/281778298914107/)
-* Version [1.1 released](https://github.com/YellowFive5/DartboardRecognition/releases)
-* Seems that last version of Emgu CV NuGet package have some breaking changes - downgrade to 4.1.0.3420 version
+* Version [1.2 released](https://github.com/YellowFive5/DartboardRecognition/releases) (Migrated to .NET Core 3.1)
+* Seems that last version of Emgu CV NuGet package have some breaking changes - use 4.1.0.3420 version
+
+![Скриншот 2019-11-09 19 26 52](https://user-images.githubusercontent.com/42347722/68531772-13433180-0327-11ea-892c-0d8b42ad3c08.png)
 
 ## Stand details
 * Now it is just debug-version of stand, but after all work complete and setup, it will be pretty-good made:
