@@ -16,7 +16,7 @@ namespace DartboardRecognition.Services
         private readonly object locker;
         private readonly Logger logger;
         private readonly IConfigurationRoot appSettings;
-        private readonly string appSettingsJsonFilePath = Path.Combine(AppContext.BaseDirectory, "appsettings.json");
+        private readonly string appSettingsJsonFilePath = Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json");
 
         public ConfigService(Logger logger)
         {
