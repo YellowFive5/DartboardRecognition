@@ -1,12 +1,14 @@
 ﻿#region Usings
 
 using System.ComponentModel;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using Autofac;
 using DartboardRecognition.Services;
+using Microsoft.Extensions.Configuration;
 using NLog;
-using NLog.Web;
+using NLog.Extensions.Logging;
 using IContainer = Autofac.IContainer;
 
 #endregion
@@ -16,11 +18,13 @@ namespace DartboardRecognition.Windows
     public partial class MainWindow
     {
         private readonly MainWindowViewModel viewModel;
-        private readonly Logger logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+        private Logger logger;
         public static IContainer ServiceContainer { get; private set; }
 
         public MainWindow()
         {
+            ConfigureNlog();
+
             logger.Info("\n");
             logger.Info("App start");
 
@@ -29,6 +33,16 @@ namespace DartboardRecognition.Windows
             viewModel = new MainWindowViewModel(this);
             DataContext = viewModel;
             viewModel.LoadSettings();
+        }
+
+        private void ConfigureNlog()
+        {
+            var config = new ConfigurationBuilder()
+                         .SetBasePath(Directory.GetCurrentDirectory())
+                         .AddJsonFile("appsettings.json", true, true)
+                         .Build();
+            LogManager.Configuration = new NLogLoggingConfiguration(config.GetSection("NLog"));
+            logger = LogManager.GetCurrentClassLogger();
         }
 
         private void RegisterContainer()
