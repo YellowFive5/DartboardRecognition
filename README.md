@@ -1,10 +1,10 @@
 # DartboardRecognition
 * The main idea to build classic steeltip dartboard-based stand with using four cameras and also write desktop application to work with.
 * This system will be automaticly detects another throw and point of impact of a dart. 
-* C# / .NET Core 3.1 / EMGU.CV 
-* Under heavy development now
+* C# / .NET Core 3.1 / EMGU.CV
 * Main community, united this idea is [here](https://www.facebook.com/groups/281778298914107/)
 * Version [1.3 released](https://github.com/YellowFive5/DartboardRecognition/releases)
+* Please keep in mind, that all of this stuff is under heavy development now. Problems of performance and optimization stays not on first place for me now. So I can't guarantee perfect work of this stuff on your "piece of sh*t" notebook. On my system (4.2 Ghz, 6 cores, 16RAM) all works correctly (with near 100% load ;-P ).
 
 ![Скриншот 2019-11-09 19 26 52](https://user-images.githubusercontent.com/42347722/68531772-13433180-0327-11ea-892c-0d8b42ad3c08.png)
 
