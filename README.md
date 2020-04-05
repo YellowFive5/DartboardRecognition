@@ -88,3 +88,5 @@ I use 4 camera modules (OV2710, 2MP 1080P HD, 85 HFOW, distortionless) on self-m
   * Using information about POI from all 4 cameras, we can calculate actual dart POI on dartboard if draw rays from cameras setup points to cameras POIs
   
 * Thats how it works. Sounds simple, but there are many things to stuck with...
+
+P.S. - If you like this stuff and if you want you can donate me for some beer ;-) (click "Sponsor" button in the top of a page) 
