@@ -1,4 +1,5 @@
 # DartboardRecognition
+* Work on this project is on hold. See next stuff in [[OneHundredAndEighty]](https://github.com/YellowFive5/OneHundredAndEighty) repo
 * The main idea to build classic steeltip dartboard-based stand with using four cameras and also write desktop application to work with.
 * This system will be automaticly detects another throw and point of impact of a dart. 
 * C# / .NET Core 3.1 / EMGU.CV
